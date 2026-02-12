@@ -1,0 +1,5 @@
+{
+  "name": "Okta: Application Assignments",
+  "description": "List all application assignments in an Okta Organization.",
+  "query": "MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)<-[:Okta_AppAssignment]-(:Okta_Base)\nRETURN p"
+}

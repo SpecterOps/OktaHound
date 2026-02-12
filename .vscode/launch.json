@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "OktaHound",
+      "type": "dotnet",
+      "request": "launch",
+      "projectPath": "${workspaceFolder}/Src/SpecterOps.OktaHound/SpecterOps.OktaHound.csproj",
+      "preLaunchTask": "build"
+    }
+  ]
+}

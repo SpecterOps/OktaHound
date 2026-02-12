@@ -1,0 +1,38 @@
+﻿using System.Text.Json.Serialization;
+
+namespace SpecterOps.OktaHound.Model.Okta;
+
+/// <summary>
+/// Base class for role-assignable resources in Okta (Users, Groups, and Apps).
+/// </summary>
+internal abstract class OktaSecurityPrincipalNode : OktaNode
+{
+    private const string HasRoleAssignmentsPropertyName = "hasRoleAssignments";
+
+    [JsonIgnore()]
+    public bool HasRoleAssignments
+    {
+        get => GetPropertyAsBool(HasRoleAssignmentsPropertyName) ?? false;
+        set => SetProperty(HasRoleAssignmentsPropertyName, value);
+    }
+
+    [JsonIgnore()]
+    public bool IsSuperAdmin
+    {
+        get;
+        set;
+    }
+
+    [JsonIgnore()]
+    public bool IsOrgAdmin
+    {
+        get;
+        set;
+    }
+
+    protected OktaSecurityPrincipalNode(string id, string oktaOrganization, string kind) : base(id, oktaOrganization, kind)
+    {
+        // Push default property values into the model
+        HasRoleAssignments = false;
+    }
+}

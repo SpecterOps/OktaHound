@@ -1,0 +1,5 @@
+{
+  "name": "Okta: Group Membership Administrators",
+  "description": "List all Group Membership Administrators in an Okta organization.",
+  "query": "MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Base)-[:Okta_GroupMembershipAdmin]->(:Okta_Group)\nRETURN p"
+}

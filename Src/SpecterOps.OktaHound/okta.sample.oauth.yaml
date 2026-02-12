@@ -1,0 +1,25 @@
+# Rename this file to okta.yaml and fill in the values below to use OAuth 2.0 private key authentication.
+okta:
+  client:
+    oktaDomain: "https://TODO.okta.com"
+    authorizationMode: "PrivateKey"
+    clientId: "TODO"
+    privateKey:
+      "d": "TODO"
+      "p": "TODO"
+      "q": "TODO"
+      "dp": "TODO"
+      "dq": "TODO"
+      "qi": "TODO"
+      "kty": "RSA"
+      "e": "AQAB"
+      "kid": "TODO"
+      "n": "TODO"
+    connectionTimeout: 30000 # milliseconds
+    requestTimeout: 0 # milliseconds
+    maxRetries: 3
+    proxy:
+      port: null
+      host: null
+      username: null
+      password: null

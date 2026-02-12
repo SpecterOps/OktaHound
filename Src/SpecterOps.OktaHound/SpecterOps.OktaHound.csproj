@@ -1,0 +1,63 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+
+	  <!-- File properties -->
+	  <Version>2.0</Version>
+	  <Product>OktaHound</Product>
+	  <AssemblyTitle>Okta Data Collector for BloodHound OpenGraph</AssemblyTitle>
+	  <Copyright>(C) 2026 Specter Ops, Inc.</Copyright>
+	  <ApplicationIcon>dog.ico</ApplicationIcon>
+
+    <!-- Set assembly name casing based on the target OS -->
+    <AssemblyName>OktaHound</AssemblyName>
+    <AssemblyName Condition="$(RuntimeIdentifier.StartsWith('linux'))">oktahound</AssemblyName>
+    <AssemblyName Condition="$(RuntimeIdentifier.StartsWith('osx'))">oktahound</AssemblyName>
+
+	  <!-- Generate a single EXE file -->
+	  <PublishSingleFile>true</PublishSingleFile>
+	  <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+	  <SelfContained>true</SelfContained>
+	  <DebugType>embedded</DebugType>
+
+	  <!-- Code analysis -->
+	  <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+	  <AnalysisLevel>6.0-recommended</AnalysisLevel>
+	  <NuGetAuditMode>all</NuGetAuditMode>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Okta.Sdk" Version="10.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.10" />
+		<PackageReference Include="System.CommandLine" Version="2.0.0-rc.1.25451.107" />
+    <!-- Pin the ILLink.Tasks version for locked mode restore to work correctly -->
+    <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="10.0.3" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <!-- Allow unit tests to access internal members. -->
+	  <InternalsVisibleTo Include="SpecterOps.OktaHound.Tests" />
+
+    <!-- Include the BloodHound Community extensions. -->
+	  <None Update="../Extensions/*.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+
+    <!-- Include sample Okta authentication configuration files. -->
+	  <None Update="okta*.yaml">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+
+    <!-- Include sample custom cypher query files. -->
+	  <None Update="../Queries/*.*">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+
+    <!-- Group the partial OktaClient class files in Visual Studio. -->
+	  <Compile Update="OktaClient.*.cs">
+      <DependentUpon>OktaClient.cs</DependentUpon>
+	  </Compile>
+  </ItemGroup>
+
+</Project>

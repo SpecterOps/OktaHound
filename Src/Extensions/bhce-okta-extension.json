@@ -1,0 +1,356 @@
+{
+  "schema": {
+    "name": "OktaHound",
+    "version": "1.0.0",
+    "namespace": "Okta"
+  },
+  "node_kinds": [
+    {
+      "name": "Okta_Organization",
+      "display_name": "Okta Organization",
+      "description": "An Okta organization",
+      "is_display_kind": "true",
+      "icon": "globe",
+      "color": "#16a5a5"
+    },
+    {
+      "name": "Okta_Realm",
+      "display_name": "Okta Realm",
+      "description": "An Okta realm",
+      "is_display_kind": "true",
+      "icon": "building",
+      "color": "#73d8ff"
+    },
+    {
+      "name": "Okta_User",
+      "display_name": "Okta User",
+      "description": "An Okta user account",
+      "is_display_kind": "true",
+      "icon": "user",
+      "color": "#d33115"
+    },
+    {
+      "name": "Okta_Group",
+      "display_name": "Okta Group",
+      "description": "An Okta user group",
+      "is_display_kind": "true",
+      "icon": "users",
+      "color": "#fcdc00"
+    },
+    {
+      "name": "Okta_Device",
+      "display_name": "Okta Device",
+      "description": "A device registered in Okta, such as a mobile phone or a computer",
+      "is_display_kind": "true",
+      "icon": "mobile",
+      "color": "#3a5d9c"
+    },
+    {
+      "name": "Okta_Application",
+      "display_name": "Okta Application",
+      "description": "An application registered in Okta, such as a SAML app or an OIDC app",
+      "is_display_kind": "true",
+      "icon": "window-maximize",
+      "color": "#68bc00"
+    },
+    {
+      "name": "Okta_ApiServiceIntegration",
+      "display_name": "Okta API Service Integration",
+      "description": "An API service integration",
+      "is_display_kind": "true",
+      "icon": "robot",
+      "color": "#68bc00"
+    },
+    {
+      "name": "Okta_ResourceSet",
+      "display_name": "Okta Resource Set",
+      "description": "A resource set containing users, groups, applications, and other Okta objects",
+      "is_display_kind": "true",
+      "icon": "folder",
+      "color": "#3a5d9c"
+    },
+    {
+      "name": "Okta_Role",
+      "display_name": "Okta Role",
+      "description": "A built-in role in Okta, such as Super Admin or Group Admin",
+      "is_display_kind": "true",
+      "icon": "clipboard-list",
+      "color": "#025e00"
+    },
+    {
+      "name": "Okta_CustomRole",
+      "display_name": "Okta Custom Role",
+      "description": "A custom role in Okta created by an administrator",
+      "is_display_kind": "true",
+      "icon": "clipboard-list",
+      "color": "#025e00"
+    },
+    {
+      "name": "Okta_RoleAssignment",
+      "display_name": "Okta Role Assignment",
+      "description": "A set of permissions assigned to a user, group, or an application in Okta",
+      "is_display_kind": "true",
+      "icon": "clipboard-check",
+      "color": "#fda1ff"
+    },
+    {
+      "name": "Okta_ApiToken",
+      "display_name": "Okta API Token",
+      "description": "A secret used by users to authenticate to the Okta API",
+      "is_display_kind": "true",
+      "icon": "key",
+      "color": "#ff746c"
+    },
+    {
+      "name": "Okta_ClientSecret",
+      "display_name": "Okta Client Secret",
+      "description": "A secret used by applications to authenticate to the Okta API",
+      "is_display_kind": "true",
+      "icon": "key",
+      "color": "#ff746c"
+    },
+    {
+      "name": "Okta_JWK",
+      "display_name": "Okta JWK",
+      "description": "An Okta JSON Web Key",
+      "is_display_kind": "true",
+      "icon": "key",
+      "color": "#ff746c"
+    },
+    {
+      "name": "Okta_AgentPool",
+      "display_name": "Okta Agent Pool",
+      "description": "A pool of synchronization or authentication agents in Okta",
+      "is_display_kind": "true",
+      "icon": "gears",
+      "color": "#aea1ff"
+    },
+    {
+      "name": "Okta_Agent",
+      "display_name": "Okta Agent",
+      "description": "A synchronization or authentication agent in Okta",
+      "is_display_kind": "true",
+      "icon": "gear",
+      "color": "#fb9e00"
+    },
+    {
+      "name": "Okta_AuthorizationServer",
+      "display_name": "Okta Authorization Server",
+      "description": "An authorization server in Okta",
+      "is_display_kind": "true",
+      "icon": "certificate",
+      "color": "#fb9e00"
+    },
+    {
+      "name": "Okta_IdentityProvider",
+      "display_name": "Okta Identity Provider",
+      "description": "An identity provider trusted by Okta for authentication",
+      "is_display_kind": "true",
+      "icon": "right-to-bracket",
+      "color": "#fb9e00"
+    },
+    {
+      "name": "Okta_Policy",
+      "display_name": "Okta Policy",
+      "description": "A policy defining rules for authentication, password, or other features in Okta",
+      "is_display_kind": "true",
+      "icon": "shield",
+      "color": "#c1e1c1"
+    }
+  ],
+  "relationship_kinds": [
+    {
+      "name": "Okta_Contains",
+      "description": "Contains relationship between the Okta organization and its objects",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_ManagerOf",
+      "description": "Manager relationship between Okta users",
+      "is_traversable": false
+    },
+    {
+      "name": "Okta_OwnsDevice",
+      "description": "Ownership relationship between a device and its assigned user",
+      "is_traversable": false
+    },
+    {
+      "name": "Okta_HasToken",
+      "description": "User ownership of an Okta API token",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_SecretOf",
+      "description": "Client secret associated with an application or service integration",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_KeyOf",
+      "description": "JSON Web Key associated with an Okta application",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_HasAgent",
+      "description": "Membership of an agent within an agent pool",
+      "is_traversable": false
+    },
+    {
+      "name": "Okta_CreatorOf",
+      "description": "Creator relationship for API service integrations",
+      "is_traversable": false
+    },
+    {
+      "name": "Okta_AppAssignment",
+      "description": "Assignment of users or groups to an Okta application",
+      "is_traversable": false
+    },
+    {
+      "name": "Okta_ResourceSetContains",
+      "description": "Membership of objects within an Okta resource set",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_MemberOf",
+      "description": "Membership of a user in an Okta group",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_HasRole",
+      "description": "Assignment of a built-in or custom role to a principal",
+      "is_traversable": false
+    },
+    {
+      "name": "Okta_HasRoleAssignment",
+      "description": "Relationship between a principal and a role assignment",
+      "is_traversable": false
+    },
+    {
+      "name": "Okta_ScopedTo",
+      "description": "Scope relationship between a role assignment and its target",
+      "is_traversable": false
+    },
+    {
+      "name": "Okta_AppAdmin",
+      "description": "Application administrator role assignment",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_GroupAdmin",
+      "description": "Group administrator role assignment",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_GroupMembershipAdmin",
+      "description": "Group membership administrator role assignment",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_HelpDeskAdmin",
+      "description": "Help desk administrator role assignment",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_SuperAdmin",
+      "description": "Super administrator role assignment",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_OrgAdmin",
+      "description": "Organization administrator role assignment",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_MobileAdmin",
+      "description": "Mobile administrator role assignment",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_IdentityProviderFor",
+      "description": "Trust relationship between an identity provider and Okta users",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_IdpGroupAssignment",
+      "description": "Identity provider group assignment to an Okta group",
+      "is_traversable": false
+    },
+    {
+      "name": "Okta_GroupPush",
+      "description": "Provisioning of group memberships to an external application",
+      "is_traversable": false
+    },
+    {
+      "name": "Okta_GroupPull",
+      "description": "Import of group memberships from an external application",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_UserPush",
+      "description": "Provisioning of users to an external application",
+      "is_traversable": false
+    },
+    {
+      "name": "Okta_UserPull",
+      "description": "Import of users from an external application",
+      "is_traversable": false
+    },
+    {
+      "name": "Okta_PolicyMapping",
+      "description": "Association of a policy with an Okta application",
+      "is_traversable": false
+    },
+    {
+      "name": "Okta_UserSync",
+      "description": "Bidirectional synchronization between Okta users and external identities",
+      "is_traversable": false
+    },
+    {
+      "name": "Okta_MembershipSync",
+      "description": "Bidirectional synchronization between Okta groups and external groups",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_OutboundSSO",
+      "description": "Single sign-on from Okta to an external identity provider",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_SWA",
+      "description": "Secure Web Authentication from Okta to an external application",
+      "is_traversable": false
+    },
+    {
+      "name": "Okta_OutboundOrgSSO",
+      "description": "Single sign-on from an Okta application to an external organization",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_OrgSWA",
+      "description": "Secure Web Authentication from an Okta application to an external organization",
+      "is_traversable": false
+    },
+    {
+      "name": "Okta_InboundOrgSSO",
+      "description": "Single sign-on from an external organization into Okta",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_InboundSSO",
+      "description": "Single sign-on from an external identity provider into Okta",
+      "is_traversable": true
+    }
+  ],
+  "environments": [
+    {
+      "environment_kind": "OktaOrganization",
+      "source_kind": "Okta_Base",
+      "principal_kinds": [
+        "Okta_User",
+        "Okta_Group",
+        "Okta_Application",
+        "Okta_ApiServiceIntegration"
+      ]
+    }
+  ],
+  "relationship_findings": []
+}

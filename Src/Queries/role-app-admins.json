@@ -1,0 +1,5 @@
+{
+  "name": "Okta: Application Administrators",
+  "description": "List all Application Administrators in an Okta organization.",
+  "query": "MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Base)-[:Okta_AppAdmin]->(app)\nWHERE (app:Okta_Application) OR (app:Okta_ApiServiceIntegration)\nRETURN p"
+}

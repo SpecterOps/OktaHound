@@ -1,0 +1,79 @@
+name: Update Documentation and Icons
+
+on:
+  push:
+    paths:
+      - Src/Extensions/bhce-okta-extension.json
+      - Src/Queries/*.json
+      - Scripts/Render-CustomNodeIcons.ps1
+      - Scripts/Render-CustomQueries.ps1
+      - Scripts/Render-Schema.ps1
+      - .github/workflows/update-documentation.yml
+
+permissions:
+  contents: write
+
+jobs:
+  update-doc-and-icons:
+    name: Update Documentation and Icons
+    runs-on: windows-latest
+    env:
+      OKTAHOUND_SCHEMA_PATH: ./Src/Extensions/bhce-okta-extension.json
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Cache NuGet icon dependencies
+        uses: actions/cache@v5
+        with:
+          path: ${{ runner.temp }}\OktaHound-IconRender
+          key: ${{ runner.os }}-icon-render-${{ hashFiles('Scripts/Render-CustomNodeIcons.ps1') }}
+          restore-keys: |
+            ${{ runner.os }}-icon-render-
+
+      - name: Render node icons
+        shell: pwsh
+        env:
+          ICON_CACHE_PATH: ${{ runner.temp }}\OktaHound-IconRender
+        run: |
+          ./Scripts/Render-CustomNodeIcons.ps1 -InputFile $env:OKTAHOUND_SCHEMA_PATH -OutputDir ./Documentation/Icons -PackageCachePath $env:ICON_CACHE_PATH
+
+      - name: Render schema documentation
+        shell: pwsh
+        run: |
+          ./Scripts/Render-Schema.ps1 -InputPath $env:OKTAHOUND_SCHEMA_PATH -OutputPath ./Documentation/Schema.md
+
+      - name: Render custom queries documentation
+        shell: pwsh
+        run: |
+          ./Scripts/Render-CustomQueries.ps1 -InputDirectory ./Src/Queries -OutputFilePath ./Documentation/Queries.md
+
+      - name: Detect changes
+        id: changes
+        shell: pwsh
+        run: |
+          [string] $status = git status --porcelain
+          if ([string]::IsNullOrWhiteSpace($status)) {
+            "No changes." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+            "has_changes=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+            return
+          }
+
+          "Files changed:" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+          # Substring(3) strips the two-character status code and following space to leave just the file path.
+          [string[]] $files = $status -split "(`r`n|`n|`r)" | ForEach-Object { $PSItem.Trim() } | Where-Object { $PSItem -ne [string]::Empty } | ForEach-Object { $PSItem.Substring(3) }
+          foreach ($file in $files) {
+            "- $file" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+          }
+
+          "has_changes=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: Commit and push changes
+        if: steps.changes.outputs.has_changes == 'true'
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Update documentation"
+          git push

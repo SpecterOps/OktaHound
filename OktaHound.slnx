@@ -1,0 +1,26 @@
+<Solution>
+  <Project Path="Src/SpecterOps.OktaHound/SpecterOps.OktaHound.csproj" DefaultStartup="true" />
+  <Project Path="Src/SpecterOps.OktaHound.Tests/SpecterOps.OktaHound.Tests.csproj" />
+  <Folder Name="/Config/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path=".github/workflows/autobuild.yml" />
+    <File Path=".github/workflows/update-documentation.yml" />
+    <File Path="global.json" />
+    <File Path="Src/Directory.Build.props" />
+  </Folder>
+  <Folder Name="/Documentation/">
+    <File Path="Documentation/Queries.md" />
+    <File Path="Documentation/Schema.md" />
+    <File Path="Documentation/Roadmap.md" />
+    <File Path="README.md" />
+    <File Path="CONTRIBUTING.md" />
+    <File Path="LICENSE" />
+    <File Path="Src/Extensions/bhce-okta-extension.json" />
+  </Folder>
+  <Folder Name="/Scripts/">
+    <File Path="Scripts/Render-CustomQueries.ps1" />
+    <File Path="Scripts/Render-CustomNodeIcons.ps1" />
+    <File Path="Scripts/Render-Schema.ps1" />
+  </Folder>
+</Solution>

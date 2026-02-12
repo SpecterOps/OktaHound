@@ -1,0 +1,9 @@
+﻿<Project Sdk="MSTest.Sdk">
+  <PropertyGroup>
+	  <IsPublishable>false</IsPublishable>
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
+  <ItemGroup>
+	  <ProjectReference Include="$(MSBuildThisFileDirectory)..\SpecterOps.OktaHound\SpecterOps.OktaHound.csproj" />
+  </ItemGroup>
+</Project>

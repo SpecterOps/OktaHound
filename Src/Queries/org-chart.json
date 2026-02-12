@@ -1,0 +1,5 @@
+{
+  "name": "Okta: Organizational Structure",
+  "description": "Retrieves all manager relationships in the Okta organization.",
+  "query": "MATCH p = (:Okta_User)-[:Okta_ManagerOf]->(:Okta_User)\nRETURN p"
+}

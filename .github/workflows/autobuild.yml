@@ -1,0 +1,133 @@
+name: 'CI Build'
+
+on:
+  push:
+    branches:
+    - '**'
+    paths:
+    - 'Src/**'
+    - '.github/workflows/autobuild.yml'
+
+jobs:
+  build:
+    name: 'Build on ${{ matrix.os }}'
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        cache: true
+        cache-dependency-path: 'Src/*/packages.lock.json'
+
+    - name: Restore NuGet Packages
+      run: |
+        dotnet restore --locked-mode
+
+    - name: Build Binaries
+      run: |
+        dotnet build --no-restore
+
+    - name: Run .NET Unit Tests
+      run: dotnet test --no-build -- --report-trx --results-directory Build/TestResults
+
+    # Publish the MSTest results to the GitHub Checks API.
+    # The action is OS-specific.
+    - name: Publish Test Results (Windows)
+      uses: EnricoMi/publish-unit-test-result-action/windows@v2
+      if: (!cancelled()) && startsWith(matrix.os, 'windows')
+      with:
+        check_name: 'Test Results (Windows)'
+        files: |
+          Build\TestResults\**\*.trx
+
+    - name: Publish Test Results (Linux)
+      uses: EnricoMi/publish-unit-test-result-action/linux@v2
+      if: (!cancelled()) && startsWith(matrix.os, 'ubuntu')
+      with:
+        check_name: 'Test Results (Linux)'
+        files: |
+          Build/TestResults/**/*.trx
+
+    - name: Publish Test Results (macOS)
+      uses: EnricoMi/publish-unit-test-result-action/macos@v2
+      if: (!cancelled()) && startsWith(matrix.os, 'macos')
+      with:
+        check_name: 'Test Results (macOS)'
+        files: |
+          Build/TestResults/**/*.trx
+
+    - name: Upload Test Results (Windows)
+      uses: actions/upload-artifact@v4
+      if: (!cancelled()) && startsWith(matrix.os, 'windows')
+      with:
+        name: TestResults_Windows
+        path: |
+            Build/TestResults/*.*
+
+    - name: Create Windows x64 Binaries
+      if: startsWith(matrix.os, 'windows')
+      run: dotnet publish --runtime win-x64 --no-restore
+
+    - name: Create Windows ARM64 Binaries
+      if: startsWith(matrix.os, 'windows')
+      run: dotnet publish --runtime win-arm64 --no-restore
+
+    - name: Create Linux x64 Binaries
+      if: startsWith(matrix.os, 'ubuntu')
+      run: dotnet publish --runtime linux-x64 --no-restore
+
+    - name: Create Linux ARM Binaries
+      if: startsWith(matrix.os, 'ubuntu')
+      run: dotnet publish --runtime linux-arm --no-restore
+
+    - name: Create Linux ARM64 Binaries
+      if: startsWith(matrix.os, 'ubuntu')
+      run: dotnet publish --runtime linux-arm64 --no-restore
+
+    - name: Create macOS ARM64 Binaries
+      if: startsWith(matrix.os, 'macos')
+      run: dotnet publish --runtime osx-arm64 --no-restore
+
+    - name: Create macOS Intel Binaries
+      if: startsWith(matrix.os, 'macos')
+      run: dotnet publish --runtime osx-x64 --no-restore
+
+    - name: Get the Version Number
+      id: get-version
+      shell: pwsh
+      working-directory: Src/SpecterOps.OktaHound
+      run: |
+        # App version example: 1.2+a8ddb25a10afaba13e833e90d001f2837477c6d2
+        [string] $version = dotnet run --no-build --verbosity quiet -- --version
+
+        # Replace '+' with '-' for semantic versioning compliance
+        $version = $version -replace '\+', '-'
+
+        # Emit the step output variable
+        "version=$version" >> $env:GITHUB_OUTPUT
+
+    - name: Upload Binaries as Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        # Example ZIP file name: OktaHound_Community_Windows_v1.2-a8ddb25a10afaba13e833e90d001f2837477c6d2.zip
+        name: OktaHound_Community_${{ startsWith(matrix.os, 'windows') && 'Windows' || startsWith(matrix.os, 'ubuntu') && 'Linux' || 'macOS' }}_v${{ steps.get-version.outputs.version }}
+        path: |
+          Build/publish/*

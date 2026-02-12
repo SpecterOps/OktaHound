@@ -1,0 +1,5 @@
+{
+  "name": "Okta: List AD Servers with Okta Agents",
+  "description": "Lists all AD servers with Okta agents installed.",
+  "query": "MATCH (agent:Okta_Agent)\nMATCH (server:Computer)\nWHERE toUpper(server.samaccountname) = toUpper(agent.name + '$') AND toUpper(server.domain) = toUpper(agent.poolName)\nRETURN agent,server"
+}

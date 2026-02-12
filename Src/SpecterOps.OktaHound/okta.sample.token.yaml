@@ -1,0 +1,14 @@
+# Rename this file to okta.yaml and fill in the values below to use token-based authentication.
+okta:
+  client:
+    oktaDomain: "https://TODO.okta.com"
+    authorizationMode: "SSWS"
+    token: "TODO"
+    connectionTimeout: 30000 # milliseconds
+    requestTimeout: 0 # milliseconds
+    maxRetries: 3
+    proxy:
+      port: null
+      host: null
+      username: null
+      password: null

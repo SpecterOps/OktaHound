@@ -1,0 +1,5 @@
+{
+  "name": "Okta: List Agents and Agent Pools",
+  "description": "Lists all Okta agent pools and their associated agents.",
+  "query": "MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_AgentPool)-[:Okta_HasAgent]->(:Okta_Agent)\nRETURN p"
+}
