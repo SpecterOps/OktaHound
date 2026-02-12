@@ -60,11 +60,7 @@ jobs:
           }
 
           "Files changed:" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
-          # Substring(3) strips the two-character status code and following space to leave just the file path.
-          [string[]] $files = $status -split "(`r`n|`n|`r)" | ForEach-Object { $PSItem.Trim() } | Where-Object { $PSItem -ne [string]::Empty } | ForEach-Object { $PSItem.Substring(3) }
-          foreach ($file in $files) {
-            "- $file" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
-          }
+          $status | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
 
           "has_changes=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
 

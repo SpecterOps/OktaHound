@@ -142,7 +142,7 @@ partial class OktaClient
                     _logger.LogTrace("Group {GroupName} ({GroupId}) is synchronized from application {SourceApplicationId}.", groupNode.Name, groupNode.Id, groupNode.SourceApplicationId);
 
                     // Find the source app. This assumes that apps are loaded before groups.
-                    OktaApplication? appNode =_graph.GetApplication(groupNode.SourceApplicationId);
+                    OktaApplication? appNode = _graph.GetApplication(groupNode.SourceApplicationId);
                     if (appNode is null)
                     {
                         _logger.LogWarning("Could not find the source application {SourceApplicationId} for group {GroupName} ({GroupId}).", groupNode.SourceApplicationId, groupNode.Name, groupNode.Id);

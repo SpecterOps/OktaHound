@@ -4,7 +4,6 @@ using Okta.Sdk.Api;
 using Okta.Sdk.Client;
 using Okta.Sdk.Model;
 using SpecterOps.OktaHound.Model.ActiveDirectory;
-using SpecterOps.OktaHound.Model.Entra;
 using SpecterOps.OktaHound.Model.Okta;
 using SpecterOps.OktaHound.Model.OpenGraph;
 
@@ -742,6 +741,7 @@ partial class OktaClient
         _logger.LogInformation("Finished fetching Okta policy rules.");
     }
 
+    [Obsolete]
     public async Task FetchOktaPolicyMappings(CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching Okta policy mappings...");

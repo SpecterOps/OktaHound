@@ -1,4 +1,4 @@
-using SpecterOps.OktaHound.Model.Entra;
+﻿using SpecterOps.OktaHound.Model.Entra;
 
 namespace SpecterOps.OktaHound.Tests;
 
