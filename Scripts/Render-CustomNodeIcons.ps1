@@ -24,7 +24,7 @@
     subdirectory under the temp directory.
 .NOTES
     Author: Michael Grafnetter
-    Version: 3.2
+    Version: 3.3
 #>
 
 #requires -Version 7
@@ -141,7 +141,7 @@ New extension format:
       "description": "An Azure tenant environment",
       "is_display_kind": "true",
       "icon": "cloud",
-      "color": "0xFF00FF"
+      "color": "#FF00FF"
     }
   ]
 }
@@ -442,7 +442,7 @@ function Write-NodeIconPng {
      The icon name to render (Font Awesome icon name when using font-awesome type).
 
  .PARAMETER Color
-     The icon background color in hex (e.g., 0x3B82F6).
+     The icon background color in hex (e.g., #3B82F6).
 
  .PARAMETER IconType
      The icon type to render. Only font-awesome is supported.

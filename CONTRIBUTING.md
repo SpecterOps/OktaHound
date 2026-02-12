@@ -9,7 +9,7 @@ The guidelines below outline the minimum environment requirements, explain how t
 ## Requirements
 
 - [.NET SDK 10.0+ SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0): The .NET SDK is required to build the application and run tests locally. Windows, Linux, and macOS are all supported.
-- A code editor or IDE with .NET support, such as [Visual Studio 2022+](https://visualstudio.microsoft.com/) or [Visual Studio Code](https://code.visualstudio.com/).
+- A code editor or IDE with .NET support, such as [Visual Studio 2026+](https://visualstudio.microsoft.com/) or [Visual Studio Code](https://code.visualstudio.com/).
 - [Okta Organization](https://developer.okta.com/signup/): Read access to an Okta Workforce Identity Cloud tenant for functional testing.
 - [BloodHound](https://bloodhound.specterops.io/get-started/introduction): Optional but recommended if you need to validate collector output.
 
@@ -49,6 +49,7 @@ These libraries and frameworks are used in the OktaHound project:
 - [ILogger API](https://learn.microsoft.com/en-us/dotnet/core/extensions/logging) - A logging abstraction for .NET applications.
 - [System.CommandLine](https://learn.microsoft.com/en-us/dotnet/standard/commandline/) - A library for parsing command-line arguments.
 - [Microsoft Testing Framework](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-mstest-intro) - The testing framework used for unit tests.
+- [Font Awesome Free](https://fontawesome.com/) - Used for BloodHound node icons.
 - [System.Text.Json](https://learn.microsoft.com/en-us/dotnet/api/system.text.json) - Used to generate pre-compiled high-performance BloodHound OpenGraph JSON serializers.
 
 ## Building from Source
@@ -75,7 +76,7 @@ These libraries and frameworks are used in the OktaHound project:
 ## Running Unit Tests
 
 1. Set the working directory to the repository root.
-2. Create the `okta.yaml` configuration file as described in the [README](README.md#configuration).
+2. Create the `okta.yaml` configuration file with the right credentials.
 3. Run all tests:
 
    ```powershell

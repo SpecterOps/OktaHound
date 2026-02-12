@@ -1,6 +1,6 @@
 {
   "schema": {
-    "name": "OktaHound",
+    "name": "Okta (OktaHound)",
     "version": "1.0.0",
     "namespace": "Okta"
   },
@@ -342,7 +342,7 @@
   ],
   "environments": [
     {
-      "environment_kind": "OktaOrganization",
+      "environment_kind": "Okta_Organization",
       "source_kind": "Okta_Base",
       "principal_kinds": [
         "Okta_User",
