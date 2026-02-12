@@ -1,5 +1,13 @@
 # OktaHound Extension Schema
 
+## Metadata
+
+**Name:** Okta (OktaHound)<br>
+**Version:** 1.0.0<br>
+**Namespace:** Okta<br>
+**Environment Kind:** Okta_Organization<br>
+**Source Kind:** Okta_Base
+
 ## Nodes
 
 | Icon | Node Kind | Display Name |
