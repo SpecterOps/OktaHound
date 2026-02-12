@@ -4,7 +4,6 @@ namespace SpecterOps.OktaHound.Model.OpenGraph;
 
 internal sealed class OpenGraphEdge
 {
-    private const string TraversablePropertyName = "traversable";
 
     [JsonPropertyName("kind")]
     public readonly string Kind;
@@ -18,19 +17,11 @@ internal sealed class OpenGraphEdge
     [JsonPropertyName("properties")]
     public readonly SortedDictionary<string, object> Properties = [];
 
-    [JsonIgnore]
-    public bool IsTraversable
-    {
-        get => GetPropertyAsBool(TraversablePropertyName) ?? false;
-        set => SetProperty(TraversablePropertyName, value);
-    }
-
     public OpenGraphEdge(OpenGraphNode start, OpenGraphNode end, string kind)
     {
         Start = start.ToEdgeNode();
         End = end.ToEdgeNode();
         Kind = kind;
-        IsTraversable = false;
     }
 
     public OpenGraphEdge(OpenGraphEdgeNode start, OpenGraphNode end, string kind)
@@ -38,7 +29,6 @@ internal sealed class OpenGraphEdge
         Start = start;
         End = end.ToEdgeNode();
         Kind = kind;
-        IsTraversable = false;
     }
 
     public OpenGraphEdge(OpenGraphNode start, OpenGraphEdgeNode end, string kind)
@@ -46,7 +36,6 @@ internal sealed class OpenGraphEdge
         Start = start.ToEdgeNode();
         End = end;
         Kind = kind;
-        IsTraversable = false;
     }
 
     public OpenGraphEdge(OpenGraphEdgeNode start, OpenGraphEdgeNode end, string kind)
@@ -54,7 +43,6 @@ internal sealed class OpenGraphEdge
         Start = start;
         End = end;
         Kind = kind;
-        IsTraversable = false;
     }
 
     public void SetProperty(string name, object? value)

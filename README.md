@@ -1,4 +1,4 @@
-# OktaHound - Work in Progress
+# OktaHound
 
 **Okta Data Collector for BloodHound OpenGraph**
 

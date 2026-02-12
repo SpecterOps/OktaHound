@@ -8,64 +8,6 @@ namespace SpecterOps.OktaHound;
 partial class OktaClient
 {
     /// <summary>
-    /// Marks specific edges in the Okta graph and hybrid edge graph as traversable.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown if the Okta graph has not been initialized.</exception>
-    public void MarkTraversableEdges()
-    {
-        if (_graph is null)
-        {
-            throw new InvalidOperationException("Okta graph is null. Ensure data has been collected before post-processing.");
-        }
-
-        string[] traversableEdges = [
-            OktaOrganization.ContainsEdgeKind,
-            OktaApiToken.HasApiTokenEdgeKind,
-            OktaClientSecret.SecretOfEdgeKind,
-            OktaJWK.KeyOfEdgeKind,
-            OktaResourceSet.ContainsEdgeKind,
-            OktaGroup.MemberOfEdgeKind,
-            OktaRole.ApplicationAdministratorEdgeKind,
-            OktaRole.GroupAdministratorEdgeKind,
-            OktaRole.GroupMembershipAdministratorEdgeKind,
-            OktaRole.HelpDeskAdministratorEdgeKind,
-            OktaRole.SuperAdministratorEdgeKind,
-            OktaRole.OrganizationAdministratorEdgeKind,
-            OktaRole.MobileAdministratorEdgeKind,
-            OktaIdentityProvider.IdpForEdgeKind,
-            OktaGroup.GroupPullEdgeKind,
-        ];
-
-        string[] traversableHybridEdges = [
-            OktaGroup.MembershipSyncEdgeKind,
-            OktaUser.SingleSignOnEdgeKind,
-            OktaApplication.OrganizationalSingleSignOnEdgeKind,
-            OktaIdentityProvider.InboundOrgSSOEdgeKind,
-            OktaIdentityProvider.InboundSsoEdgeKind,
-        ];
-
-        foreach (var edgeKind in traversableEdges)
-        {
-            _graph.Elements.EdgesByKind.TryGetValue(edgeKind, out var edges);
-
-            foreach (var edge in edges ?? [])
-            {
-                edge.IsTraversable = true;
-            }
-        }
-
-        foreach (var edgeKind in traversableHybridEdges)
-        {
-            _hybridEdgeGraph.Elements.EdgesByKind.TryGetValue(edgeKind, out var edges);
-
-            foreach (var edge in edges ?? [])
-            {
-                edge.IsTraversable = true;
-            }
-        }
-    }
-
-    /// <summary>
     /// Creates the Domain nodes in AD subgraph.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown if the Okta graph has not been initialized.</exception>

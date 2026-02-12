@@ -18,19 +18,32 @@ param (
 
 Set-StrictMode -Version Latest
 
+# Parse the JSON file
+[psobject] $json = Get-Content -Path $InputPath | ConvertFrom-Json
+[psobject[]] $nodeKinds = @($json.node_kinds | Sort-Object -Property name)
+[psobject[]] $relationshipKinds = @($json.relationship_kinds | Sort-Object -Property name)
+
+# Generate the header and metadata section
 [string] $markdown = @'
 # OktaHound Extension Schema
+
+## Metadata
+
+**Name:** {0}<br>
+**Version:** {1}<br>
+**Namespace:** {2}<br>
+**Environment Kind:** {3}<br>
+**Source Kind:** {4}
+
+'@ -f $json.schema.name, $json.schema.version, $json.schema.namespace, $json.environments[0].environment_kind, $json.environments[0].source_kind
+
+$markdown += @'
 
 ## Nodes
 
 | Icon | Node Kind | Display Name |
 |------|-----------|--------------|
 '@
-
-# Parse the JSON file
-[psobject] $json = Get-Content -Path $InputPath | ConvertFrom-Json
-[psobject[]] $nodeKinds = @($json.node_kinds | Sort-Object -Property name)
-[psobject[]] $relationshipKinds = @($json.relationship_kinds | Sort-Object -Property name)
 
 # Add a table row for each node kind
 foreach ($nodeKind in $nodeKinds) {

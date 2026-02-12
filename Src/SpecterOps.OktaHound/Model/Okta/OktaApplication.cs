@@ -549,7 +549,7 @@ internal sealed class OktaApplication : OktaSecurityPrincipalNode
             JamfProSamlApplicationType or JamfProSwaApplicationType => new OpenGraphEdgeNode(targetUserId, "jamf_Account", "name"),
 
             // TODO: Check that the GitHub mapping is OK
-            GitHubCloudApplicationType => new OpenGraphEdgeNode(targetUserId, "GHUser", "name"),
+            GitHubCloudApplicationType => new OpenGraphEdgeNode(targetUserId, "GH_User", "name"),
 
             // TODO: Check OP mapping
             OnePasswordBusinessApplicationType => new OpenGraphEdgeNode(targetUserId, "OPUser", "name"),
@@ -614,7 +614,7 @@ internal sealed class OktaApplication : OktaSecurityPrincipalNode
             JamfProSamlApplicationType => JamfDomain is not null ? new OpenGraphEdgeNode(JamfDomain, "jamf_Tenant", "name") : null,
 
             // TODO: Check that the GitHub mapping is OK
-            GitHubCloudApplicationType => GitHubOrganization is not null ? new OpenGraphEdgeNode(GitHubOrganization, "GHOrganization", "name") : null,
+            GitHubCloudApplicationType => GitHubOrganization is not null ? new OpenGraphEdgeNode(GitHubOrganization, "GH_Organization", "name") : null,
 
             // TODO: Check OP mapping
             OnePasswordBusinessApplicationType => OnePasswordDomain is not null ? new OpenGraphEdgeNode(OnePasswordDomain, "OPAccount", "name") : null,
