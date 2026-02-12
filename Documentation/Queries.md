@@ -287,7 +287,7 @@ This query can be imported into BloodHound from the [role-super-admins.json](../
 Users, groups, and applications in Okta organization with role assignments.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(n:Okta)
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(n:Okta_Base)
 WHERE n.hasRoleAssignments AND (n:Okta_User OR n:Okta_Group OR n:Okta_Application OR n:Okta_ApiServiceIntegration)
 RETURN p
 ```
