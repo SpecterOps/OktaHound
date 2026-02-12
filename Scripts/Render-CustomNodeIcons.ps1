@@ -24,7 +24,7 @@
     subdirectory under the temp directory.
 .NOTES
     Author: Michael Grafnetter
-    Version: 3.1
+    Version: 3.2
 #>
 
 #requires -Version 7
@@ -109,10 +109,6 @@ function Main {
         if ([string]::IsNullOrWhiteSpace($iconColor)) {
             Write-Warning "Skipping ${nodeName}`: icon color is missing."
             continue
-        }
-
-        if (-not [string]::IsNullOrWhiteSpace($iconColor)) {
-            $iconColor = Normalize-IconColor -Color $iconColor
         }
 
         New-NodeIcon -NodeName $nodeName -Icon $iconName -Color $iconColor -IconType $iconType -OutputDir $OutputDir -ImageSize $ImageSize -IconScale $IconScale
@@ -206,43 +202,6 @@ function Get-SafeFileName {
     }
 
     return $Name
-}
-
-<#
-.SYNOPSIS
-    Normalizes a hex color string to a format understood by SkiaSharp.
-
-.PARAMETER Color
-    A hex color string (e.g., 0x3B82F6, #3B82F6, 3B82F6, or AARRGGBB).
-
-.OUTPUTS
-    A normalized hex color string prefixed with #, or $null if invalid.
-#>
-function Normalize-IconColor {
-    [OutputType([string])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [string] $Color
-    )
-
-    [string] $trimmed = $Color.Trim()
-    if ($trimmed.StartsWith('0x')) {
-        $trimmed = $trimmed.Substring(2)
-    }
-
-    if ($trimmed.StartsWith('#')) {
-        $trimmed = $trimmed.Substring(1)
-    }
-
-    if ($trimmed -match '^[0-9a-fA-F]{6}$') {
-        return "#$trimmed"
-    }
-
-    if ($trimmed -match '^[0-9a-fA-F]{8}$') {
-        return "#$trimmed"
-    }
-
-    return $null
 }
 
 <#

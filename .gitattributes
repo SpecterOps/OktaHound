@@ -1,0 +1,5 @@
+# Normalize line endings for generated docs
+Documentation/*.md text eol=crlf
+
+# Enforce LF for query and extension files for *NIX package compatibility (UTF-8 no BOM)
+*.json text eol=lf working-tree-encoding=UTF-8

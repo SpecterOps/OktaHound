@@ -40,19 +40,22 @@
 	  <InternalsVisibleTo Include="SpecterOps.OktaHound.Tests" />
 
     <!-- Include the BloodHound Community extensions. -->
-	  <None Update="../Extensions/*.json">
+	  <Content Include="../Extensions/*.*" LinkBase="extensions">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
 
     <!-- Include sample Okta authentication configuration files. -->
-	  <None Update="okta*.yaml">
+	  <Content Include="okta*.yaml">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
 
     <!-- Include sample custom cypher query files. -->
-	  <None Update="../Queries/*.*">
+	  <Content Include="../Queries/*.*" LinkBase="queries">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
 
     <!-- Group the partial OktaClient class files in Visual Studio. -->
 	  <Compile Update="OktaClient.*.cs">
