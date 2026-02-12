@@ -2,11 +2,11 @@
 
 **Okta Data Collector for BloodHound OpenGraph**
 
-[![Applies to BloodHound Community Edition](https://mintlify.s3.us-west-1.amazonaws.com/specterops/assets/community-edition-pill-tag.svg)](#)
+[![Applies to BloodHound Community Edition](https://mintlify.s3.us-west-1.amazonaws.com/specterops/assets/community-edition-pill-tag.svg)](https://specterops.io/bloodhound-community-edition/)
 
 [![Apache License 2.0](https://img.shields.io/badge/license-Apache%20License%202.0-green)](LICENSE)
-[![.NET 8.0+](https://img.shields.io/badge/Runtime-8.0%2B-007FFF.svg?logo=.net)](#)
-[![Windows, macOS, and Linux Support](https://img.shields.io/badge/OS-Windows%20%7C%20macOS%20%7C%20Linux-blue)](#)
+[![.NET 10.0+](https://img.shields.io/badge/Runtime-10.0%2B-007FFF.svg?logo=.net)](https://dotnet.microsoft.com/en-us/)
+[![Windows, macOS, and Linux Support](https://img.shields.io/badge/OS-Windows%20%7C%20macOS%20%7C%20Linux-blue)](https://github.com/SpecterOps/OktaHound/releases)
 [![CI Build](https://github.com/SpecterOps/OktaHound/actions/workflows/autobuild.yml/badge.svg)](https://github.com/SpecterOps/OktaHound/actions/workflows/autobuild.yml)
 
 ## Overview
@@ -33,6 +33,27 @@ The other main product in Okta's portfolio is [Auth0](https://auth0.com/), previ
 ### Valdemar Carøe - [SpecterOps](https://specterops.io)
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-valdemar--carøe-0077B5.svg)](https://www.linkedin.com/in/valdemar-carøe)
+
+## Okta Attack Paths
+
+Okta is an interesting target for attackers, as it is widely used by organizations to manage
+access to their cloud and on-premises applications.
+Compromising an Okta organization can provide attackers with access to a wide range of resources and data.
+Having said that, Okta organizations seem to be secure by default.
+Multi-factor authentication (MFA) is enforced for all users and re-authentication is required for sensitive administrative tasks.
+
+![Default Catch-All rule](https://support.okta.com/help/servlet/rtaImage?eid=ka0KZ000000Q2en&feoid=00N0Z00000GpsjQ&refid=0EMKZ000000FtDI)
+
+Moreover, Okta has taken steps to mitigate privilege elevation paths through RBAC. For example,
+only Super Administrators can manage groups with administrative roles. Most vulnerabilities thus arise from misconfigurations,
+such as excessive role assignments, weak authentication policies, insecure application integrations, and sensitive credential exposure.
+It is also important to note that a non-privileged Okta user might have administrative access in connected applications,
+such as GitHub Enterprise Cloud or Amazon Web Services (AWS). Hybrid attack paths between on-premises Active Directory environments and Okta are also possible.
+
+![Okta role assignments displayed in BloodHound](Documentation/Screenshots/bloodhound-role-assignments.png)
+
+Our research on Okta attack paths is still ongoing.
+Interesting mappings to MITRE ATT&CK is [available from Elastic](https://github.com/elastic/detection-rules/tree/main/rules/integrations/okta).
 
 ## Okta Free Trial
 
