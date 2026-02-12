@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   update-doc-and-icons:
-    name: Update Documentation and Icons
+    name: Update Doc and Icons
     runs-on: windows-latest
     env:
       OKTAHOUND_SCHEMA_PATH: ./Src/Extensions/bhce-okta-extension.json
