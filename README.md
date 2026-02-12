@@ -7,7 +7,7 @@
 [![Apache License 2.0](https://img.shields.io/badge/license-Apache%20License%202.0-green)](LICENSE)
 [![.NET 8.0+](https://img.shields.io/badge/Runtime-8.0%2B-007FFF.svg?logo=.net)](#)
 [![Windows, macOS, and Linux Support](https://img.shields.io/badge/OS-Windows%20%7C%20macOS%20%7C%20Linux-blue)](#)
-[![CI Build](https://github.com/SpecterOps/oktahound-community/actions/workflows/autobuild.yml/badge.svg)](https://github.com/SpecterOps/oktahound-community/actions/workflows/autobuild.yml)
+[![CI Build](https://github.com/SpecterOps/OktaHound/actions/workflows/autobuild.yml/badge.svg)](https://github.com/SpecterOps/OktaHound/actions/workflows/autobuild.yml)
 
 ## Overview
 
