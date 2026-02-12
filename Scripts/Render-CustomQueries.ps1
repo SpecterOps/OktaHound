@@ -59,4 +59,7 @@ This query can be imported into BloodHound from the [{3}](../Src/Queries/{3}) fi
 '@ -f $title, $description, $query, $fileName
 }
 
+# Normalize line endings to CRLF for Git working tree
+$markdown = $markdown -replace "`r?`n", "`r`n"
+
 Set-Content -Path $OutputFilePath -Value $markdown -Encoding UTF8 -Verbose

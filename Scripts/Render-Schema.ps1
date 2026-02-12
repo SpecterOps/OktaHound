@@ -65,5 +65,8 @@ $markdown += @'
 > that is bundled with OktaHound Community Edition.
 '@
 
+# Normalize line endings to CRLF for Git working tree
+$markdown = $markdown -replace "`r?`n", "`r`n"
+
 # Create the Nodes.md file
 Set-Content -Path $OutputPath -Value $markdown -Encoding UTF8 -Verbose
