@@ -213,7 +213,6 @@ internal partial class OktaClient
         // Perform post-processsing tasks
         CreateDomainNodes();
         AddPermissionEdges();
-        MarkTraversableEdges();
         CreateManagerEdges();
 
         // TODO: Fetch AWS IAM roles linked to Okta users and groups
