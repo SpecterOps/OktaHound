@@ -1,0 +1,86 @@
+{
+  "schema": {
+    "name": "SCIM",
+    "version": "1.1.0",
+    "namespace": "SCIM"
+  },
+  "node_kinds": [
+    {
+      "name": "SCIM_Organization",
+      "display_name": "SCIM Organization",
+      "description": "An organization or tenant in the IdP",
+      "is_display_kind": "true",
+      "icon": "building-circle-arrow-right",
+      "color": "#3B82F6"
+    },
+    {
+      "name": "SCIM_User",
+      "display_name": "SCIM User",
+      "description": "A user account provisioned via SCIM",
+      "is_display_kind": "true",
+      "icon": "user-gear",
+      "color": "#10B981"
+    },
+    {
+      "name": "SCIM_Group",
+      "display_name": "SCIM Group",
+      "description": "A group provisioned via SCIM",
+      "is_display_kind": "true",
+      "icon": "users-gear",
+      "color": "#EF4444"
+    },
+    {
+      "name": "SCIM_Role",
+      "display_name": "SCIM Role",
+      "description": "A role assigned to users",
+      "is_display_kind": "true",
+      "icon": "clipboard-list",
+      "color": "#F59E0B"
+    },
+    {
+      "name": "SCIM_Base",
+      "display_name": "SCIM Base",
+      "description": "A base node type for SCIM resources",
+      "is_display_kind": "false",
+      "icon": "group-arrows-rotate",
+      "color": "#6B7280"
+    }
+  ],
+  "relationship_kinds": [
+    {
+      "name": "SCIM_Contains",
+      "description": "Organization contains a SCIM resource",
+      "is_traversable": true
+    },
+    {
+      "name": "SCIM_MemberOf",
+      "description": "User or group is a member of a group",
+      "is_traversable": true
+    },
+    {
+      "name": "SCIM_HasRole",
+      "description": "User is assigned to a role",
+      "is_traversable": true
+    },
+    {
+      "name": "SCIM_ManagerOf",
+      "description": "User is a manager of another user",
+      "is_traversable": false
+    },
+    {
+      "name": "SCIM_Provisioned",
+      "description": "SCIM resource is provisioned to a target system",
+      "is_traversable": true
+    }
+  ],
+  "environments": [
+    {
+      "environment_kind": "SCIM_Organization",
+      "source_kind": "SCIM_Base",
+      "principal_kinds": [
+        "SCIM_User",
+        "SCIM_Group"
+      ]
+    }
+  ]
+}
