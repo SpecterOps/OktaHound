@@ -282,6 +282,17 @@ RETURN p
 
 This query can be imported into BloodHound from the [role-super-admins.json](../Src/Queries/role-super-admins.json) file.
 
+## SCIM Apps Reading Password Updates
+
+Lists application-to-user assignments where the app can read password updates.
+
+```cypher
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)-[:Okta_ReadPasswordUpdates]->(:Okta_User)
+RETURN p
+```
+
+This query can be imported into BloodHound from the [scim-read-passwords.json](../Src/Queries/scim-read-passwords.json) file.
+
 ## Tier 0 Resources
 
 Users, groups, and applications in Okta organization with role assignments.

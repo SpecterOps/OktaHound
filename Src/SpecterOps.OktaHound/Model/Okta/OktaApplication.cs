@@ -10,6 +10,7 @@ internal sealed class OktaApplication : OktaSecurityPrincipalNode
 {
     public const string NodeKind = "Okta_Application";
     public const string AppAssignmentEdgeKind = "Okta_AppAssignment";
+    public const string ReadPasswordUpdatesEdgeKind = "Okta_ReadPasswordUpdates";
     public const string OrganizationalSingleSignOnEdgeKind = "Okta_OutboundOrgSSO";
     public const string OrganizationalSecureWebAuthenticationEdgeKind = "Okta_OrgSWA";
     private const string FeaturesPropertyName = "features";
@@ -140,7 +141,14 @@ internal sealed class OktaApplication : OktaSecurityPrincipalNode
     public string? SignOnMode => GetProperty<string>(SignOnModePropertyName);
 
     [JsonIgnore]
-    public bool SupportsSCIM => GetProperty<List<string>>(FeaturesPropertyName)?.Contains("SCIM_PROVISIONING") ?? false;
+    private IEnumerable<string> Features =>
+        GetProperty<string[]>(FeaturesPropertyName) ?? [];
+
+    [JsonIgnore]
+    public bool SupportsSCIM => Features.Contains("SCIM_PROVISIONING");
+
+    [JsonIgnore]
+    public bool SupportsPasswordUpdates => Features.Contains("PUSH_PASSWORD_UPDATES");
 
     [JsonIgnore]
     public bool IsService => ClientType == OpenIdConnectApplicationType.Service.Value;

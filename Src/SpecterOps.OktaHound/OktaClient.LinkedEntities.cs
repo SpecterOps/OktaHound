@@ -234,6 +234,12 @@ partial class OktaClient
                         // Create the (:Okta_User)-[:Okta_AppAssignment]->(:Okta_Application) edge
                         _graph.AddEdge(oktaUser, appNode, OktaApplication.AppAssignmentEdgeKind);
                     }
+
+                    if (appNode.SupportsPasswordUpdates)
+                    {
+                        // Create the (:Okta_Application)-[:Okta_ReadPasswordUpdates]->(:Okta_User) edge
+                        _graph.AddEdge(appNode, oktaUser, OktaApplication.ReadPasswordUpdatesEdgeKind);
+                    }
                 }
 
                 if (domainSid is not null && appNode.ActiveDirectoryDomainSid is null)
