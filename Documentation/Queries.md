@@ -304,3 +304,4 @@ RETURN p
 ```
 
 This query can be imported into BloodHound from the [users-api-tokens.json](../Src/Queries/users-api-tokens.json) file.
+
