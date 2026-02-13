@@ -6,7 +6,7 @@
 **Version:** 1.0.0<br>
 **Namespace:** Okta<br>
 **Environment Kind:** Okta_Organization<br>
-**Source Kind:** Okta_Base
+**Source Kind:** Okta
 
 ## Nodes
 

@@ -48,7 +48,7 @@ This query can be imported into BloodHound from the [ad-sso-accounts.json](../Sr
 List all application assignments in an Okta Organization.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)<-[:Okta_AppAssignment]-(:Okta_Base)
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)<-[:Okta_AppAssignment]-(:Okta)
 RETURN p
 ```
 
@@ -59,7 +59,7 @@ This query can be imported into BloodHound from the [app-assignments.json](../Sr
 Lists all service application secrets and JWTs in the Okta organization.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)<-[:Okta_SecretOf|Okta_KeyOf]->(:Okta_Base)
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)<-[:Okta_SecretOf|Okta_KeyOf]->(:Okta)
 RETURN p
 ```
 
@@ -92,7 +92,7 @@ This query can be imported into BloodHound from the [group-members.json](../Src/
 Retrieves all hybrid relationships from external systems to Okta.
 
 ```cypher
-MATCH p = (external)-[]->(:Okta_Base)
+MATCH p = (external)-[]->(:Okta)
 WHERE (external:SNOWBase) OR (external:GHBase) OR (external:OPBase) OR (external:Base) OR (external:Jamf) OR (external:AZBase)
 RETURN p
 ```
@@ -104,7 +104,7 @@ This query can be imported into BloodHound from the [hybrid-inbound.json](../Src
 Retrieves all hybrid relationships from Okta to external systems.
 
 ```cypher
-MATCH p = (:Okta_Base)-[]->(external)
+MATCH p = (:Okta)-[]->(external)
 WHERE (external:SNOWBase) OR (external:GHBase) OR (external:OPBase) OR (external:Base) OR (external:Jamf) OR (external:AZBase)
 RETURN p
 ```
@@ -116,7 +116,7 @@ This query can be imported into BloodHound from the [hybrid-outbound.json](../Sr
 Retrieves all users and groups that are synchronized TO or FROM Okta.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Base)-[:Okta_UserPull|Okta_UserPush|Okta_GroupPull|Okta_GroupPush]->(:Okta_Base)
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_UserPull|Okta_UserPush|Okta_GroupPull|Okta_GroupPush]->(:Okta)
 RETURN p
 ```
 
@@ -139,7 +139,7 @@ Retrieves all policy mappings in the Okta organization.
 
 ```cypher
 MATCH policies = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Policy)
-MATCH mappings = (:Okta_Policy)-[:Okta_PolicyMapping]->(:Okta_Base)
+MATCH mappings = (:Okta_Policy)-[:Okta_PolicyMapping]->(:Okta)
 RETURN policies,mappings
 ```
 
@@ -150,7 +150,7 @@ This query can be imported into BloodHound from the [policy-mappings.json](../Sr
 Applications in the Okta organization that have roles assigned.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta_Base)
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
 RETURN p
 ```
 
@@ -161,7 +161,7 @@ This query can be imported into BloodHound from the [privileged-apps.json](../Sr
 Users and groups synchronized from external sources that have privileged role assignments in Okta organization.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)-[:Okta_UserPull|Okta_GroupPull]->(:Okta_Base)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta_Base)
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)-[:Okta_UserPull|Okta_GroupPull]->(:Okta)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
 RETURN p
 ```
 
@@ -196,7 +196,7 @@ This query can be imported into BloodHound from the [privileged-users-no-mfa.jso
 Lists all resource sets and their associated members.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_ResourceSet)-[:Okta_ResourceSetContains]->(:Okta_Base)
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_ResourceSet)-[:Okta_ResourceSetContains]->(:Okta)
 RETURN p
 ```
 
@@ -207,7 +207,7 @@ This query can be imported into BloodHound from the [resource-set-membership.jso
 List all Application Administrators in an Okta organization.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Base)-[:Okta_AppAdmin]->(app)
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_AppAdmin]->(app)
 WHERE (app:Okta_Application) OR (app:Okta_ApiServiceIntegration)
 RETURN p
 ```
@@ -219,8 +219,8 @@ This query can be imported into BloodHound from the [role-app-admins.json](../Sr
 Lists all role assignments, including transitive group membership.
 
 ```cypher
-MATCH direct = (:Okta_Base)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta_Base)
-MATCH indirect = (:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta_Base)
+MATCH direct = (:Okta)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+MATCH indirect = (:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
 RETURN direct,indirect
 ```
 
@@ -231,7 +231,7 @@ This query can be imported into BloodHound from the [role-assignments.json](../S
 List all Group Administrators in an Okta organization.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Base)-[:Okta_GroupAdmin]->(resource)
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_GroupAdmin]->(resource)
 WHERE (resource:Okta_Group) OR (resource:Okta_User)
 RETURN p
 ```
@@ -243,7 +243,7 @@ This query can be imported into BloodHound from the [role-group-admins.json](../
 List all Group Membership Administrators in an Okta organization.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Base)-[:Okta_GroupMembershipAdmin]->(:Okta_Group)
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_GroupMembershipAdmin]->(:Okta_Group)
 RETURN p
 ```
 
@@ -254,7 +254,7 @@ This query can be imported into BloodHound from the [role-group-membership-admin
 List all Help Desk Administrators in an Okta organization.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Base)-[:Okta_HelpDeskAdmin]->(:Okta_User)
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_HelpDeskAdmin]->(:Okta_User)
 RETURN p
 ```
 
@@ -265,7 +265,7 @@ This query can be imported into BloodHound from the [role-helpdesk-admins.json](
 List all Organization Administrators in an Okta organization.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Base)-[:Okta_OrgAdmin]->(:Okta_Base)
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_OrgAdmin]->(:Okta)
 RETURN p
 ```
 
@@ -276,7 +276,7 @@ This query can be imported into BloodHound from the [role-org-admins.json](../Sr
 List all Super Administrators in an Okta organization.
 
 ```cypher
-MATCH p = (:Okta_Base)-[:Okta_SuperAdmin]->(:Okta_Organization)
+MATCH p = (:Okta)-[:Okta_SuperAdmin]->(:Okta_Organization)
 RETURN p
 ```
 
@@ -287,7 +287,7 @@ This query can be imported into BloodHound from the [role-super-admins.json](../
 Users, groups, and applications in Okta organization with role assignments.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(n:Okta_Base)
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(n:Okta)
 WHERE n.hasRoleAssignments AND (n:Okta_User OR n:Okta_Group OR n:Okta_Application OR n:Okta_ApiServiceIntegration)
 RETURN p
 ```
