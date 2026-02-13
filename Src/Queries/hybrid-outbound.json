@@ -1,5 +1,5 @@
 {
   "name": "Okta: Hybrid Relationships Outbound",
   "description": "Retrieves all hybrid relationships from Okta to external systems.",
-  "query": "MATCH p = (:Okta_Base)-[]->(external)\nWHERE (external:SNOWBase) OR (external:GHBase) OR (external:OPBase) OR (external:Base) OR (external:Jamf) OR (external:AZBase)\nRETURN p"
+  "query": "MATCH p = (:Okta)-[]->(external)\nWHERE (external:SNOWBase) OR (external:GHBase) OR (external:OPBase) OR (external:Base) OR (external:Jamf) OR (external:AZBase)\nRETURN p"
 }

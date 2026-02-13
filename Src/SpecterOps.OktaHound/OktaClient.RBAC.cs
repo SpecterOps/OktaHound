@@ -236,7 +236,7 @@ partial class OktaClient
 
         // Handle built-in roles that target either the entire organization or individual groups or apps.
 
-        // Create the (Okta_Base)-[:Okta_HasRole]->(:Okta_Role) edge
+        // Create the (Okta)-[:Okta_HasRole]->(:Okta_Role) edge
         var roleNode = _graph.GetBuiltInRole(roleAssignment.Type) ?? throw new InvalidOperationException($"Unknown role {roleAssignment.Type.Value}");
         _graph.AddEdge(assignee, roleNode, OktaRole.HasRoleEdgeKind);
 
@@ -244,7 +244,7 @@ partial class OktaClient
         var roleAssignmentNode = new OktaRoleAssignment(roleAssignment, roleNode, assignee, _graph.Organization.DomainName);
         _graph.AddNode(roleAssignmentNode);
 
-        // Create the (:Okta_Base)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment) edge
+        // Create the (:Okta)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment) edge
         _graph.AddEdge(assignee, roleAssignmentNode, OktaRoleAssignment.HasRoleAssignmentEdgeKind);
 
         if (roleAssignment.Type == RoleType.APPADMIN)
@@ -463,14 +463,14 @@ partial class OktaClient
             return;
         }
 
-        // Create the (Okta_Base)-[:Okta_HasRole]->(:Okta_CustomRole) edge
+        // Create the (Okta)-[:Okta_HasRole]->(:Okta_CustomRole) edge
         _graph.AddEdge(assignee, customRoleNode, OktaCustomRole.HasCustomRoleEdgeKind);
 
         // Create the OktaRoleAssignment node
         OktaRoleAssignment roleAssignmentNode = new(roleAssignment, customRoleNode, assignee, _graph.Organization.DomainName);
         _graph.AddNode(roleAssignmentNode);
 
-        // Create the (:Okta_Base)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment) edge
+        // Create the (:Okta)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment) edge
         _graph.AddEdge(assignee, roleAssignmentNode, OktaRoleAssignment.HasRoleAssignmentEdgeKind);
 
         // The OktaScopedTo edge is created when fetching resource sets.

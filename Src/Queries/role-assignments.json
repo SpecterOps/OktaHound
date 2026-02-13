@@ -1,5 +1,5 @@
 {
   "name": "Okta: Role Assignments",
   "description": "Lists all role assignments, including transitive group membership.",
-  "query": "MATCH direct = (:Okta_Base)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta_Base)\nMATCH indirect = (:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta_Base)\nRETURN direct,indirect"
+  "query": "MATCH direct = (:Okta)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)\nMATCH indirect = (:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)\nRETURN direct,indirect"
 }

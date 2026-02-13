@@ -1,5 +1,5 @@
 {
   "name": "Okta: Tier 0 Resources",
   "description": "Users, groups, and applications in Okta organization with role assignments.",
-  "query": "MATCH p = (:Okta_Organization)-[:Okta_Contains]->(n:Okta_Base)\nWHERE n.hasRoleAssignments AND (n:Okta_User OR n:Okta_Group OR n:Okta_Application OR n:Okta_ApiServiceIntegration)\nRETURN p"
+  "query": "MATCH p = (:Okta_Organization)-[:Okta_Contains]->(n:Okta)\nWHERE n.hasRoleAssignments AND (n:Okta_User OR n:Okta_Group OR n:Okta_Application OR n:Okta_ApiServiceIntegration)\nRETURN p"
 }

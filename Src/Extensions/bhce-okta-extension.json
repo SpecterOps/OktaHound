@@ -343,7 +343,7 @@
   "environments": [
     {
       "environment_kind": "Okta_Organization",
-      "source_kind": "Okta_Base",
+      "source_kind": "Okta",
       "principal_kinds": [
         "Okta_User",
         "Okta_Group",

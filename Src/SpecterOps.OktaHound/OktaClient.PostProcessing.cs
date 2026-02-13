@@ -98,8 +98,8 @@ partial class OktaClient
                         continue;
                     }
 
-                    // Create the (:Okta_Base)-[:Okta_AppAdmin]->(:Okta_Application) edge OR
-                    // (:Okta_Base)-[:Okta_AppAdmin]->(:Okta_ApiServiceIntegration) edge
+                    // Create the (:Okta)-[:Okta_AppAdmin]->(:Okta_Application) edge OR
+                    // (:Okta)-[:Okta_AppAdmin]->(:Okta_ApiServiceIntegration) edge
                     _graph.AddEdge(roleAssignment.Assignee, targetApp, OktaRole.ApplicationAdministratorEdgeKind);
                 }
             }
@@ -118,7 +118,7 @@ partial class OktaClient
                         continue;
                     }
 
-                    // Create the (:Okta_Base)-[:Okta_GroupAdmin]->(:Okta_User) and (:Okta_Base)-[:Okta_GroupAdmin]->(:Okta_Group) edges
+                    // Create the (:Okta)-[:Okta_GroupAdmin]->(:Okta_User) and (:Okta)-[:Okta_GroupAdmin]->(:Okta_Group) edges
                     _graph.AddEdge(roleAssignment.Assignee, targetPrincipal, OktaRole.GroupAdministratorEdgeKind);
                 }
             }
@@ -137,7 +137,7 @@ partial class OktaClient
                         continue;
                     }
 
-                    // Create the (:Okta_Base)-[:Okta_GroupMembershipAdmin]->(:Okta_Group) edge
+                    // Create the (:Okta)-[:Okta_GroupMembershipAdmin]->(:Okta_Group) edge
                     _graph.AddEdge(roleAssignment.Assignee, targetGroup, OktaRole.GroupMembershipAdministratorEdgeKind);
                 }
             }
@@ -156,7 +156,7 @@ partial class OktaClient
                         continue;
                     }
 
-                    // Create the (:Okta_Base)-[:Okta_HelpDeskAdmin]->(:Okta_User) edge
+                    // Create the (:Okta)-[:Okta_HelpDeskAdmin]->(:Okta_User) edge
                     _graph.AddEdge(roleAssignment.Assignee, targetUser, OktaRole.HelpDeskAdministratorEdgeKind);
                 }
             }
@@ -175,9 +175,9 @@ partial class OktaClient
                     }
 
                     // Create the
-                    // (:Okta_Base)-[:Okta_OrgAdmin]->(:Okta_User),
-                    // (:Okta_Base)-[:Okta_OrgAdmin]->(:Okta_Group), and
-                    // (:Okta_Base)-[:Okta_OrgAdmin]->(:Okta_Device) edges
+                    // (:Okta)-[:Okta_OrgAdmin]->(:Okta_User),
+                    // (:Okta)-[:Okta_OrgAdmin]->(:Okta_Group), and
+                    // (:Okta)-[:Okta_OrgAdmin]->(:Okta_Device) edges
                     _graph.AddEdge(roleAssignment.Assignee, targetNode, OktaRole.OrganizationAdministratorEdgeKind);
                 }
             }
@@ -186,13 +186,13 @@ partial class OktaClient
                 // Mobile Admins have permissions on devices
                 foreach (var deviceNode in _graph.Devices)
                 {
-                    // Create the (:Okta_Base)-[:Okta_MobileAdmin]->(:Okta_Device) edge
+                    // Create the (:Okta)-[:Okta_MobileAdmin]->(:Okta_Device) edge
                     _graph.AddEdge(roleAssignment.Assignee, deviceNode, OktaRole.MobileAdministratorEdgeKind);
                 }
             }
             else if (roleAssignment.RoleType == RoleType.SUPERADMIN)
             {
-                // Create the (:Okta_Base)-[:Okta_SuperAdmin]->(:Okta_Organization) edge
+                // Create the (:Okta)-[:Okta_SuperAdmin]->(:Okta_Organization) edge
                 _graph.AddEdge(roleAssignment.Assignee, _graph.Organization, OktaRole.SuperAdministratorEdgeKind);
             }
             else if (roleAssignment.RoleType == RoleType.ACCESSREQUESTSADMIN)

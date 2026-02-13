@@ -1,5 +1,5 @@
 {
   "name": "Okta: Super Admins",
   "description": "List all Super Administrators in an Okta organization.",
-  "query": "MATCH p = (:Okta_Base)-[:Okta_SuperAdmin]->(:Okta_Organization)\nRETURN p"
+  "query": "MATCH p = (:Okta)-[:Okta_SuperAdmin]->(:Okta_Organization)\nRETURN p"
 }

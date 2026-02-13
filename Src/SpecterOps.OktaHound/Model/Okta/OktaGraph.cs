@@ -6,7 +6,7 @@ namespace SpecterOps.OktaHound.Model.Okta;
 
 internal sealed class OktaGraph(OktaOrganization organization) : OpenGraphBase<OktaGraphElements>(OktaGraphSerializationContext.Default, new OktaGraphElements(organization), OktaSourceKind)
 {
-    public const string OktaSourceKind = "Okta_Base";
+    public const string OktaSourceKind = "Okta";
 
     [JsonIgnore]
     public IEnumerable<OktaUser> Users => Elements.UsersById.Select(item => item.Value);

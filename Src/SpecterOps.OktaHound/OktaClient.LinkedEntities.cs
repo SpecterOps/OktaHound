@@ -464,7 +464,7 @@ partial class OktaClient
                             resourceSetNode.OriginalId,
                             memberNode.Value);
 
-                        // Create the (:Okta_Base)-[:Okta_ResourceSetContains]->(:Okta_ResourceSet) edge
+                        // Create the (:Okta)-[:Okta_ResourceSetContains]->(:Okta_ResourceSet) edge
                         _graph.AddEdge(resourceSetNode, memberNode, OktaResourceSet.ContainsEdgeKind);
                     }
                 }

@@ -687,7 +687,7 @@ partial class OktaClient
                 {
                     _logger.LogTrace("Setting {CreatedBy} as the creator of the {ServiceName} ({ServiceId}) API service integration...", service.CreatedBy, service.Name, service.Id);
 
-                    // Create the (:Okta_Base)-[:Okta_CreatorOf]->(:Okta_ApiServiceIntegration) edge
+                    // Create the (:Okta)-[:Okta_CreatorOf]->(:Okta_ApiServiceIntegration) edge
                     // Although not tested, the creator could probably not only be a user, but an application as well.
                     OpenGraphEdgeNode createdByNode = new(service.CreatedBy, OktaGraph.OktaSourceKind);
                     _graph.AddEdge(createdByNode, serviceNode, OktaApiServiceIntegration.CreatorOfEdgeKind);

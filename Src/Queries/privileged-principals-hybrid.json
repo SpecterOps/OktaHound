@@ -1,5 +1,5 @@
 {
   "name": "Okta: Hybrid Principals with Privileged Access",
   "description": "Users and groups synchronized from external sources that have privileged role assignments in Okta organization.",
-  "query": "MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)-[:Okta_UserPull|Okta_GroupPull]->(:Okta_Base)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta_Base)\nRETURN p"
+  "query": "MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)-[:Okta_UserPull|Okta_GroupPull]->(:Okta)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)\nRETURN p"
 }

@@ -11,6 +11,6 @@ public class OktaGraphTester
         OktaOrganization org = new(id: "abc", domainName: "contoso.okta.com", companyName: "Contoso");
         OktaGraph graph = new(org);
         string json = graph.ToString();
-        Assert.AreEqual("{\"metadata\":{\"source_kind\":\"Okta_Base\"},\"graph\":{\"nodes\":[{\"id\":\"abc\",\"properties\":{\"displayName\":\"Contoso\",\"name\":\"contoso.okta.com\",\"oktaDomain\":\"contoso.okta.com\"},\"kinds\":[\"Okta_Organization\"]}],\"edges\":[]}}", json);
+        Assert.AreEqual("{\"metadata\":{\"source_kind\":\"Okta\"},\"graph\":{\"nodes\":[{\"id\":\"abc\",\"properties\":{\"displayName\":\"Contoso\",\"name\":\"contoso.okta.com\",\"oktaDomain\":\"contoso.okta.com\"},\"kinds\":[\"Okta_Organization\"]}],\"edges\":[]}}", json);
     }
 }

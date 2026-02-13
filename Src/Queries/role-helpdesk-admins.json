@@ -1,5 +1,5 @@
 {
   "name": "Okta: Help Desk Administrators",
   "description": "List all Help Desk Administrators in an Okta organization.",
-  "query": "MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Base)-[:Okta_HelpDeskAdmin]->(:Okta_User)\nRETURN p"
+  "query": "MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_HelpDeskAdmin]->(:Okta_User)\nRETURN p"
 }

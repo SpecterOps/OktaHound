@@ -1,5 +1,5 @@
 {
   "name": "Okta: Group Administrators",
   "description": "List all Group Administrators in an Okta organization.",
-  "query": "MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Base)-[:Okta_GroupAdmin]->(resource)\nWHERE (resource:Okta_Group) OR (resource:Okta_User)\nRETURN p"
+  "query": "MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_GroupAdmin]->(resource)\nWHERE (resource:Okta_Group) OR (resource:Okta_User)\nRETURN p"
 }
