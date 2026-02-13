@@ -498,9 +498,9 @@ partial class OktaClient
                 OktaApiToken tokenNode = new(token, _graph.Organization.DomainName);
                 _graph.AddNode(tokenNode);
 
-                // Create edge (:Okta_ApiToken)-[:Okta_HasToken]->(:Okta_User)
+                // Create edge (:Okta_ApiToken)-[:Okta_ApiTokenFor]->(:Okta_User)
                 OpenGraphEdgeNode userNode = OktaUser.CreateEdgeNode(token.UserId);
-                _graph.AddEdge(tokenNode, userNode, OktaApiToken.HasApiTokenEdgeKind);
+                _graph.AddEdge(tokenNode, userNode, OktaApiToken.ApiTokenForEdgeKind);
             }
 
             _logger.LogInformation("Successfully processed {TokenCount} API tokens.", tokenCount);

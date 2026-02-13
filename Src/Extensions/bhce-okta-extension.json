@@ -175,7 +175,7 @@
       "is_traversable": false
     },
     {
-      "name": "Okta_HasToken",
+      "name": "Okta_ApiTokenFor",
       "description": "User ownership of an Okta API token",
       "is_traversable": true
     },

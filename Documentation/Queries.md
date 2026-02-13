@@ -299,9 +299,8 @@ This query can be imported into BloodHound from the [tier0.json](../Src/Queries/
 Retrieves all (privileged) users in the Okta organization who have been assigned API tokens.
 
 ```cypher
-MATCH p = (:Okta_ApiToken)-[:Okta_HasToken]->(:Okta_User)<-[:Okta_Contains]-(:Okta_Organization)
+MATCH p = (:Okta_ApiToken)-[:Okta_ApiTokenFor]->(:Okta_User)<-[:Okta_Contains]-(:Okta_Organization)
 RETURN p
 ```
 
 This query can be imported into BloodHound from the [users-api-tokens.json](../Src/Queries/users-api-tokens.json) file.
-

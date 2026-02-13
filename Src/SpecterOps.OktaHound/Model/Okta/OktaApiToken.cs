@@ -6,7 +6,7 @@ namespace SpecterOps.OktaHound.Model.Okta;
 internal sealed class OktaApiToken : OktaNode
 {
     public const string NodeKind = "Okta_ApiToken";
-    public const string HasApiTokenEdgeKind = "Okta_HasToken";
+    public const string ApiTokenForEdgeKind = "Okta_ApiTokenFor";
 
     public OktaApiToken(ApiToken apiToken, string domainName) : base(apiToken.Id, domainName, NodeKind)
     {

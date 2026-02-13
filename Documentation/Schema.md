@@ -47,7 +47,7 @@
 | Okta_HasAgent | ❌ | Membership of an agent within an agent pool |
 | Okta_HasRole | ❌ | Assignment of a built-in or custom role to a principal |
 | Okta_HasRoleAssignment | ❌ | Relationship between a principal and a role assignment |
-| Okta_HasToken | ✅ | User ownership of an Okta API token |
+| Okta_ApiTokenFor | ✅ | User ownership of an Okta API token |
 | Okta_HelpDeskAdmin | ✅ | Help desk administrator role assignment |
 | Okta_IdentityProviderFor | ✅ | Trust relationship between an identity provider and Okta users |
 | Okta_IdpGroupAssignment | ❌ | Identity provider group assignment to an Okta group |
