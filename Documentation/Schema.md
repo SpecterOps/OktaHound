@@ -36,6 +36,7 @@
 
 | Relationship Kind | Traversable | Description |
 |-------------------|:-----------:|-------------|
+| Okta_ApiTokenFor | ✅ | User ownership of an Okta API token |
 | Okta_AppAdmin | ✅ | Application administrator role assignment |
 | Okta_AppAssignment | ❌ | Assignment of users or groups to an Okta application |
 | Okta_Contains | ✅ | Contains relationship between the Okta organization and its objects |
@@ -47,7 +48,6 @@
 | Okta_HasAgent | ❌ | Membership of an agent within an agent pool |
 | Okta_HasRole | ❌ | Assignment of a built-in or custom role to a principal |
 | Okta_HasRoleAssignment | ❌ | Relationship between a principal and a role assignment |
-| Okta_ApiTokenFor | ✅ | User ownership of an Okta API token |
 | Okta_HelpDeskAdmin | ✅ | Help desk administrator role assignment |
 | Okta_IdentityProviderFor | ✅ | Trust relationship between an identity provider and Okta users |
 | Okta_IdpGroupAssignment | ❌ | Identity provider group assignment to an Okta group |
@@ -64,6 +64,7 @@
 | Okta_OutboundSSO | ✅ | Single sign-on from Okta to an external identity provider |
 | Okta_OwnsDevice | ❌ | Ownership relationship between a device and its assigned user |
 | Okta_PolicyMapping | ❌ | Association of a policy with an Okta application |
+| Okta_ReadPasswordUpdates | ✅ | Application can read password updates over the SCIM protocol |
 | Okta_ResourceSetContains | ✅ | Membership of objects within an Okta resource set |
 | Okta_ScopedTo | ❌ | Scope relationship between a role assignment and its target |
 | Okta_SecretOf | ✅ | Client secret associated with an application or service integration |

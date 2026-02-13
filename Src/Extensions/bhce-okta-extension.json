@@ -205,6 +205,11 @@
       "is_traversable": false
     },
     {
+      "name": "Okta_ReadPasswordUpdates",
+      "description": "Application can read password updates over the SCIM protocol",
+      "is_traversable": true
+    },
+    {
       "name": "Okta_ResourceSetContains",
       "description": "Membership of objects within an Okta resource set",
       "is_traversable": true
