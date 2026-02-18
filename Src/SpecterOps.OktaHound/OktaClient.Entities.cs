@@ -61,7 +61,6 @@ partial class OktaClient
         try
         {
             UserApi userApi = new(_oktaConfig);
-            UserFactorApi authFactorsApi = new(_oktaConfig);
             int userCount = 0;
 
             await foreach (var user in userApi.ListUsers(cancellationToken: cancellationToken).ConfigureAwait(false))
@@ -209,9 +208,9 @@ partial class OktaClient
                 {
                     _logger.LogTrace("The {DeviceName} device is owned by user {UserId}.", device.Profile.DisplayName, user.User.Id);
 
-                    // Create the (:Okta_Device)-[:Okta_OwnsDevice]->(:Okta_User) edge
+                    // Create the (:Okta_Device)-[:Okta_DeviceOf]->(:Okta_User) edge
                     var userNode = OktaUser.CreateEdgeNode(user.User.Id);
-                    _graph.AddEdge(deviceNode, userNode, OktaDevice.OwnsDeviceEdgeKind);
+                    _graph.AddEdge(deviceNode, userNode, OktaDevice.DeviceOfEdgeKind);
                 }
             }
 

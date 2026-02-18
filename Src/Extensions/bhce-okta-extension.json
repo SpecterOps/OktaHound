@@ -170,7 +170,7 @@
       "is_traversable": false
     },
     {
-      "name": "Okta_OwnsDevice",
+      "name": "Okta_DeviceOf",
       "description": "Ownership relationship between a device and its assigned user",
       "is_traversable": false
     },

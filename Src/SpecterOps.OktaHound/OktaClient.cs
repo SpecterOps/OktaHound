@@ -173,9 +173,10 @@ internal partial class OktaClient
         Task authorizationServersTask = FetchOktaAuthorizationServers(cancellationToken);
 
         // Event logs require both users and devices to be loaded first
-        Task eventLogTask = Task.WhenAll(usersTask, devicesTask).
-            ContinueWith(_ => FetchOktaLogs(cancellationToken), cancellationToken).
-            Unwrap();
+        // TODO: Implement event log processing
+        // Task eventLogTask = Task.WhenAll(usersTask, devicesTask).
+        //    ContinueWith(_ => FetchOktaLogs(cancellationToken), cancellationToken).
+        //    Unwrap();
 
         // Wait for all basic fetch tasks to complete
         await Task.WhenAll(
@@ -208,14 +209,13 @@ internal partial class OktaClient
 
         // Keep the FetchOktaUserAuthenticationFactors running in parallel with all other tasks.
         // It iterates over all users, making it the longest running task.
-        await Task.WhenAll(eventLogTask, factorsTask).ConfigureAwait(false);
+
+        // TODO: await Task.WhenAll(eventLogTask, factorsTask).ConfigureAwait(false);
 
         // Perform post-processsing tasks
         CreateDomainNodes();
         AddPermissionEdges();
         CreateManagerEdges();
-
-        // TODO: Fetch AWS IAM roles linked to Okta users and groups
 
         return (_graph, _adGraph, _hybridEdgeGraph);
     }

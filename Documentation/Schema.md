@@ -62,7 +62,7 @@
 | Okta_OrgSWA | ❌ | Secure Web Authentication from an Okta application to an external organization |
 | Okta_OutboundOrgSSO | ✅ | Single sign-on from an Okta application to an external organization |
 | Okta_OutboundSSO | ✅ | Single sign-on from Okta to an external identity provider |
-| Okta_OwnsDevice | ❌ | Ownership relationship between a device and its assigned user |
+| Okta_DeviceOf | ❌ | Ownership relationship between a device and its assigned user |
 | Okta_PolicyMapping | ❌ | Association of a policy with an Okta application |
 | Okta_ReadPasswordUpdates | ✅ | Application can read password updates over the SCIM protocol |
 | Okta_ResourceSetContains | ✅ | Membership of objects within an Okta resource set |

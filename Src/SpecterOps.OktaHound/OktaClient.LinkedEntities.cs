@@ -238,6 +238,7 @@ partial class OktaClient
                     if (appNode.SupportsPasswordUpdates)
                     {
                         // Create the (:Okta_Application)-[:Okta_ReadPasswordUpdates]->(:Okta_User) edge
+                        _logger.LogTrace("Application {AppName} can read password updates for user {UserId}.", appNode.Name, oktaUser.Value);
                         _graph.AddEdge(appNode, oktaUser, OktaApplication.ReadPasswordUpdatesEdgeKind);
                     }
                 }

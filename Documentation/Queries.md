@@ -70,7 +70,7 @@ This query can be imported into BloodHound from the [app-credentials.json](../Sr
 List all devices and their owners in an Okta Organization.
 
 ```cypher
-MATCH p =(:Okta_Organization)-[:Okta_Contains]->(:Okta_Device)-[:Okta_OwnsDevice]->(:Okta_User)
+MATCH p =(:Okta_Organization)-[:Okta_Contains]->(:Okta_Device)-[:Okta_DeviceOf]->(:Okta_User)
 RETURN p
 ```
 
