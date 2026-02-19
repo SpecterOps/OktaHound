@@ -210,7 +210,7 @@ internal partial class OktaClient
         // Keep the FetchOktaUserAuthenticationFactors running in parallel with all other tasks.
         // It iterates over all users, making it the longest running task.
 
-        // TODO: await Task.WhenAll(eventLogTask, factorsTask).ConfigureAwait(false);
+        await factorsTask.ConfigureAwait(false);
 
         // Perform post-processsing tasks
         CreateDomainNodes();
