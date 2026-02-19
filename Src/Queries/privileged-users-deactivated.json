@@ -1,5 +1,5 @@
 {
   "name": "Okta: Deactivated Privileged Users",
   "description": "Disabled user accounts with active role assignments in Okta organization.",
-  "query": "MATCH p = (:Okta_Organization)-[:Okta_Contains]->(u:Okta_User)\nWHERE u.hasRoleAssignments AND u.status <> 'ACTIVE'\nRETURN p"
+  "query": "MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)\nWHERE u.status <> 'ACTIVE'\nRETURN p"
 }
