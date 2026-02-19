@@ -45,7 +45,7 @@ Multi-factor authentication (MFA) is enforced for all users and re-authenticatio
 ![Default Catch-All rule](https://support.okta.com/help/servlet/rtaImage?eid=ka0KZ000000Q2en&feoid=00N0Z00000GpsjQ&refid=0EMKZ000000FtDI)
 
 Moreover, Okta has taken steps to mitigate privilege elevation paths through RBAC. For example,
-only Super Administrators can manage groups with administrative roles. Most vulnerabilities thus arise from misconfigurations,
+only Super Administrators can manage groups with administrative roles. Most attack paths thus arise from misconfigurations,
 such as excessive role assignments, weak authentication policies, insecure application integrations, and sensitive credential exposure.
 It is also important to note that a non-privileged Okta user might have administrative access in connected applications,
 such as GitHub Enterprise Cloud or Amazon Web Services (AWS). Hybrid attack paths between on-premises Active Directory environments and Okta are also possible.

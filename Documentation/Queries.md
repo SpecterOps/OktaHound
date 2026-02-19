@@ -48,7 +48,7 @@ This query can be imported into BloodHound from the [ad-sso-accounts.json](../Sr
 List all application assignments in an Okta Organization.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)<-[:Okta_AppAssignment]-(:Okta)
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_AppAssignment]->(:Okta_Application)
 RETURN p
 ```
 
@@ -70,7 +70,7 @@ This query can be imported into BloodHound from the [app-credentials.json](../Sr
 List all devices and their owners in an Okta Organization.
 
 ```cypher
-MATCH p =(:Okta_Organization)-[:Okta_Contains]->(:Okta_Device)-[:Okta_OwnsDevice]->(:Okta_User)
+MATCH p =(:Okta_Organization)-[:Okta_Contains]->(:Okta_Device)-[:Okta_DeviceOf]->(:Okta_User)
 RETURN p
 ```
 
@@ -172,8 +172,8 @@ This query can be imported into BloodHound from the [privileged-principals-hybri
 Disabled user accounts with active role assignments in Okta organization.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(u:Okta_User)
-WHERE u.hasRoleAssignments AND u.status <> 'ACTIVE'
+MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE u.status <> 'ACTIVE'
 RETURN p
 ```
 
@@ -184,8 +184,8 @@ This query can be imported into BloodHound from the [privileged-users-deactivate
 Users with active role assignments in Okta organization who do not have multi-factor authentication enabled.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(u:Okta_User)
-WHERE u.hasRoleAssignments AND u.authenticationFactors = 0
+MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE u.authenticationFactors = 0
 RETURN p
 ```
 
@@ -282,9 +282,9 @@ RETURN p
 
 This query can be imported into BloodHound from the [role-super-admins.json](../Src/Queries/role-super-admins.json) file.
 
-## SCIM Apps Reading Password Updates
+## SCIM Apps Receiving Password Updates
 
-Lists application-to-user assignments where the app can read password updates.
+Lists application-to-user assignments where the app receives password updates.
 
 ```cypher
 MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)-[:Okta_ReadPasswordUpdates]->(:Okta_User)

@@ -6,8 +6,7 @@ namespace SpecterOps.OktaHound.Model.Okta;
 internal sealed class OktaDevice : OktaNode
 {
     public const string NodeKind = "Okta_Device";
-    // TODO: Rename Okta_OwnsDevice to Okta_DeviceOf for clarity.
-    public const string OwnsDeviceEdgeKind = "Okta_OwnsDevice";
+    public const string DeviceOfEdgeKind = "Okta_DeviceOf";
     private const string UdidPropertyName = "udid";
     private const string OriginalIdPropertyName = "oktaId";
 

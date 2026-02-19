@@ -41,6 +41,7 @@
 | Okta_AppAssignment | ❌ | Assignment of users or groups to an Okta application |
 | Okta_Contains | ✅ | Contains relationship between the Okta organization and its objects |
 | Okta_CreatorOf | ❌ | Creator relationship for API service integrations |
+| Okta_DeviceOf | ❌ | Ownership relationship between a device and its assigned user |
 | Okta_GroupAdmin | ✅ | Group administrator role assignment |
 | Okta_GroupMembershipAdmin | ✅ | Group membership administrator role assignment |
 | Okta_GroupPull | ✅ | Import of group memberships from an external application |
@@ -62,7 +63,6 @@
 | Okta_OrgSWA | ❌ | Secure Web Authentication from an Okta application to an external organization |
 | Okta_OutboundOrgSSO | ✅ | Single sign-on from an Okta application to an external organization |
 | Okta_OutboundSSO | ✅ | Single sign-on from Okta to an external identity provider |
-| Okta_OwnsDevice | ❌ | Ownership relationship between a device and its assigned user |
 | Okta_PolicyMapping | ❌ | Association of a policy with an Okta application |
 | Okta_ReadPasswordUpdates | ✅ | Application can read password updates over the SCIM protocol |
 | Okta_ResourceSetContains | ✅ | Membership of objects within an Okta resource set |
