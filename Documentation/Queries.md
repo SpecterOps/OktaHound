@@ -16,6 +16,7 @@ MATCH (agent:Okta_Agent)
 MATCH (server:Computer)
 WHERE toUpper(server.samaccountname) = toUpper(agent.name + '$') AND toUpper(server.domain) = toUpper(agent.poolName)
 RETURN agent,server
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [ad-agents-hosts.json](../Src/Queries/ad-agents-hosts.json) file.
@@ -27,6 +28,7 @@ Lists all Okta agent pools and their associated agents.
 ```cypher
 MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_AgentPool)-[:Okta_HasAgent]->(:Okta_Agent)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [ad-agents.json](../Src/Queries/ad-agents.json) file.
@@ -39,6 +41,7 @@ Agentless Desktop Single Sign-on accounts registered in Active Directory.
 MATCH (u:User)
 WHERE ANY (spn IN u.serviceprincipalnames WHERE toUpper(spn) STARTS WITH 'HTTP/' AND (toLower(spn) ENDS WITH 'kerberos.okta.com' OR toLower(spn) ENDS WITH 'kerberos.oktapreview.com' OR toLower(spn) ENDS WITH 'kerberos.okta-emea.com' OR toLower(spn) ENDS WITH 'kerberos.okta-gov.com' OR toLower(spn) ENDS WITH 'kerberos.okta.mil' OR toLower(spn) ENDS WITH 'kerberos.okta-miltest.com' OR toLower(spn) ENDS WITH 'kerberos.trex-govcloud.com'))
 RETURN u
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [ad-sso-accounts.json](../Src/Queries/ad-sso-accounts.json) file.
@@ -50,6 +53,7 @@ List all application assignments in an Okta Organization.
 ```cypher
 MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_AppAssignment]->(:Okta_Application)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [app-assignments.json](../Src/Queries/app-assignments.json) file.
@@ -61,6 +65,7 @@ Lists all service application secrets and JWTs in the Okta organization.
 ```cypher
 MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)<-[:Okta_SecretOf|Okta_KeyOf]->(:Okta)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [app-credentials.json](../Src/Queries/app-credentials.json) file.
@@ -72,6 +77,7 @@ List all devices and their owners in an Okta Organization.
 ```cypher
 MATCH p =(:Okta_Organization)-[:Okta_Contains]->(:Okta_Device)-[:Okta_DeviceOf]->(:Okta_User)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [devices.json](../Src/Queries/devices.json) file.
@@ -83,6 +89,7 @@ Retrieves all group membership relationships in the Okta organization.
 ```cypher
 MATCH p = (:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [group-members.json](../Src/Queries/group-members.json) file.
@@ -92,9 +99,9 @@ This query can be imported into BloodHound from the [group-members.json](../Src/
 Retrieves all hybrid relationships from external systems to Okta.
 
 ```cypher
-MATCH p = (external)-[]->(:Okta)
-WHERE (external:SNOWBase) OR (external:GHBase) OR (external:OPBase) OR (external:Base) OR (external:Jamf) OR (external:AZBase)
+MATCH p = (:SNOWBase:GHBase:OPBase:Base:Jamf:AZBase)-[]->(:Okta)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [hybrid-inbound.json](../Src/Queries/hybrid-inbound.json) file.
@@ -104,9 +111,9 @@ This query can be imported into BloodHound from the [hybrid-inbound.json](../Src
 Retrieves all hybrid relationships from Okta to external systems.
 
 ```cypher
-MATCH p = (:Okta)-[]->(external)
-WHERE (external:SNOWBase) OR (external:GHBase) OR (external:OPBase) OR (external:Base) OR (external:Jamf) OR (external:AZBase)
+MATCH p = (:Okta)-[]->(:SNOWBase:GHBase:OPBase:Base:Jamf:AZBase)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [hybrid-outbound.json](../Src/Queries/hybrid-outbound.json) file.
@@ -118,6 +125,7 @@ Retrieves all users and groups that are synchronized TO or FROM Okta.
 ```cypher
 MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_UserPull|Okta_UserPush|Okta_GroupPull|Okta_GroupPush]->(:Okta)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [hybrid-sync.json](../Src/Queries/hybrid-sync.json) file.
@@ -129,6 +137,7 @@ Retrieves all manager relationships in the Okta organization.
 ```cypher
 MATCH p = (:Okta_User)-[:Okta_ManagerOf]->(:Okta_User)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [org-chart.json](../Src/Queries/org-chart.json) file.
@@ -141,6 +150,7 @@ Retrieves all policy mappings in the Okta organization.
 MATCH policies = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Policy)
 MATCH mappings = (:Okta_Policy)-[:Okta_PolicyMapping]->(:Okta)
 RETURN policies,mappings
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [policy-mappings.json](../Src/Queries/policy-mappings.json) file.
@@ -152,6 +162,7 @@ Applications in the Okta organization that have roles assigned.
 ```cypher
 MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [privileged-apps.json](../Src/Queries/privileged-apps.json) file.
@@ -163,6 +174,7 @@ Users and groups synchronized from external sources that have privileged role as
 ```cypher
 MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)-[:Okta_UserPull|Okta_GroupPull]->(:Okta)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [privileged-principals-hybrid.json](../Src/Queries/privileged-principals-hybrid.json) file.
@@ -175,6 +187,7 @@ Disabled user accounts with active role assignments in Okta organization.
 MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
 WHERE u.status <> 'ACTIVE'
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [privileged-users-deactivated.json](../Src/Queries/privileged-users-deactivated.json) file.
@@ -187,6 +200,7 @@ Users with active role assignments in Okta organization who do not have multi-fa
 MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
 WHERE u.authenticationFactors = 0
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [privileged-users-no-mfa.json](../Src/Queries/privileged-users-no-mfa.json) file.
@@ -198,6 +212,7 @@ Lists all resource sets and their associated members.
 ```cypher
 MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_ResourceSet)-[:Okta_ResourceSetContains]->(:Okta)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [resource-set-membership.json](../Src/Queries/resource-set-membership.json) file.
@@ -207,9 +222,9 @@ This query can be imported into BloodHound from the [resource-set-membership.jso
 List all Application Administrators in an Okta organization.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_AppAdmin]->(app)
-WHERE (app:Okta_Application) OR (app:Okta_ApiServiceIntegration)
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_User:Okta_Group:Okta_Application)-[:Okta_AppAdmin]->(:Okta_Application:Okta_ApiServiceIntegration)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [role-app-admins.json](../Src/Queries/role-app-admins.json) file.
@@ -219,9 +234,9 @@ This query can be imported into BloodHound from the [role-app-admins.json](../Sr
 Lists all role assignments, including transitive group membership.
 
 ```cypher
-MATCH direct = (:Okta)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-MATCH indirect = (:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-RETURN direct,indirect
+MATCH p = (:Okta)-[:Okta_HasRoleAssignment|Okta_MemberOf*1..2]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [role-assignments.json](../Src/Queries/role-assignments.json) file.
@@ -234,6 +249,7 @@ List all Group Administrators in an Okta organization.
 MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_GroupAdmin]->(resource)
 WHERE (resource:Okta_Group) OR (resource:Okta_User)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [role-group-admins.json](../Src/Queries/role-group-admins.json) file.
@@ -245,6 +261,7 @@ List all Group Membership Administrators in an Okta organization.
 ```cypher
 MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_GroupMembershipAdmin]->(:Okta_Group)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [role-group-membership-admins.json](../Src/Queries/role-group-membership-admins.json) file.
@@ -256,6 +273,7 @@ List all Help Desk Administrators in an Okta organization.
 ```cypher
 MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_HelpDeskAdmin]->(:Okta_User)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [role-helpdesk-admins.json](../Src/Queries/role-helpdesk-admins.json) file.
@@ -267,6 +285,7 @@ List all Organization Administrators in an Okta organization.
 ```cypher
 MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_OrgAdmin]->(:Okta)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [role-org-admins.json](../Src/Queries/role-org-admins.json) file.
@@ -278,6 +297,7 @@ List all Super Administrators in an Okta organization.
 ```cypher
 MATCH p = (:Okta)-[:Okta_SuperAdmin]->(:Okta_Organization)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [role-super-admins.json](../Src/Queries/role-super-admins.json) file.
@@ -289,18 +309,21 @@ Lists application-to-user assignments where the app receives password updates.
 ```cypher
 MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)-[:Okta_ReadPasswordUpdates]->(:Okta_User)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [scim-read-passwords.json](../Src/Queries/scim-read-passwords.json) file.
 
-## Tier 0 Resources
+## Tier Zero Principals and Devices
 
-Users, groups, and applications in Okta organization with role assignments.
+Principals with SUPER_ADMIN or ORG_ADMIN role assignments and their associated devices.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(n:Okta)
-WHERE n.hasRoleAssignments AND (n:Okta_User OR n:Okta_Group OR n:Okta_Application OR n:Okta_ApiServiceIntegration)
+MATCH p = (:Okta)-[:Okta_HasRoleAssignment|Okta_MemberOf|Okta_DeviceOf*1..3]->(r:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta_Organization)
+WHERE r.type = "SUPER_ADMIN"
+OR r.type = "ORG_ADMIN"
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [tier0.json](../Src/Queries/tier0.json) file.
@@ -312,6 +335,7 @@ Retrieves all (privileged) users in the Okta organization who have been assigned
 ```cypher
 MATCH p = (:Okta_ApiToken)-[:Okta_ApiTokenFor]->(:Okta_User)<-[:Okta_Contains]-(:Okta_Organization)
 RETURN p
+LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [users-api-tokens.json](../Src/Queries/users-api-tokens.json) file.

@@ -1,5 +1,5 @@
 {
-  "name": "Okta: Tier 0 Resources",
-  "description": "Users, groups, and applications in Okta organization with role assignments.",
-  "query": "MATCH p = (:Okta_Organization)-[:Okta_Contains]->(n:Okta)\nWHERE n.hasRoleAssignments AND (n:Okta_User OR n:Okta_Group OR n:Okta_Application OR n:Okta_ApiServiceIntegration)\nRETURN p"
+  "name": "Okta: Tier Zero Principals and Devices",
+  "description": "Principals with SUPER_ADMIN or ORG_ADMIN role assignments and their associated devices.",
+  "query": "MATCH p = (:Okta)-[:Okta_HasRoleAssignment|Okta_MemberOf|Okta_DeviceOf*1..3]->(r:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta_Organization)\nWHERE r.type = \"SUPER_ADMIN\"\nOR r.type = \"ORG_ADMIN\"\nRETURN p\nLIMIT 1000"
 }
