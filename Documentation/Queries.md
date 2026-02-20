@@ -46,6 +46,19 @@ LIMIT 1000
 
 This query can be imported into BloodHound from the [ad-sso-accounts.json](../Src/Queries/ad-sso-accounts.json) file.
 
+## Principals with Admin Console Access
+
+Identifies principals with access to the Okta Admin Console.
+
+```cypher
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_AppAssignment]->(c:Okta_Application)
+WHERE c.appType = "saasure"
+RETURN p
+LIMIT 1000
+```
+
+This query can be imported into BloodHound from the [admin-console-access.json](../Src/Queries/admin-console-access.json) file.
+
 ## Application Assignments
 
 List all application assignments in an Okta Organization.
@@ -155,6 +168,19 @@ LIMIT 1000
 
 This query can be imported into BloodHound from the [policy-mappings.json](../Src/Queries/policy-mappings.json) file.
 
+## Unrotated Active Access Keys on Privileged Apps
+
+Finds active JWKs or client secrets older than 365 days on applications that have role assignments.
+
+```cypher
+MATCH p = (s:Okta_JWK:Okta_ClientSecret)-[:Okta_KeyOf|Okta_SecretOf]->(:Okta_Application:Okta_ApiServiceIntegration)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE s.status = "ACTIVE" AND datetime(s.created) <= datetime() - duration("P365D")
+RETURN p
+LIMIT 1000
+```
+
+This query can be imported into BloodHound from the [privileged-app-unrotated-access-keys.json](../Src/Queries/privileged-app-unrotated-access-keys.json) file.
+
 ## Applications with Role Assignments
 
 Applications in the Okta organization that have roles assigned.
@@ -184,7 +210,7 @@ This query can be imported into BloodHound from the [privileged-principals-hybri
 Disabled user accounts with active role assignments in Okta organization.
 
 ```cypher
-MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment|Okta_MemberOf*1..2]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
 WHERE u.status <> 'ACTIVE'
 RETURN p
 LIMIT 1000
@@ -197,13 +223,39 @@ This query can be imported into BloodHound from the [privileged-users-deactivate
 Users with active role assignments in Okta organization who do not have multi-factor authentication enabled.
 
 ```cypher
-MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment|Okta_MemberOf*1..2]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
 WHERE u.authenticationFactors = 0
 RETURN p
 LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [privileged-users-no-mfa.json](../Src/Queries/privileged-users-no-mfa.json) file.
+
+## Privileged Users with Old Passwords
+
+Finds users with role assignments where the last password change was more than a year ago.
+
+```cypher
+MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment|Okta_MemberOf*1..2]->(r:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE u.passwordChanged IS NOT NULL AND datetime(u.passwordChanged) <= datetime() - duration("P365D")
+RETURN p
+LIMIT 1000
+```
+
+This query can be imported into BloodHound from the [privileged-users-old-passwords.json](../Src/Queries/privileged-users-old-passwords.json) file.
+
+## Privileged Users with Unexpected Status
+
+Finds users with role assignments whose status is not ACTIVE.
+
+```cypher
+MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment|Okta_MemberOf*1..2]->(r:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE u.status <> "ACTIVE"
+RETURN p
+LIMIT 1000
+```
+
+This query can be imported into BloodHound from the [privileged-users-unexpected-status.json](../Src/Queries/privileged-users-unexpected-status.json) file.
 
 ## Resource Set Membership
 
@@ -313,6 +365,19 @@ LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [scim-read-passwords.json](../Src/Queries/scim-read-passwords.json) file.
+
+## Stale Privileged Users
+
+Finds user accounts with role assignments that have not logged in for at least 180 days.
+
+```cypher
+MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment|Okta_MemberOf*1..2]->(r:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE u.lastLogin IS NULL OR datetime(u.lastLogin) <= datetime() - duration("P180D")
+RETURN p
+LIMIT 1000
+```
+
+This query can be imported into BloodHound from the [stale-privileged-accounts.json](../Src/Queries/stale-privileged-accounts.json) file.
 
 ## Tier Zero Principals and Devices
 

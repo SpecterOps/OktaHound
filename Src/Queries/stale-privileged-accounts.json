@@ -1,0 +1,5 @@
+{
+  "name": "Okta: Stale Privileged Users",
+  "description": "Finds user accounts with role assignments that have not logged in for at least 180 days.",
+  "query": "MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment|Okta_MemberOf*1..2]->(r:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)\nWHERE u.lastLogin IS NULL OR datetime(u.lastLogin) <= datetime() - duration(\"P180D\")\nRETURN p\nLIMIT 1000"
+}
