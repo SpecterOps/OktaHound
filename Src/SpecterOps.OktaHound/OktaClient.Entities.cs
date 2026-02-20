@@ -74,6 +74,14 @@ partial class OktaClient
 
                 // Create the (:Okta_Organization)-[:Okta_Contains]->(:Okta_User) edge
                 _graph.AddEdge(_graph.Organization, userNode, OktaOrganization.ContainsEdgeKind);
+
+                if (userNode.RealmId is not null)
+                {
+                    // Create the (:Okta_Realm)-[:Okta_RealmContains]->(:Okta_User) edge if the user belongs to a realm
+                    _logger.LogTrace("User {Login} belongs to realm {RealmId}.", userNode.Login, userNode.RealmId);
+                    var realmNode = OktaRealm.CreateEdgeNode(userNode.RealmId);
+                    _graph.AddEdge(realmNode, userNode, OktaRealm.RealmContainsEdgeKind);
+                }
             }
 
             _logger.LogInformation("Successfully processed {UserCount} users.", userCount);
@@ -291,13 +299,6 @@ partial class OktaClient
             }
 
             _logger.LogInformation("Successfully processed {RealmCount} realms.", realmCount);
-            _logger.LogInformation("Fetching realm assignments...");
-
-            // TODO: Parallelize fetching realm assignments
-            await foreach (var realmAssignment in realmAssignmentApi.ListRealmAssignments(cancellationToken: cancellationToken).ConfigureAwait(false))
-            {
-                // TODO: Implement realm assignments.
-            }
         }
         catch (ApiException e)
         {

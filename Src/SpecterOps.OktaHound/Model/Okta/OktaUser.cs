@@ -15,6 +15,7 @@ internal sealed class OktaUser : OktaSecurityPrincipalNode
     public const string SecureWebAuthenticationEdgeKind = "Okta_SWA";
     private const string EnabledPropertyName = "enabled";
     private const string ManagerIdPropertyName = "managerId";
+    private const string RealmIdPropertyName = "realmId";
     private const string LoginPropertyName = "login";
     private const string EmailPropertyName = "email";
 
@@ -33,6 +34,9 @@ internal sealed class OktaUser : OktaSecurityPrincipalNode
 
     [JsonIgnore]
     public string? ManagerId => GetProperty<string>(ManagerIdPropertyName);
+
+    [JsonIgnore]
+    public string? RealmId => GetProperty<string>(RealmIdPropertyName);
 
     public OktaUser(User user, string domainName) : base(user.Id, domainName, NodeKind)
     {
@@ -72,6 +76,7 @@ internal sealed class OktaUser : OktaSecurityPrincipalNode
         SetProperty("employeeNumber", user.Profile.EmployeeNumber);
         SetProperty("organization", user.Profile.Organization);
         SetProperty("division", user.Profile.Division);
+        SetProperty(RealmIdPropertyName, user.RealmId);
         SetProperty(ManagerIdPropertyName, user.Profile.ManagerId);
 
         if (user.Credentials is not null)

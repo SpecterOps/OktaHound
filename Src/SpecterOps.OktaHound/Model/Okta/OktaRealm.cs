@@ -4,6 +4,7 @@ namespace SpecterOps.OktaHound.Model.Okta;
 
 internal sealed class OktaRealm : OktaNode
 {
+    public const string RealmContainsEdgeKind = "Okta_RealmContains";
     private const string NodeKind = "Okta_Realm";
 
     public OktaRealm(Realm realm, string domainName) : base(realm.Id, domainName, NodeKind)
