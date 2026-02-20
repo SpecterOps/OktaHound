@@ -1,5 +1,5 @@
 {
   "name": "Okta: Agentless SSO Accounts",
   "description": "Agentless Desktop Single Sign-on accounts registered in Active Directory.",
-  "query": "MATCH (u:User)\nWHERE ANY (spn IN u.serviceprincipalnames WHERE toUpper(spn) STARTS WITH 'HTTP/' AND (toLower(spn) ENDS WITH 'kerberos.okta.com' OR toLower(spn) ENDS WITH 'kerberos.oktapreview.com' OR toLower(spn) ENDS WITH 'kerberos.okta-emea.com' OR toLower(spn) ENDS WITH 'kerberos.okta-gov.com' OR toLower(spn) ENDS WITH 'kerberos.okta.mil' OR toLower(spn) ENDS WITH 'kerberos.okta-miltest.com' OR toLower(spn) ENDS WITH 'kerberos.trex-govcloud.com'))\nRETURN u"
+  "query": "MATCH (u:User)\nWHERE ANY (spn IN u.serviceprincipalnames WHERE toUpper(spn) STARTS WITH 'HTTP/' AND (toLower(spn) ENDS WITH 'kerberos.okta.com' OR toLower(spn) ENDS WITH 'kerberos.oktapreview.com' OR toLower(spn) ENDS WITH 'kerberos.okta-emea.com' OR toLower(spn) ENDS WITH 'kerberos.okta-gov.com' OR toLower(spn) ENDS WITH 'kerberos.okta.mil' OR toLower(spn) ENDS WITH 'kerberos.okta-miltest.com' OR toLower(spn) ENDS WITH 'kerberos.trex-govcloud.com'))\nRETURN u\nLIMIT 1000"
 }

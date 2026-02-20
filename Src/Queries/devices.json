@@ -1,7 +1,7 @@
 {
   "name": "Okta: Device Ownership",
   "description": "List all devices and their owners in an Okta Organization.",
-  "query": "MATCH p =(:Okta_Organization)-[:Okta_Contains]->(:Okta_Device)-[:Okta_DeviceOf]->(:Okta_User)\nRETURN p"
+  "query": "MATCH p =(:Okta_Organization)-[:Okta_Contains]->(:Okta_Device)-[:Okta_DeviceOf]->(:Okta_User)\nRETURN p\nLIMIT 1000"
 }
 
 
