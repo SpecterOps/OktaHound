@@ -28,7 +28,7 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Okta.Sdk" Version="10.0.2" />
+		<PackageReference Include="Okta.Sdk" Version="10.0.3" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.10" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-rc.1.25451.107" />
     <!-- Pin the ILLink.Tasks version for locked mode restore to work correctly -->

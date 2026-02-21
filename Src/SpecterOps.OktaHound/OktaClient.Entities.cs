@@ -245,9 +245,7 @@ partial class OktaClient
             RoleCResourceSetApi resourceSetApi = new(_oktaConfig);
             int resourceSetCount = 0;
 
-            // TODO: Implement resource set pagination if needed
-            ResourceSets resourceSets = await resourceSetApi.ListResourceSetsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-            foreach (ResourceSet resourceSet in resourceSets._ResourceSets)
+            await foreach (ResourceSet resourceSet in resourceSetApi.ListAllResourceSets(cancellationToken).ConfigureAwait(false))
             {
                 _logger.LogDebug("Processing resource set {ResourceSetLabel} ({ResourceSetId})...", resourceSet.Label, resourceSet.Id);
                 resourceSetCount++;
@@ -396,10 +394,7 @@ partial class OktaClient
             RoleECustomApi roleApi = new(_oktaConfig);
             int roleCount = 0;
 
-            // TODO: Implement role pagination if needed
-            IamRoles roles = await roleApi.ListRolesAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-
-            foreach (IamRole role in roles.Roles)
+            await foreach (IamRole role in roleApi.ListAllRoles(cancellationToken).ConfigureAwait(false))
             {
                 if (OktaRole.BuiltInRoles.Contains(role.Id))
                 {
@@ -592,7 +587,9 @@ partial class OktaClient
                 // Create the (:Okta_Organization)-[:Okta_Contains]->(:Okta_AuthorizationServer) edge
                 _graph.AddEdge(_graph.Organization, authorizationServerNode, OktaOrganization.ContainsEdgeKind);
 
-                // TODO: List associated servers
+                // TODO: List associated trusted servers
+                // AuthorizationServerAssocApi authorizationServerAssocApi = new(_oktaConfig);
+                // authorizationServerAssocApi.ListAssociatedServersByTrustedType(authorizationServerNode.Id, trusted: true, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             _logger.LogInformation("Successfully processed {AuthorizationServerCount} authorization servers.", authorizationServerCount);
@@ -771,7 +768,7 @@ partial class OktaClient
         {
             _logger.LogInformation("Fetching system log events...");
 
-            // TODO: Apply filters
+            // TODO: Apply system log filters
             await foreach (var oktaEvent in logApi.ListLogEvents(sortOrder: SortOrderParameter.DESCENDING, cancellationToken: cancellationToken).ConfigureAwait(false))
             {
                 eventCount++;

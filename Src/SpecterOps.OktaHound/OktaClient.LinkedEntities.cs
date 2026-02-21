@@ -441,24 +441,19 @@ partial class OktaClient
                 // The API client is not thread-safe, so it needs to be instantiated for each thread
                 RoleCResourceSetResourceApi resourceSetApi = new(_oktaConfig);
 
-                // TODO: Implement resource set pagination if needed
-                ResourceSetResources resources = await resourceSetApi.ListResourceSetResourcesAsync(resourceSetNode.OriginalId, cancellationToken).ConfigureAwait(false);
-
-                foreach (ResourceSetResource resource in resources.Resources)
+                await foreach (ResourceSetResource resource in resourceSetApi.ListAllResourceSetResources(resourceSetNode.OriginalId, cancellationToken).ConfigureAwait(false))
                 {
                     string? resourceUrl = resource.Links?.Self?.Href;
 
                     if (resourceUrl is null)
                     {
                         // Several resource types, including "Identity and access management",
-                        // "Workflows", "Customizations", or "Support Cases", cannot be resolved using the SDK.
+                        // "Workflows", "Customizations", or "Support Cases", are not exposed through the API as entities.
                         // Example "orn": "orn:okta:iam:00ow0o8if0CNwsKmk697:contained_resources"
                         // Example "orn": "orn:okta:support:00ow0o8if0CNwsKmk697:cases"
                         // Example "orn": "orn:okta:workflow:00ow0o8if0CNwsKmk697:flows"
                         // Example "orn": "orn:okta:idp:00ow0o8if0CNwsKmk697:customizations"
-
-                        // TODO: File an SDK bug request for missing ORN in the result.
-
+                        // TODO: Consider adding these virtual entities with ORNs as nodes to the graph.
                         // Skip processing this resource set assignment
                         continue;
                     }
@@ -656,10 +651,7 @@ partial class OktaClient
             int privilegedUserCount = 0;
             RoleAssignmentAUserApi roleAssignmentApi = new(_oktaConfig);
 
-            // TODO: Paginate results if needed
-            var privilegedUsers = await roleAssignmentApi.ListUsersWithRoleAssignmentsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-
-            foreach (RoleAssignedUser privilegedUser in privilegedUsers?.Value ?? [])
+            await foreach (RoleAssignedUser privilegedUser in roleAssignmentApi.ListAllUsersWithRoleAssignments(limit: null, cancellationToken).ConfigureAwait(false))
             {
                 privilegedUserCount++;
 
@@ -940,12 +932,6 @@ partial class OktaClient
                 await foreach (var secret in integrationsApi.ListApiServiceIntegrationInstanceSecrets(serviceNode.Id, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
                     _logger.LogTrace("The {ServiceName} ({ServiceId}) API service integration has an {Status} client secret {SecretId}.", serviceNode.Name, serviceNode.Id, secret.Status?.Value?.ToLowerInvariant(), secret.Id);
-
-                    if (secret.Status != APIServiceIntegrationInstanceSecret.StatusEnum.ACTIVE)
-                    {
-                        // TODO: Consider adding inactive client secrets as well
-                        continue;
-                    }
 
                     // Create the OktaClientSecret node
                     OktaClientSecret secretNode = new(secret, _graph.Organization.DomainName);
