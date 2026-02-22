@@ -335,7 +335,7 @@ partial class OktaClient
             CancellationToken = cancellationToken
         };
 
-        await Parallel.ForEachAsync(OktaRole.BuiltInRoles, concurrency, async (roleId, cancellationToken) =>
+        await Parallel.ForEachAsync(OktaBuiltinRole.BuiltInRoles, concurrency, async (roleId, cancellationToken) =>
         {
             try
             {
@@ -345,7 +345,7 @@ partial class OktaClient
                 var role = await roleApi.GetRoleAsync(roleId, cancellationToken).ConfigureAwait(false);
 
                 // Create the OktaRole node
-                var roleNode = new OktaRole(role, _graph.Organization.DomainName);
+                var roleNode = new OktaBuiltinRole(role, _graph.Organization.DomainName);
                 _graph.AddNode(roleNode);
 
                 // Create the (:Okta_Organization)-[:Okta_Contains]->(:Okta_Role) edge
@@ -396,7 +396,7 @@ partial class OktaClient
 
             await foreach (IamRole role in roleApi.ListAllRoles(cancellationToken).ConfigureAwait(false))
             {
-                if (OktaRole.BuiltInRoles.Contains(role.Id))
+                if (OktaBuiltinRole.BuiltInRoles.Contains(role.Id))
                 {
                     // Skip built-in roles, as the API typically returns WORKFLOWS_ADMIN as a custom role.
                     continue;

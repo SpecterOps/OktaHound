@@ -15,7 +15,7 @@ internal sealed class OktaGraph(OktaOrganization organization) : OpenGraphBase<O
     public IEnumerable<OktaGroup> Groups => Elements.GroupsById.Select(item => item.Value);
 
     [JsonIgnore]
-    public IEnumerable<OktaSecurityPrincipalNode> UsersAndGroups => [.. Users, .. Groups];
+    public IEnumerable<OktaSecurityPrincipal> UsersAndGroups => [.. Users, .. Groups];
 
     [JsonIgnore]
     public IEnumerable<OktaNode> UsersAndGroupsAndDevices => [.. Users, .. Groups, .. Devices];
@@ -67,7 +67,7 @@ internal sealed class OktaGraph(OktaOrganization organization) : OpenGraphBase<O
 
     public bool AddNode(OktaApplication app) => Elements.AppsById.TryAdd(app.Id, app);
 
-    public bool AddNode(OktaRole role) => Elements.RolesById.TryAdd(role.Id, role);
+    public bool AddNode(OktaBuiltinRole role) => Elements.RolesById.TryAdd(role.Id, role);
 
     public void AddNode(OktaRoleAssignment roleAssignment) => Elements.RoleAssignments.Add(roleAssignment);
 
@@ -138,9 +138,9 @@ internal sealed class OktaGraph(OktaOrganization organization) : OpenGraphBase<O
     public IEnumerable<OktaNode> GetAppsAndIntegrations(string type) =>
         [.. GetApplications(type), .. GetApiServiceIntegrations(type)];
 
-    public OktaRole? GetBuiltInRole(RoleType roleType)
+    public OktaBuiltinRole? GetBuiltInRole(RoleType roleType)
     {
-        string roleId = OktaRole.MakeRoleIdUnique(roleType.Value, Organization.DomainName);
+        string roleId = OktaBuiltinRole.MakeRoleIdUnique(roleType.Value, Organization.DomainName);
         Elements.RolesById.TryGetValue(roleId, out var role);
         return role;
     }

@@ -210,7 +210,7 @@ partial class OktaClient
         _logger.LogInformation("Finished fetching application role assignments.");
     }
 
-    public async Task ProcessRoleAssignment(StandardRole roleAssignment, OktaSecurityPrincipalNode assignee, CancellationToken cancellationToken = default)
+    public async Task ProcessRoleAssignment(StandardRole roleAssignment, OktaSecurityPrincipal assignee, CancellationToken cancellationToken = default)
     {
         if (_graph is null)
         {
@@ -238,7 +238,7 @@ partial class OktaClient
 
         // Create the (Okta)-[:Okta_HasRole]->(:Okta_Role) edge
         var roleNode = _graph.GetBuiltInRole(roleAssignment.Type) ?? throw new InvalidOperationException($"Unknown role {roleAssignment.Type.Value}");
-        _graph.AddEdge(assignee, roleNode, OktaRole.HasRoleEdgeKind);
+        _graph.AddEdge(assignee, roleNode, OktaBuiltinRole.HasRoleEdgeKind);
 
         // Create the OktaRoleAssignment node
         var roleAssignmentNode = new OktaRoleAssignment(roleAssignment, roleNode, assignee, _graph.Organization.DomainName);
@@ -422,7 +422,7 @@ partial class OktaClient
         }
     }
 
-    public void ProcessRoleAssignment(CustomRole roleAssignment, OktaSecurityPrincipalNode assignee)
+    public void ProcessRoleAssignment(CustomRole roleAssignment, OktaSecurityPrincipal assignee)
     {
         if (_graph is null)
         {
@@ -451,7 +451,7 @@ partial class OktaClient
         // Translate custom role label to ID
         // Note that a couple of built-in roles are considered custom by the API,
         // including WORKFLOWS_ADMIN, ACCESS_CERTIFICATIONS_ADMIN, and ACCESS_REQUESTS_ADMIN.
-        OktaNode? customRoleNode = roleAssignment.Type == RoleType.CUSTOM ?
+        OktaRole? customRoleNode = roleAssignment.Type == RoleType.CUSTOM ?
             _graph.GetCustomRole(roleAssignment.Label) :
             _graph.GetBuiltInRole((RoleType)roleAssignment.Role);
 

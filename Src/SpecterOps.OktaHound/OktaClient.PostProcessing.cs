@@ -27,7 +27,7 @@ partial class OktaClient
             if (domainSid is not null && domainName is not null)
             {
                 _logger.LogDebug("Discovered Active Directory domain {DomainName} ({DomainSid}).", domainName, domainSid);
-                ActiveDirectoryDomain domainNode = new ActiveDirectoryDomain(domainSid, domainName);
+                ActiveDirectoryDomain domainNode = new(domainSid, domainName);
                 _adGraph.AddNode(domainNode);
             }
             else
@@ -94,20 +94,19 @@ partial class OktaClient
                     if (targetApp is OktaApplication appNode && appNode.HasRoleAssignments)
                     {
                         // App admins can't manage apps with admin privileges.
-                        // TODO: Verify this claim
                         continue;
                     }
 
                     // Create the (:Okta)-[:Okta_AppAdmin]->(:Okta_Application) edge OR
                     // (:Okta)-[:Okta_AppAdmin]->(:Okta_ApiServiceIntegration) edge
-                    _graph.AddEdge(roleAssignment.Assignee, targetApp, OktaRole.ApplicationAdministratorEdgeKind);
+                    _graph.AddEdge(roleAssignment.Assignee, targetApp, OktaBuiltinRole.ApplicationAdministratorEdgeKind);
                 }
             }
             else if (roleAssignment.RoleType == RoleType.USERADMIN)
             {
                 // If the assignment has no targets, it applies to all users and groups in the org
-                IEnumerable<OktaSecurityPrincipalNode> targetUsersAndGroups = roleAssignment.Targets.Count > 0 ?
-                    roleAssignment.Targets.Cast<OktaSecurityPrincipalNode>() :
+                IEnumerable<OktaSecurityPrincipal> targetUsersAndGroups = roleAssignment.Targets.Count > 0 ?
+                    roleAssignment.Targets.Cast<OktaSecurityPrincipal>() :
                     _graph.UsersAndGroups;
 
                 foreach (var targetPrincipal in targetUsersAndGroups)
@@ -119,7 +118,7 @@ partial class OktaClient
                     }
 
                     // Create the (:Okta)-[:Okta_GroupAdmin]->(:Okta_User) and (:Okta)-[:Okta_GroupAdmin]->(:Okta_Group) edges
-                    _graph.AddEdge(roleAssignment.Assignee, targetPrincipal, OktaRole.GroupAdministratorEdgeKind);
+                    _graph.AddEdge(roleAssignment.Assignee, targetPrincipal, OktaBuiltinRole.GroupAdministratorEdgeKind);
                 }
             }
             else if (roleAssignment.RoleType == RoleType.GROUPMEMBERSHIPADMIN)
@@ -138,7 +137,7 @@ partial class OktaClient
                     }
 
                     // Create the (:Okta)-[:Okta_GroupMembershipAdmin]->(:Okta_Group) edge
-                    _graph.AddEdge(roleAssignment.Assignee, targetGroup, OktaRole.GroupMembershipAdministratorEdgeKind);
+                    _graph.AddEdge(roleAssignment.Assignee, targetGroup, OktaBuiltinRole.GroupMembershipAdministratorEdgeKind);
                 }
             }
             else if (roleAssignment.RoleType == RoleType.HELPDESKADMIN)
@@ -157,20 +156,17 @@ partial class OktaClient
                     }
 
                     // Create the (:Okta)-[:Okta_HelpDeskAdmin]->(:Okta_User) edge
-                    _graph.AddEdge(roleAssignment.Assignee, targetUser, OktaRole.HelpDeskAdministratorEdgeKind);
+                    _graph.AddEdge(roleAssignment.Assignee, targetUser, OktaBuiltinRole.HelpDeskAdministratorEdgeKind);
                 }
             }
             else if (roleAssignment.RoleType == RoleType.ORGADMIN)
             {
-                // TODO: Org Admins could probably register SCIM apps and steal passwords
-
                 // Org Admin have permissions on users, groups, and devices
                 foreach (var targetNode in _graph.UsersAndGroupsAndDevices)
                 {
-                    if (targetNode is OktaSecurityPrincipalNode principalNode && principalNode.HasRoleAssignments)
+                    if (targetNode is OktaSecurityPrincipal principalNode && principalNode.HasRoleAssignments)
                     {
                         // Org admins can't manage users or groups with admin privileges.
-                        // TODO: Verify this claim
                         continue;
                     }
 
@@ -178,7 +174,7 @@ partial class OktaClient
                     // (:Okta)-[:Okta_OrgAdmin]->(:Okta_User),
                     // (:Okta)-[:Okta_OrgAdmin]->(:Okta_Group), and
                     // (:Okta)-[:Okta_OrgAdmin]->(:Okta_Device) edges
-                    _graph.AddEdge(roleAssignment.Assignee, targetNode, OktaRole.OrganizationAdministratorEdgeKind);
+                    _graph.AddEdge(roleAssignment.Assignee, targetNode, OktaBuiltinRole.OrganizationAdministratorEdgeKind);
                 }
             }
             else if (roleAssignment.RoleType == RoleType.MOBILEADMIN)
@@ -187,21 +183,21 @@ partial class OktaClient
                 foreach (var deviceNode in _graph.Devices)
                 {
                     // Create the (:Okta)-[:Okta_MobileAdmin]->(:Okta_Device) edge
-                    _graph.AddEdge(roleAssignment.Assignee, deviceNode, OktaRole.MobileAdministratorEdgeKind);
+                    _graph.AddEdge(roleAssignment.Assignee, deviceNode, OktaBuiltinRole.MobileAdministratorEdgeKind);
                 }
             }
             else if (roleAssignment.RoleType == RoleType.SUPERADMIN)
             {
                 // Create the (:Okta)-[:Okta_SuperAdmin]->(:Okta_Organization) edge
-                _graph.AddEdge(roleAssignment.Assignee, _graph.Organization, OktaRole.SuperAdministratorEdgeKind);
+                _graph.AddEdge(roleAssignment.Assignee, _graph.Organization, OktaBuiltinRole.SuperAdministratorEdgeKind);
             }
             else if (roleAssignment.RoleType == RoleType.ACCESSREQUESTSADMIN)
             {
-                // TODO: Explore the Access Requests Admin role (Custom IAM role)
+                // TODO: Explore the Access Requests Admin role (Custom IAM role), which seems to be able to manage apps.
             }
             else if (roleAssignment.RoleType == RoleType.ACCESSCERTIFICATIONSADMIN)
             {
-                // TODO: Explore the Access Certifications Admin role (Custom IAM role)
+                // The okta.governance.accessCertifications.manage permission does not seem to be abusable.
             }
             else if (roleAssignment.RoleType == RoleType.APIACCESSMANAGEMENTADMIN)
             {
@@ -217,7 +213,84 @@ partial class OktaClient
             }
             else if (roleAssignment.RoleType == RoleType.CUSTOM)
             {
-                // TODO: Handle custom role permissions
+                var permissions = roleAssignment.Role.Permissions;
+
+                if (permissions is null)
+                {
+                    _logger.LogWarning("Custom role {RoleName} has no permissions. Skipping edge creation for this role.", roleAssignment.Role.Name);
+                    continue;
+                }
+
+                // Handle user permissions
+                if (permissions.Contains("okta.users.manage") ||
+                    permissions.Contains("okta.users.credentials.manage") ||
+                    permissions.Contains("okta.users.credentials.manageTemporaryAccessCode") ||
+                    permissions.Contains("okta.users.credentials.resetFactors") ||
+                    permissions.Contains("okta.users.credentials.resetPassword") ||
+                    permissions.Contains("okta.users.credentials.expirePassword"))
+                {
+                    foreach (var targetUser in roleAssignment.Targets.OfType<OktaUser>())
+                    {
+                        if (targetUser.HasRoleAssignments)
+                        {
+                            // Users with assigned roles can't be managed by custom roles.
+                            continue;
+                        }
+
+                        if (permissions.Contains("okta.users.manage") ||
+                            permissions.Contains("okta.users.credentials.manage") ||
+                            permissions.Contains("okta.users.credentials.manageTemporaryAccessCode") ||
+                            permissions.Contains("okta.users.credentials.resetPassword") ||
+                            permissions.Contains("okta.users.credentials.expirePassword"))
+                        {
+                            // Create the (:Okta)-[:Okta_ResetPassword]->(:Okta_User) edge
+                            // TODO: Introduce a standalone permission for manageTemporaryAccessCode
+                            _graph.AddEdge(roleAssignment.Assignee, targetUser, OktaCustomRole.ResetPasswordEdgeKind);
+                        }
+
+                        if (permissions.Contains("okta.users.manage") ||
+                            permissions.Contains("okta.users.credentials.manage") ||
+                            permissions.Contains("okta.users.credentials.resetFactors"))
+                        {
+                            // Create the (:Okta)-[:Okta_ResetFactors]->(:Okta_User) edge
+                            _graph.AddEdge(roleAssignment.Assignee, targetUser, OktaCustomRole.ResetFactorsEdgeKind);
+                        }
+                    }
+                }
+
+                if (permissions.Contains("okta.groups.manage") ||
+                    permissions.Contains("okta.groups.members.manage"))
+                {
+                    foreach (var targetGroup in roleAssignment.Targets.OfType<OktaGroup>())
+                    {
+                        if (targetGroup.HasRoleAssignments)
+                        {
+                            // Groups with assigned roles can't be managed by custom roles.
+                            continue;
+                        }
+
+                        // Create the (:Okta)-[:Okta_AddMember]->(:Okta_Group) edge
+                        _graph.AddEdge(roleAssignment.Assignee, targetGroup, OktaCustomRole.AddMemberEdgeKind);
+                    }
+                }
+
+                if (permissions.Contains("okta.apps.manage"))
+                {
+                    foreach (var targetApp in roleAssignment.Targets.OfType<OktaApplication>())
+                    {
+                        if (targetApp.HasRoleAssignments)
+                        {
+                            // Apps with assigned roles can't be managed by custom roles.
+                            continue;
+                        }
+
+                        // Create the (:Okta)-[:Okta_ManageApp]->(:Okta_Application) edge
+                        _graph.AddEdge(roleAssignment.Assignee, targetApp, OktaCustomRole.ManageAppEdgeKind);
+                    }
+                }
+
+                // TODO: Handle the Okta_AddSelf edge
+                // TODO: Handle additional custom role permissions
             }
         }
 

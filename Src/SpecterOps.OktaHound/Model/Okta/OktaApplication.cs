@@ -6,7 +6,7 @@ using SpecterOps.OktaHound.Model.OpenGraph;
 
 namespace SpecterOps.OktaHound.Model.Okta;
 
-internal sealed class OktaApplication : OktaSecurityPrincipalNode
+internal sealed class OktaApplication : OktaSecurityPrincipal
 {
     public const string NodeKind = "Okta_Application";
     public const string AppAssignmentEdgeKind = "Okta_AppAssignment";

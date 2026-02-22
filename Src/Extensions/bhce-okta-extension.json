@@ -230,6 +230,26 @@
       "is_traversable": false
     },
     {
+      "name": "Okta_ResetPassword",
+      "description": "Ability to reset passwords or temporary credentials for scoped Okta users",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_ResetFactors",
+      "description": "Ability to reset MFA factors for scoped Okta users",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_AddMember",
+      "description": "Ability to add or remove members in scoped Okta groups",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_ManageApp",
+      "description": "Ability to manage scoped Okta applications",
+      "is_traversable": true
+    },
+    {
       "name": "Okta_HasRoleAssignment",
       "description": "Relationship between a principal and a role assignment",
       "is_traversable": false

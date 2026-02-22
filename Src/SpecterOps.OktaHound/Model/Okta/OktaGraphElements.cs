@@ -68,7 +68,7 @@ internal sealed class OktaGraphElements(OktaOrganization organization) : OpenGra
     /// Represents a thread-safe collection of built-in roles, keyed by their string identifiers.
     /// </summary>
     [JsonIgnore]
-    public readonly ConcurrentDictionary<string, OktaRole> RolesById = new();
+    public readonly ConcurrentDictionary<string, OktaBuiltinRole> RolesById = new();
 
     /// <summary>
     /// Represents a thread-safe collection of custom roles, keyed by their string identifiers.

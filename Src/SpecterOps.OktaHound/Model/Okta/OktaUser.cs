@@ -4,7 +4,7 @@ using SpecterOps.OktaHound.Model.OpenGraph;
 
 namespace SpecterOps.OktaHound.Model.Okta;
 
-internal sealed class OktaUser : OktaSecurityPrincipalNode
+internal sealed class OktaUser : OktaSecurityPrincipal
 {
     public const string NodeKind = "Okta_User";
     public const string ManagerOfEdgeKind = "Okta_ManagerOf";

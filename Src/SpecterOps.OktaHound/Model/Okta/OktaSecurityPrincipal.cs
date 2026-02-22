@@ -5,7 +5,7 @@ namespace SpecterOps.OktaHound.Model.Okta;
 /// <summary>
 /// Base class for role-assignable resources in Okta (Users, Groups, and Apps).
 /// </summary>
-internal abstract class OktaSecurityPrincipalNode : OktaNode
+internal abstract class OktaSecurityPrincipal : OktaNode
 {
     private const string HasRoleAssignmentsPropertyName = "hasRoleAssignments";
 
@@ -30,7 +30,7 @@ internal abstract class OktaSecurityPrincipalNode : OktaNode
         set;
     }
 
-    protected OktaSecurityPrincipalNode(string id, string oktaOrganization, string kind) : base(id, oktaOrganization, kind)
+    protected OktaSecurityPrincipal(string id, string oktaOrganization, string kind) : base(id, oktaOrganization, kind)
     {
         // Push default property values into the model
         HasRoleAssignments = false;
