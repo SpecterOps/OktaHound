@@ -36,6 +36,7 @@
 
 | Relationship Kind | Traversable | Description |
 |-------------------|:-----------:|-------------|
+| Okta_AddMember | ✅ | Ability to add or remove members in scoped Okta groups |
 | Okta_ApiTokenFor | ✅ | User ownership of an Okta API token |
 | Okta_AppAdmin | ✅ | Application administrator role assignment |
 | Okta_AppAssignment | ❌ | Assignment of users or groups to an Okta application |
@@ -55,6 +56,7 @@
 | Okta_InboundOrgSSO | ✅ | Single sign-on from an external organization into Okta |
 | Okta_InboundSSO | ✅ | Single sign-on from an external identity provider into Okta |
 | Okta_KeyOf | ✅ | JSON Web Key associated with an Okta application |
+| Okta_ManageApp | ✅ | Ability to manage scoped Okta applications |
 | Okta_ManagerOf | ❌ | Manager relationship between Okta users |
 | Okta_MemberOf | ✅ | Membership of a user in an Okta group |
 | Okta_MembershipSync | ✅ | Bidirectional synchronization between Okta groups and external groups |
@@ -66,6 +68,8 @@
 | Okta_PolicyMapping | ❌ | Association of a policy with an Okta application |
 | Okta_ReadPasswordUpdates | ✅ | Application can read password updates over the SCIM protocol |
 | Okta_RealmContains | ✅ | Contains relationship between an Okta realm and its users |
+| Okta_ResetFactors | ✅ | Ability to reset MFA factors for scoped Okta users |
+| Okta_ResetPassword | ✅ | Ability to reset passwords or temporary credentials for scoped Okta users |
 | Okta_ResourceSetContains | ✅ | Membership of objects within an Okta resource set |
 | Okta_ScopedTo | ❌ | Scope relationship between a role assignment and its target |
 | Okta_SecretOf | ✅ | Client secret associated with an application or service integration |
