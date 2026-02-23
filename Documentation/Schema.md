@@ -2,8 +2,9 @@
 
 ## Metadata
 
-**Name:** Okta (OktaHound)<br>
-**Version:** 1.0.0<br>
+**Name:** OktaHound<br>
+**Display Name:** Okta (OktaHound)<br>
+**Version:** 1.1.0<br>
 **Namespace:** Okta<br>
 **Environment Kind:** Okta_Organization<br>
 **Source Kind:** Okta

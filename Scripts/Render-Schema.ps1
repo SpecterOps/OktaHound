@@ -22,6 +22,11 @@ Set-StrictMode -Version Latest
 [psobject] $json = Get-Content -Path $InputPath | ConvertFrom-Json
 [psobject[]] $nodeKinds = @($json.node_kinds | Sort-Object -Property name)
 [psobject[]] $relationshipKinds = @($json.relationship_kinds | Sort-Object -Property name)
+[string] $schemaDisplayName = if (-not [string]::IsNullOrWhiteSpace($json.schema.display_name)) {
+    $json.schema.display_name
+} else {
+    $json.schema.name
+}
 
 # Generate the header and metadata section
 [string] $markdown = @'
@@ -30,12 +35,13 @@ Set-StrictMode -Version Latest
 ## Metadata
 
 **Name:** {0}<br>
-**Version:** {1}<br>
-**Namespace:** {2}<br>
-**Environment Kind:** {3}<br>
-**Source Kind:** {4}
+**Display Name:** {1}<br>
+**Version:** {2}<br>
+**Namespace:** {3}<br>
+**Environment Kind:** {4}<br>
+**Source Kind:** {5}
 
-'@ -f $json.schema.name, $json.schema.version, $json.schema.namespace, $json.environments[0].environment_kind, $json.environments[0].source_kind
+'@ -f $json.schema.name, $schemaDisplayName, $json.schema.version, $json.schema.namespace, $json.environments[0].environment_kind, $json.environments[0].source_kind
 
 $markdown += @'
 

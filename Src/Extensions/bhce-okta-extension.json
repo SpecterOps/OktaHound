@@ -1,7 +1,8 @@
 {
   "schema": {
-    "name": "Okta (OktaHound)",
-    "version": "1.0.0",
+    "name": "OktaHound",
+    "display_name": "Okta (OktaHound)",
+    "version": "1.1.0",
     "namespace": "Okta"
   },
   "node_kinds": [
@@ -9,7 +10,7 @@
       "name": "Okta_Organization",
       "display_name": "Okta Organization",
       "description": "An Okta organization",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "globe",
       "color": "#16a5a5"
     },
@@ -17,7 +18,7 @@
       "name": "Okta_Realm",
       "display_name": "Okta Realm",
       "description": "An Okta realm",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "building",
       "color": "#73d8ff"
     },
@@ -25,7 +26,7 @@
       "name": "Okta_User",
       "display_name": "Okta User",
       "description": "An Okta user account",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "user",
       "color": "#d33115"
     },
@@ -33,7 +34,7 @@
       "name": "Okta_Group",
       "display_name": "Okta Group",
       "description": "An Okta user group",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "users",
       "color": "#fcdc00"
     },
@@ -41,7 +42,7 @@
       "name": "Okta_Device",
       "display_name": "Okta Device",
       "description": "A device registered in Okta, such as a mobile phone or a computer",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "mobile",
       "color": "#3a5d9c"
     },
@@ -49,7 +50,7 @@
       "name": "Okta_Application",
       "display_name": "Okta Application",
       "description": "An application registered in Okta, such as a SAML app or an OIDC app",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "window-maximize",
       "color": "#68bc00"
     },
@@ -57,7 +58,7 @@
       "name": "Okta_ApiServiceIntegration",
       "display_name": "Okta API Service Integration",
       "description": "An API service integration",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "robot",
       "color": "#68bc00"
     },
@@ -65,7 +66,7 @@
       "name": "Okta_ResourceSet",
       "display_name": "Okta Resource Set",
       "description": "A resource set containing users, groups, applications, and other Okta objects",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "folder",
       "color": "#3a5d9c"
     },
@@ -73,7 +74,7 @@
       "name": "Okta_Role",
       "display_name": "Okta Role",
       "description": "A built-in role in Okta, such as Super Admin or Group Admin",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "clipboard-list",
       "color": "#025e00"
     },
@@ -81,7 +82,7 @@
       "name": "Okta_CustomRole",
       "display_name": "Okta Custom Role",
       "description": "A custom role in Okta created by an administrator",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "clipboard-list",
       "color": "#025e00"
     },
@@ -89,7 +90,7 @@
       "name": "Okta_RoleAssignment",
       "display_name": "Okta Role Assignment",
       "description": "A set of permissions assigned to a user, group, or an application in Okta",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "clipboard-check",
       "color": "#fda1ff"
     },
@@ -97,7 +98,7 @@
       "name": "Okta_ApiToken",
       "display_name": "Okta API Token",
       "description": "A secret used by users to authenticate to the Okta API",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "key",
       "color": "#ff746c"
     },
@@ -105,7 +106,7 @@
       "name": "Okta_ClientSecret",
       "display_name": "Okta Client Secret",
       "description": "A secret used by applications to authenticate to the Okta API",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "key",
       "color": "#ff746c"
     },
@@ -113,7 +114,7 @@
       "name": "Okta_JWK",
       "display_name": "Okta JWK",
       "description": "An Okta JSON Web Key",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "key",
       "color": "#ff746c"
     },
@@ -121,7 +122,7 @@
       "name": "Okta_AgentPool",
       "display_name": "Okta Agent Pool",
       "description": "A pool of synchronization or authentication agents in Okta",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "gears",
       "color": "#aea1ff"
     },
@@ -129,7 +130,7 @@
       "name": "Okta_Agent",
       "display_name": "Okta Agent",
       "description": "A synchronization or authentication agent in Okta",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "gear",
       "color": "#fb9e00"
     },
@@ -137,7 +138,7 @@
       "name": "Okta_AuthorizationServer",
       "display_name": "Okta Authorization Server",
       "description": "An authorization server in Okta",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "certificate",
       "color": "#fb9e00"
     },
@@ -145,7 +146,7 @@
       "name": "Okta_IdentityProvider",
       "display_name": "Okta Identity Provider",
       "description": "An identity provider trusted by Okta for authentication",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "right-to-bracket",
       "color": "#fb9e00"
     },
@@ -153,7 +154,7 @@
       "name": "Okta_Policy",
       "display_name": "Okta Policy",
       "description": "A policy defining rules for authentication, password, or other features in Okta",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "shield",
       "color": "#c1e1c1"
     }

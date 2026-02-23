@@ -1,7 +1,8 @@
 {
   "schema": {
     "name": "SCIM",
-    "version": "1.1.0",
+    "display_name": "SCIM",
+    "version": "1.2.0",
     "namespace": "SCIM"
   },
   "node_kinds": [
@@ -9,7 +10,7 @@
       "name": "SCIM_Organization",
       "display_name": "SCIM Organization",
       "description": "An organization or tenant in the IdP",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "building-circle-arrow-right",
       "color": "#3B82F6"
     },
@@ -17,7 +18,7 @@
       "name": "SCIM_User",
       "display_name": "SCIM User",
       "description": "A user account provisioned via SCIM",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "user-gear",
       "color": "#10B981"
     },
@@ -25,7 +26,7 @@
       "name": "SCIM_Group",
       "display_name": "SCIM Group",
       "description": "A group provisioned via SCIM",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "users-gear",
       "color": "#EF4444"
     },
@@ -33,17 +34,9 @@
       "name": "SCIM_Role",
       "display_name": "SCIM Role",
       "description": "A role assigned to users",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "clipboard-list",
       "color": "#F59E0B"
-    },
-    {
-      "name": "SCIM_Base",
-      "display_name": "SCIM Base",
-      "description": "A base node type for SCIM resources",
-      "is_display_kind": "false",
-      "icon": "group-arrows-rotate",
-      "color": "#6B7280"
     }
   ],
   "relationship_kinds": [
@@ -76,7 +69,7 @@
   "environments": [
     {
       "environment_kind": "SCIM_Organization",
-      "source_kind": "SCIM_Base",
+      "source_kind": "SCIM",
       "principal_kinds": [
         "SCIM_User",
         "SCIM_Group"
