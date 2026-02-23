@@ -1,4 +1,4 @@
-# Okta_KeyOf Edge
+# General Information
 
 The traversable `Okta_KeyOf` edges represent the relationships between applications ([Okta_Application](../Nodes/Okta_Application.md)) and their JWKs:
 

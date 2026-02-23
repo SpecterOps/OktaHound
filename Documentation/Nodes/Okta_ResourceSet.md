@@ -1,6 +1,4 @@
-# Okta_ResourceSet Node
-
-## Overview
+# Overview
 
 Resource sets are collections of entities that can be used to scope custom role assignments in Okta.
 A resource set can contain the following object types:

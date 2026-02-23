@@ -1,4 +1,4 @@
-# Okta_AppAssignment Edge
+# General Information
 
 Only users that are assigned to applications can access them. Users can be assigned to applications directly or indirectly through group memberships.
 

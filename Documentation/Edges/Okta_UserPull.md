@@ -1,4 +1,4 @@
-# Okta_UserPull Edge
+# General Information
 
 The `Okta_UserPull` edges represent user import relationships from external applications to Okta.
 

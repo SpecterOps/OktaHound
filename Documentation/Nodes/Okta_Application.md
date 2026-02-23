@@ -1,6 +1,4 @@
-# Okta_Application Node
-
-## Overview
+# Overview
 
 Applications in Okta represent the various software applications and services that users can access through the Okta organization. Applications can be configured to use different authentication methods, such as SAML, OIDC, or SWA. These protocols can either be configured manually by administrators or automatically by adding an application from Okta's App Integration Catalog, which provides a wide range of pre-configured cloud and on-premises application templates.
 
@@ -8,7 +6,7 @@ With the exception of API Service applications, Okta users and groups can be ass
 
 In `OktaHound`, applications are represented as `Okta_Application` nodes.
 
-## User Name Mapping
+# User Name Mapping
 
 User name mapping from Okta to SAML 2.0, OpenID Connect (OIDC), and Secure Web Authentication (SWA) applications is configurable in the Okta Admin Console, with the default setting being the Okta username pass-through, i.e., `${source.login}`.
 
@@ -26,7 +24,7 @@ User name mapping from Okta to SAML 2.0, OpenID Connect (OIDC), and Secure Web A
 | (None)                        | `NONE`                                                      | No                     |
 | Custom                        | ?                                                           | No                     |
 
-## API Service Applications
+# API Service Applications
 
 This application type is the most interesting one from the security perspective, as it represents OAuth 2.0 service (daemon) applications that can be granted machine-to-machine access to Okta APIs, without any user interaction. These applications can be assigned administrative roles, e.g., Super Admin, and OAuth 2.0 scope grants, e.g., `okta.users.manage`. Any API operation must be allowed by both the assigned roles and the granted scopes.
 
@@ -35,7 +33,7 @@ This application type is the most interesting one from the security perspective,
 > [!WARNING]
 > Research of role mapping and scope grants for API service applications in Okta is still ongoing.
 
-## Hybrid Identities
+# Hybrid Identities
 
 ![Okta AD agent settings](../Screenshots/okta-ad-agent.png)
 
@@ -101,7 +99,7 @@ graph TB
   u1 -- Okta_OutboundSSO --> jmfu1
 ```
 
-## GitHub Enterprise Cloud Organizations
+# GitHub Enterprise Cloud Organizations
 
 When integrating Okta with GitHub Enterprise Cloud, each GitHub organization connected to Okta is represented as a separate `Okta_Application` node in BloodHound.
 
@@ -110,12 +108,12 @@ When integrating Okta with GitHub Enterprise Cloud, each GitHub organization con
 > [!WARNING]
 > User mapping between `OktaHound` and `GitHound` is not implemented at this time.
 
-## AWS Accounts
+# AWS Accounts
 
 > [!WARNING]
 > Support for AWS accounts and roles in Okta is not implemented at this time.
 
-## Jamf Pro
+# Jamf Pro
 
 When integrating Okta with Jamf Pro using SAML 2.0, each Jamf Pro instance connected to Okta is represented as a separate `Okta_Application` node in BloodHound.
 The differentiator is the `domainFQDN` property:
@@ -126,7 +124,7 @@ It is also possible to integrate Jamf Pro with Okta using Secure Web Authenticat
 
 ![Jamf Pro SWA settings](../Screenshots/app-jamf-swa.png)
 
-## Google Workspace
+# Google Workspace
 
 Similarly to the Jamf Pro SAML applications, each Google Workspace (formerly G Suite) instance connected to Okta using SAML 2.0 is represented as a separate `Okta_Application` node in BloodHound and is identified by the `domainFQDN` property:
 
@@ -136,13 +134,13 @@ The SAML 2.0 protocol should always be preferred to SWA when integrating Okta wi
 
 ![Google Workspace sign-in protocol settings](../Screenshots/app-google-protocol-selector.png)
 
-## Generic SAML 2.0 Applications
+# Generic SAML 2.0 Applications
 
 The assertion consumer service (ACS) URLs of generic (non-Catalog) Okta SAML 2.0 applications are exposed via the `url` attribute in BloodHound.
 
 ![Okta SAML application in BloodHound](../Screenshots/bloodhound-app-saml.png)
 
-## Generic Secure Web Authentication (SWA) Applications
+# Generic Secure Web Authentication (SWA) Applications
 
 Secure Web Authentication (SWA) is an Okta technology that provides Single Sign-On (SSO) functionality to external web applications that don't support federated protocols. SWA applications store user credentials in Okta and automatically fill them in when users access the application through the Okta dashboard.
 
@@ -153,7 +151,7 @@ The app's login page URL is exposed via the `url` attribute in BloodHound.
 > [!WARNING]
 > TODO: Fetch a list of stored credentials for SWA applications, if the API allows it.
 
-## Generic OpenID Connect (OIDC) Applications
+# Generic OpenID Connect (OIDC) Applications
 
 Okta supports three types of OIDC applications:
 
@@ -167,7 +165,7 @@ OIDC applications can be granted OAuth 2.0 scopes to access Okta APIs on behalf 
 
 ![Okta application OIDC grants](../Screenshots/app-oidc-grants.png)
 
-## SCIM-Enabled Applications
+# SCIM-Enabled Applications
 
 The `features` attribute of `Okta_Application` nodes may contain the following SCIM-related values,
 indicating if SCIM is enabled and which protocol capabilities are supported:

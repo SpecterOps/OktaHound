@@ -1,4 +1,4 @@
-# Okta_OrgSWA Edge
+# General Information
 
 The non-traversable `Okta_OrgSWA` edges represent the Secure Web Authentication (SWA) relationships between Okta applications and supported external organizations or tenants. SWA stores user credentials in Okta and automatically fills them in when users access the application, which is less secure than federated SSO protocols.
 

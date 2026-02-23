@@ -1,4 +1,4 @@
-# Okta_RealmContains Edge
+# General Information
 
 The traversable `Okta_RealmContains` edges represent containment relationships between realms and the users assigned to those realms.
 

@@ -1,4 +1,4 @@
-# Okta_UserPush Edge
+# General Information
 
 The non-traversable `Okta_UserPush` edges represent user provisioning relationships from Okta to external applications. When configured, Okta can automatically create, update, or deactivate user accounts in integrated applications using protocols like SCIM or LDAP.
 

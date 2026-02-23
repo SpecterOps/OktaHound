@@ -1,4 +1,4 @@
-# Okta_PolicyMapping Edge
+# General Information
 
 The non-traversable `Okta_PolicyMapping` edges represent the association between a policy and the resources to which it is applied.
 

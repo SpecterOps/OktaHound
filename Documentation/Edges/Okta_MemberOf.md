@@ -1,4 +1,4 @@
-# Okta_MemberOf Edge
+# General Information
 
 The traversable `Okta_MemberOf` edges represent the membership relationships between users and groups in Okta:
 
