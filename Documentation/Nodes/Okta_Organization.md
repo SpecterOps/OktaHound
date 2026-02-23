@@ -1,0 +1,42 @@
+# Okta_Organization Node
+
+## Overview
+
+The Organization entity represents the Okta tenant itself. It contains general information about the organization, such as its name, domain, and settings.
+
+In `OktaHound`, the organization is represented as a single `Okta_Organization` node.
+
+## Okta_Contains Edges
+
+The traversable `Okta_Contains` edges represent the containment relationships between the organization and other entities in Okta. The organization node will have `Okta_Contains` edges to all other nodes in the graph, with some exceptions.
+
+```mermaid
+graph LR
+    org("Okta_Organization contoso.okta.com")
+    user1("Okta_User john\@contoso.com")
+    group1("Okta_Group IT")
+    app1("Okta_Application GitHub")
+    role1("Okta_Role Super Admin")
+    device1("Okta_Device John's MacBook")
+    realm1("Okta_Realm EU")
+    cr1("Okta_CustomRole Help Desk")
+    rs1("Okta_ResourceSet HR Resources")
+    ap1("Okta_AgentPool AD Sync Pool")
+    as1("Okta_AuthorizationServer Default Server")
+    ip1("Okta_IdentityProvider Google IdP")
+    is1("Okta_APIServiceIntegration Elastic Agent")
+    p1("Okta_Policy Idp Discovery Policy")
+    org -- Okta_Contains --> user1
+    org -- Okta_Contains --> group1
+    org -- Okta_Contains --> app1
+    org -- Okta_Contains --> role1
+    org -- Okta_Contains --> device1
+    org -- Okta_Contains --> cr1
+    org -- Okta_Contains --> realm1
+    org -- Okta_Contains --> rs1
+    org -- Okta_Contains --> ap1
+    org -- Okta_Contains --> as1
+    org -- Okta_Contains --> ip1
+    org -- Okta_Contains --> is1
+    org -- Okta_Contains --> p1
+```
