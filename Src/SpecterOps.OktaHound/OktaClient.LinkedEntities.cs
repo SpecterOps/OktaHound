@@ -515,6 +515,13 @@ partial class OktaClient
             string groupId = resourceUrl.Split('/')[^2];
             return _graph.GetGroupMembers([groupId]).Select(user => user.ToEdgeNode());
         }
+        else if (resourceUrl.Contains("/api/v1/groups/", StringComparison.InvariantCulture))
+        {
+            // Specific group
+            // Example: https://integrator-5415459.okta.com/api/v1/groups/00gw2t2qcta3zvASN697
+            string groupId = resourceUrl.TrimEnd('/').Split('/').Last();
+            return [OktaGroup.CreateEdgeNode(groupId)];
+        }
         else if (resourceUrl.EndsWith("/api/v1/apps", StringComparison.InvariantCulture))
         {
             // All apps in the organization

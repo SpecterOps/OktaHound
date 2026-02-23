@@ -98,7 +98,7 @@ internal partial class OktaClient
         }
     }
 
-    public async Task<(OktaGraph? oktaGraph, OpenGraph adGraph, OpenGraph hybridEdges)> FetchOktaGraph(CancellationToken cancellationToken = default)
+    public async Task<(OktaGraph? oktaGraph, OpenGraph adGraph, OpenGraph hybridEdges)> FetchOktaGraph(bool skipMfa = false, CancellationToken cancellationToken = default)
     {
         // Fetch the Okta organization information first
         await InitializeOktaGraph(cancellationToken).ConfigureAwait(false);
@@ -114,9 +114,19 @@ internal partial class OktaClient
             ContinueWith(_ => FetchOktaPrivilegedUsers(cancellationToken), cancellationToken).
             Unwrap();
 
-        Task factorsTask = usersTask.
-            ContinueWith(_ => FetchOktaUserAuthenticationFactors(cancellationToken), cancellationToken).
-            Unwrap();
+        Task factorsTask;
+
+        if (skipMfa)
+        {
+            _logger.LogInformation("Skipping user authentication factors collection.");
+            factorsTask = Task.CompletedTask;
+        }
+        else
+        {
+            factorsTask = usersTask.
+                ContinueWith(_ => FetchOktaUserAuthenticationFactors(cancellationToken), cancellationToken).
+                Unwrap();
+        }
 
         Task appsTask = FetchOktaApplications(cancellationToken);
 

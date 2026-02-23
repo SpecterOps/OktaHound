@@ -2,7 +2,7 @@
   "profiles": {
     "SpecterOps.OktaHound": {
       "commandName": "Project",
-      "commandLineArgs": "collect --verbosity Trace"
+      "commandLineArgs": "collect --verbosity Trace --skip-mfa"
     }
   }
 }

@@ -45,11 +45,18 @@ class Program
             Arity = ArgumentArity.ExactlyOne
         };
 
+        Option<bool> skipMfaOption = new("--skip-mfa")
+        {
+            Description = "Skip collecting user authentication factors (MFA).",
+            Required = false
+        };
+
         Command collectCommand = new("collect", "Collect and export data from an Okta organization")
         {
             outputDirectoryOption,
             oktaDomainOption,
-            oktaApiTokenOption
+            oktaApiTokenOption,
+            skipMfaOption
         };
 
         // No need to dispose the cancellation token source, as it is bound to the application lifetime
@@ -62,6 +69,7 @@ class Program
             LogLevel verbosity = parseResult.GetRequiredValue(verboseOption);
             string? oktaDomain = parseResult.GetValue(oktaDomainOption);
             string? oktaApiToken = parseResult.GetValue(oktaApiTokenOption);
+            bool skipMfa = parseResult.GetValue(skipMfaOption);
 
             // Log messages to the console
             ILogger logger = CreateConsoleLogger(verbosity);
@@ -75,7 +83,7 @@ class Program
             };
 
             // Launch the main logic
-            return FetchAndSaveOktaGraph(outputDirectory, logger, oktaDomain, oktaApiToken, tokenSource.Token);
+            return FetchAndSaveOktaGraph(outputDirectory, logger, oktaDomain, oktaApiToken, skipMfa, tokenSource.Token);
         });
 
         RootCommand rootCommand = new("SpecterOps OktaHound - Okta Data Collector for BloodHound OpenGraph")
@@ -93,6 +101,7 @@ class Program
         ILogger logger,
         string? domain = null,
         string? apiToken = null,
+        bool skipMfa = false,
         CancellationToken cancellationToken = default)
     {
         try
@@ -133,7 +142,7 @@ class Program
 
             // Fetch the Okta OpenGraph data
             (OktaGraph? oktaGraph, OpenGraph adGraph, OpenGraph hybridEdges) =
-                await oktaClient.FetchOktaGraph(cancellationToken).ConfigureAwait(false);
+                await oktaClient.FetchOktaGraph(skipMfa, cancellationToken).ConfigureAwait(false);
 
             if (oktaGraph == null)
             {
