@@ -9,21 +9,3 @@ These tokens are always associated with a specific user in Okta, and the permiss
 The use of API tokens is generally discouraged in favor of OAuth 2.0 access tokens, as they provide better security and flexibility. However, API tokens are still widely used by Okta customers.
 
 In `OktaHound`, API tokens are represented as `Okta_ApiToken` nodes.
-
-## Okta_ApiTokenFor Edges
-
-The traversable `Okta_ApiTokenFor` edges represent the API token assignments for users in Okta, represented by the [Okta_User](Okta_User.md) nodes:
-
-```mermaid
-graph LR
-    u1("Okta_User john\@contoso.com")
-    u2("Okta_User steve\@contoso.com")
-    t1("Okta_ApiToken Test App")
-    t2("Okta_ApiToken Postman")
-    t3("Okta_ApiToken Python Script")
-    org("Okta_Organization contoso.okta.com")
-    t1 -- Okta_ApiTokenFor --> u1
-    t2 -- Okta_ApiTokenFor --> u2
-    t3 -- Okta_ApiTokenFor --> u2
-    u2 -- Okta_SuperAdmin --> org
-```

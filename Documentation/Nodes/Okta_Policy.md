@@ -22,34 +22,3 @@ The following [policy types](https://developer.okta.com/docs/api/openapi/okta-ma
 
 The `OktaHound` collector specifically reads the `IDP_DISCOVERY` policies to check
 if the [Agentless Desktop SSO](https://help.okta.com/en-us/content/topics/directory/configuring_agentless_sso.htm) feature is enabled in the organization through at least one such policy.
-
-## Okta_PolicyMapping Edges
-
-The non-traversable `Okta_PolicyMapping` edges represent the association between a policy and the resources to which it is applied.
-
-> [!WARNING]
-> Only application targets are currently supported by `OktaHound`.
-
-```mermaid
-graph LR
-    o["Okta_Organization contoso.okta.com"]
-    p1["Okta_Policy Idp Discovery Policy {Type: 'IDP_DISCOVERY'}"]
-    p2["Okta_Policy Active Directory Policy {Type: 'PASSWORD'}"]
-    p3["Okta_Policy Okta Admin Console {Type: 'ACCESS_POLICY'}"]
-    p4["Okta_Policy Any two factors {Type: 'ACCESS_POLICY'}"]
-    p5["Okta_Policy Default Policy {Type: 'PROFILE_ENROLLMENT'}"]
-    a1["Okta_Application Okta Admin Console"]
-    a2["Okta_Application Salesforce"]
-    a3["Okta_Application Intranet Portal"]
-    o -->|Okta_Contains| p1
-    o -->|Okta_Contains| p2
-    o -->|Okta_Contains| p3
-    p3 -->|Okta_PolicyMapping| a1
-    o -->|Okta_Contains| p4
-    p4 -->|Okta_PolicyMapping| a2
-    p4 -->|Okta_PolicyMapping| a3
-    o -->|Okta_Contains| p5
-    p5 -->|Okta_PolicyMapping| a1
-    p5 -->|Okta_PolicyMapping| a2
-    p5 -->|Okta_PolicyMapping| a3
-```

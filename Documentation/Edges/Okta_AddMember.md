@@ -1,0 +1,15 @@
+# Okta_AddMember Edge
+
+The traversable `Okta_AddMember` edges represent custom role permissions that allow a principal (user, group, or application)
+to add or remove members in scoped Okta groups. These edges are created when a custom role includes
+the `okta.groups.members.manage` or `okta.groups.manage` permissions.
+
+```mermaid
+graph LR
+    u1("Okta_User john\@contoso.com")
+    g1("Okta_Group Finance")
+    g2("Okta_Group Tier 0 Admins")
+    app1("Okta_Application Automation")
+    u1 -- Okta_AddMember --> g1
+    app1 -- Okta_AddMember --> g2
+```
