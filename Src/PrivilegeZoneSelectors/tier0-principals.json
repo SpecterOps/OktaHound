@@ -1,0 +1,7 @@
+{
+  "name": "Okta: Tier Zero Principals",
+  "description": "Principals with SUPER_ADMIN or ORG_ADMIN role assignments.",
+  "cypher": "MATCH (n:Okta)-[:Okta_HasRoleAssignment|Okta_MemberOf*1..2]->(r:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta_Organization)\nWHERE r.type = \"SUPER_ADMIN\"\nOR r.type = \"ORG_ADMIN\"\nRETURN n",
+  "enabled": true,
+  "allow_disable": true
+}

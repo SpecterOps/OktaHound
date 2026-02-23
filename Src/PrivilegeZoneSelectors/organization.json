@@ -1,0 +1,7 @@
+{
+  "name": "Okta: Organization",
+  "description": "Organization nodes in Okta.",
+  "cypher": "MATCH (n:Okta_Organization)\nRETURN n",
+  "enabled": true,
+  "allow_disable": true
+}
