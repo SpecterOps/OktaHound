@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Web;
 using Okta.Sdk.Api;
 using Okta.Sdk.Client;

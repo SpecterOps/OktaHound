@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using SpecterOps.OktaHound.Model.Entra;
 using SpecterOps.OktaHound.Model.OpenGraph;
 

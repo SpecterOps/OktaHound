@@ -18,22 +18,6 @@ and [edges](Documentation/Schema.md#edges) in BloodHound's graph database.
 
 The other main product in Okta's portfolio is [Auth0](https://auth0.com/), previously known as Customer Identity Cloud. Auth0 is **not supported** by `OktaHound` at this time.
 
-## Authors
-
-### Michael Grafnetter - [SpecterOps](https://specterops.io)
-
-[![Twitter](https://img.shields.io/twitter/follow/MGrafnetter.svg?label=Twitter%20@MGrafnetter&style=social)](https://x.com/MGrafnetter)
-[![Blog](https://img.shields.io/badge/Blog-www.dsinternals.com-2A6496.svg)](https://www.dsinternals.com/en)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-grafnetter-0077B5.svg)](https://www.linkedin.com/in/grafnetter)
-
-### Lance Cain - [SpecterOps](https://specterops.io)
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-lance--cain--3ab262184-0077B5.svg)](https://www.linkedin.com/in/lance-cain-3ab262184/)
-
-### Valdemar Carøe - [SpecterOps](https://specterops.io)
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-valdemar--carøe-0077B5.svg)](https://www.linkedin.com/in/valdemar-carøe)
-
 ## Okta Attack Paths
 
 Okta is an interesting target for attackers, as it is widely used by organizations to manage

@@ -1,4 +1,4 @@
-using SpecterOps.OktaHound.Model.OpenGraph;
+﻿using SpecterOps.OktaHound.Model.OpenGraph;
 
 namespace SpecterOps.OktaHound.Model.Jamf;
 
