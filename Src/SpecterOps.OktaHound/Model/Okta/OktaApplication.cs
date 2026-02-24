@@ -1,8 +1,13 @@
 ﻿using System.Collections.Immutable;
 using System.Text.Json.Serialization;
 using Okta.Sdk.Model;
+using SpecterOps.OktaHound.Model.ActiveDirectory;
 using SpecterOps.OktaHound.Model.Entra;
+using SpecterOps.OktaHound.Model.GitHub;
+using SpecterOps.OktaHound.Model.Jamf;
+using SpecterOps.OktaHound.Model.OnePassword;
 using SpecterOps.OktaHound.Model.OpenGraph;
+using SpecterOps.OktaHound.Model.Snowflake;
 
 namespace SpecterOps.OktaHound.Model.Okta;
 
@@ -203,7 +208,7 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
     public string? UserNameMapping => GetProperty<string>(UserNameMappingPropertyName);
 
     [JsonIgnore]
-    public string? GitHubOrganization => GetProperty<string>(GitHubOrganizationPropertyName);
+    public string? GitHubOrganizationName => GetProperty<string>(GitHubOrganizationPropertyName);
 
     [JsonIgnore]
     public string? JamfDomain => GetProperty<string>(JamfDomainPropertyName);
@@ -218,19 +223,13 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
         {
             string? regionType = GetProperty<string>(OnePasswordRegionPropertyName);
             string? subDomain = GetProperty<string>(OnePasswordSubdomainPropertyName);
-
-            if (regionType != null && subDomain != null)
-            {
-                // Example: contoso.1Password.com
-                return $"{subDomain}.1Password.{regionType}";
-            }
-            else
-            {
-                return null;
-            }
-
+            // Example: contoso.1Password.com
+            return OnePasswordAccount.GetDomain(subDomain, regionType);
         }
     }
+
+    [JsonIgnore]
+    public string? OnePasswordSubDomain => GetProperty<string>(OnePasswordSubdomainPropertyName);
 
     /// <summary>
     /// FQDN of the domain this app represents.
@@ -258,14 +257,7 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
     public string? EntraClientId => GetProperty<string>(EntraClientIdPropertyName);
 
     [JsonIgnore]
-    public string? EntraRegion => GetProperty<string>(EntraIdDiscoveryEndpointPropertyName) switch
-    {
-        // TODO: Consider using an Enum for the Entra region
-        "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration" => "Global",
-        "https://login.microsoftonline.us/common/v2.0/.well-known/openid-configuration" => "USGovernment",
-        "https://login.partner.microsoftonline.cn/common/v2.0/.well-known/openid-configuration" => "China",
-        _ => null,
-    };
+    public string? EntraRegion => EntraIdTenant.GetRegionFromEndpoint(GetProperty<string>(EntraIdDiscoveryEndpointPropertyName));
 
     [JsonIgnore]
     public string? Url => GetProperty<string>(UrlPropertyName);
@@ -424,7 +416,7 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
             SetProperty(UserNameMappingPropertyName, saml1App.Credentials?.UserNameTemplate?.Template);
 
             // SAML Assertion Consumer Service (ACS) URL
-            // TODO: SetProperty(UrlPropertyName, saml1App.Settings?.SignOn?.SsoAcsUrl);
+            SetProperty(UrlPropertyName, saml1App.Settings?.SignOn?.SsoAcsUrlOverride);
 
             /* Sample additional properties for specific apps:
             Office 365:
@@ -544,7 +536,7 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
 
     public OpenGraphEdgeNode? CreateHybridUserNode(string? targetUserId)
     {
-        if (targetUserId is null)
+        if (string.IsNullOrWhiteSpace(targetUserId))
         {
             // Mapping is not configured or could not be resolved.
             return null;
@@ -553,21 +545,17 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
         // Check if the application is supported by a known BloodHound collector
         return ApplicationType switch
         {
-            // TODO: Check that the Jamf mapping is OK
-            JamfProSamlApplicationType or JamfProSwaApplicationType => new OpenGraphEdgeNode(targetUserId, "jamf_Account", "name"),
+            JamfProSamlApplicationType or JamfProSwaApplicationType => JamfAccount.CreateEdgeNode(targetUserId, JamfDomain),
 
-            // TODO: Check that the GitHub mapping is OK
-            GitHubCloudApplicationType => new OpenGraphEdgeNode(targetUserId, "GH_User", "name"),
+            GitHubCloudApplicationType => GitHubUser.CreateEdgeNode(targetUserId, GitHubOrganizationName),
 
-            // TODO: Check OP mapping
-            OnePasswordBusinessApplicationType => new OpenGraphEdgeNode(targetUserId, "OPUser", "name"),
+            OnePasswordBusinessApplicationType => OnePasswordUser.CreateEdgeNode(targetUserId, OnePasswordDomain),
 
             // SAML-only Snowflake users (without SCIM) can be matched by the username.
-            SnowflakeApplicationType => new OpenGraphEdgeNode(targetUserId, "SNOWUser", "name"),
+            SnowflakeApplicationType => SnowflakeUser.CreateEdgeNode(targetUserId, SnowflakeSubdomain),
 
             // Entra ID users are matched by their userPrincipalName.
-            // TODO: Add tenant ID to the node properties?
-            Office365ApplicationType => new OpenGraphEdgeNode(targetUserId, "AZUser", matchBy: "name"),
+            Office365ApplicationType => EntraIdUser.CreateEdgeNode(targetUserId, EntraTenantId),
 
             // TODO: Add support for additional applications
             _ => null // This app is not yet supported
@@ -599,13 +587,12 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
     {
         return ApplicationType switch
         {
-            // TODO: Check that the AD group mapping is OK
-            // AD groups are matched by their qualified name, e.g., IT@contoso.com
-            ActiveDirectoryApplicationType => ActiveDirectoryDomain is not null ? new OpenGraphEdgeNode($"{groupProfile.Name}@{ActiveDirectoryDomain}", "Group", matchBy: "name") : null,
+            // AD groups are matched by their name and domain FQDN, e.g., contoso.com
+            ActiveDirectoryApplicationType => ActiveDirectoryGroup.CreateEdgeNode(groupProfile.Name, ActiveDirectoryDomain),
 
-            // Entra ID groups are matched by their qualified name, e.g., Test@8cb4e812-3974-4f6d-bc74-abcfcd70f252
-            // TODO: Validate that the Entra group mapping works
-            Office365ApplicationType => EntraTenantId is not null ? new OpenGraphEdgeNode($"{groupProfile.Name}@{EntraTenantId}", "AZGroup", matchBy: "name") : null,
+            // Entra ID groups are matched by their display name and tenant ID, e.g., "Test" + 8cb4e812-3974-4f6d-bc74-abcfcd70f252
+            Office365ApplicationType => EntraIdGroup.CreateEdgeNode(groupProfile.Name, EntraTenantId),
+
             // TODO: Add mapping for SNOWGroup
             SnowflakeApplicationType => null,
             // TODO: Add support for Org2Org group push mappings
@@ -618,20 +605,17 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
     {
         return ApplicationType switch
         {
-            // TODO: Check that the Jamf mapping is OK
-            JamfProSamlApplicationType => JamfDomain is not null ? new OpenGraphEdgeNode(JamfDomain, "jamf_Tenant", "name") : null,
+            JamfProSamlApplicationType or JamfProSwaApplicationType => JamfTenant.CreateEdgeNode(JamfDomain),
 
-            // TODO: Check that the GitHub mapping is OK
-            GitHubCloudApplicationType => GitHubOrganization is not null ? new OpenGraphEdgeNode(GitHubOrganization, "GH_Organization", "name") : null,
+            GitHubCloudApplicationType => GitHubOrganization.CreateEdgeNode(GitHubOrganizationName),
 
-            // TODO: Check OP mapping
-            OnePasswordBusinessApplicationType => OnePasswordDomain is not null ? new OpenGraphEdgeNode(OnePasswordDomain, "OPAccount", "name") : null,
+            OnePasswordBusinessApplicationType => OnePasswordAccount.CreateEdgeNode(OnePasswordDomain),
 
             // Snowflake accounts are matched by the subdomain stored in the ID attribute, e.g., CGXOVHZ-NR46411.
-            SnowflakeApplicationType => SnowflakeSubdomain is not null ? new OpenGraphEdgeNode(SnowflakeSubdomain, "SNOWAccount") : null,
+            SnowflakeApplicationType => SnowflakeAccount.CreateEdgeNode(SnowflakeSubdomain),
 
             // Entra ID tenants are matched by their tenant ID, e.g., 31537af4-6d77-4bb9-a681-d2394888ea26.
-            Office365ApplicationType => EntraTenantId is not null ? EntraIdTenant.CreateEdgeNode(EntraTenantId) : null,
+            Office365ApplicationType => EntraIdTenant.CreateEdgeNode(EntraTenantId),
 
             // TODO: Add support for additional applications
             _ => null // This app is not yet supported

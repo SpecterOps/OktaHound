@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Okta.Sdk.Client;
-using SpecterOps.OktaHound.Model.ActiveDirectory;
 using SpecterOps.OktaHound.Model.Okta;
 using SpecterOps.OktaHound.Model.OpenGraph;
 

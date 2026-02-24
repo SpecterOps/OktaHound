@@ -4,6 +4,7 @@ using Okta.Sdk.Api;
 using Okta.Sdk.Client;
 using Okta.Sdk.Model;
 using SpecterOps.OktaHound.Model.ActiveDirectory;
+using SpecterOps.OktaHound.Model.Entra;
 using SpecterOps.OktaHound.Model.Okta;
 using SpecterOps.OktaHound.Model.OpenGraph;
 
@@ -161,7 +162,7 @@ partial class OktaClient
                                 // If only outbound sync is configured for the domain or we are early in the processing,
                                 // the domain SID might not be known yet. We thus identify the domain by FQDN instead of SID,
                                 // which is not 100% reliable.
-                                domainNode = ActiveDirectoryDomain.CreateEdgeNode(appNode.DomainName, "name");
+                                domainNode = ActiveDirectoryDomain.CreateEdgeNode(appNode.DomainName, NodeMatchType.Name);
                             }
 
                             // Add the (:Domain)-[:Contains]->(:User) edge to the AD graph
@@ -1086,8 +1087,7 @@ partial class OktaClient
                     // We currently only create this edge for users who are already linked to the IdP, ignoring possible auto-linking configuration.
                     if (idpNode.TenantId is not null && idpUser.ExternalId is not null)
                     {
-                        // TODO: Optionally augment userPrincipalName matching with TenantId
-                        OpenGraphEdgeNode entraUserNode = new(idpUser.ExternalId, "AZUser", matchBy: "name");
+                        OpenGraphEdgeNode entraUserNode = EntraIdUser.CreateEdgeNode(idpUser.ExternalId, idpNode.TenantId);
                         _hybridEdgeGraph.AddEdge(entraUserNode, userNode, OktaIdentityProvider.InboundSsoEdgeKind);
                     }
                 }

@@ -26,5 +26,5 @@ internal sealed class ActiveDirectoryDomain : OpenGraphNode
         }
     }
 
-    public static OpenGraphEdgeNode CreateEdgeNode(string domainSid, string matchBy = "id") => new(domainSid, NodeKind, matchBy);
+    public static OpenGraphEdgeNode CreateEdgeNode(string domainSid, NodeMatchType matchBy = NodeMatchType.Id) => new(domainSid, NodeKind, NodeMatchType.Id);
 }

@@ -6,6 +6,19 @@ namespace SpecterOps.OktaHound.Tests;
 public class EntraIdTenantTester
 {
     [TestMethod]
+    [DataRow("https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration", "Global")]
+    [DataRow("https://login.microsoftonline.us/common/v2.0/.well-known/openid-configuration", "USGovernment")]
+    [DataRow("https://login.partner.microsoftonline.cn/common/v2.0/.well-known/openid-configuration", "China")]
+    [DataRow("https://example.com/common/v2.0/.well-known/openid-configuration", null)]
+    [DataRow(null, null)]
+    public void EntraIdTenant_GetRegionFromEndpoint_ReturnsExpectedRegion(string? endpoint, string? expectedRegion)
+    {
+        var actualRegion = EntraIdTenant.GetRegionFromEndpoint(endpoint);
+
+        Assert.AreEqual(expectedRegion, actualRegion);
+    }
+
+    [TestMethod]
     public async Task EntraIdTenant_GetTenantIdFromOnMicrosoftDomain_Empty_ReturnsNull()
     {
         var nullResult = await EntraIdTenant.GetTenantIdFromOnMicrosoftDomain(null);

@@ -33,28 +33,32 @@ internal abstract class OpenGraphBase<ElementsType>(JsonSerializerContext serial
         Elements.EdgesByKind.GetOrAdd(edge.Kind, _ => []).Add(edge);
     }
 
-    public void AddEdge(OpenGraphNode start, OpenGraphNode end, string kind)
+    public OpenGraphEdge AddEdge(OpenGraphNode start, OpenGraphNode end, string kind)
     {
         OpenGraphEdge edge = new(start, end, kind);
         AddEdge(edge);
+        return edge;
     }
 
-    public void AddEdge(OpenGraphEdgeNode start, OpenGraphNode end, string kind)
+    public OpenGraphEdge AddEdge(OpenGraphEdgeNode start, OpenGraphNode end, string kind)
     {
         OpenGraphEdge edge = new(start, end, kind);
         AddEdge(edge);
+        return edge;
     }
 
-    public void AddEdge(OpenGraphNode start, OpenGraphEdgeNode end, string kind)
+    public OpenGraphEdge AddEdge(OpenGraphNode start, OpenGraphEdgeNode end, string kind)
     {
         OpenGraphEdge edge = new(start, end, kind);
         AddEdge(edge);
+        return edge;
     }
 
-    public void AddEdge(OpenGraphEdgeNode start, OpenGraphEdgeNode end, string kind)
+    public OpenGraphEdge AddEdge(OpenGraphEdgeNode start, OpenGraphEdgeNode end, string kind)
     {
         OpenGraphEdge edge = new(start, end, kind);
         AddEdge(edge);
+        return edge;
     }
 
     public void SaveAsJson(string path)

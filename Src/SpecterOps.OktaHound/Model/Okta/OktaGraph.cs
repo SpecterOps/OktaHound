@@ -112,9 +112,12 @@ internal sealed class OktaGraph(OktaOrganization organization) : OpenGraphBase<O
             return [];
         }
 
+        IEnumerable<OpenGraphEdge> memberofEdgesFilteredByGroupId = memberOfEdges.Where(edge => groupIds.Contains(edge.End.Value));
+        IEnumerable<string> userIds = memberofEdgesFilteredByGroupId.Select(edge => edge.Start.Value!); // We do not expect the memberId to be null
+
         // Get unique user IDs that are members of the specified groups
         HashSet<string> uniqueMemberIds = [];
-        uniqueMemberIds.UnionWith(memberOfEdges.Where(edge => groupIds.Contains(edge.End.Value)).Select(edge => edge.Start.Value));
+        uniqueMemberIds.UnionWith(userIds);
 
         // Retrieve OktaUser objects for the unique user IDs
         return uniqueMemberIds.Select(userId => GetUserById(userId)).Where(user => user != null).Select(user => user!);

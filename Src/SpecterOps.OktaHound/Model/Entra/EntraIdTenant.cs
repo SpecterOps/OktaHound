@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Diagnostics.CodeAnalysis;
 using SpecterOps.OktaHound.Model.OpenGraph;
 
 namespace SpecterOps.OktaHound.Model.Entra;
@@ -7,14 +8,49 @@ internal static class EntraIdTenant
 {
     private const string NodeKind = "AZTenant";
 
-    public static OpenGraphEdgeNode CreateEdgeNode(string tenantId) => new(tenantId, NodeKind, matchBy: "id");
+    [return: NotNullIfNotNull(nameof(tenantId))]
+    public static OpenGraphEdgeNode? CreateEdgeNode(string? tenantId)
+    {
+        if (tenantId is null)
+        {
+            return null;
+        }
+
+        return new OpenGraphEdgeNode(tenantId, NodeKind);
+    }
+
+    public static string? GetRegionFromEndpoint(string? endpoint)
+    {
+        if (string.IsNullOrEmpty(endpoint))
+        {
+            return null;
+        }
+
+        // TODO: Consider using an Enum for the Entra region
+        if (endpoint.StartsWith("https://login.microsoftonline.com", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Global";
+        }
+        else if (endpoint.StartsWith("https://login.microsoftonline.us", StringComparison.OrdinalIgnoreCase))
+        {
+            return "USGovernment";
+        }
+        else if (endpoint.StartsWith("https://login.partner.microsoftonline.cn", StringComparison.OrdinalIgnoreCase))
+        {
+            return "China";
+        }
+        else
+        {
+            // Unknown or unsupported endpoint format
+            return null;
+        }
+    }
 
     public static string? ParseTenantIdFromUrl(string? uriString)
     {
         // URL format: https://login.microsoftonline.com/{tenantId}/saml2
         // or https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token
         // Sample: https://login.microsoftonline.com/996af01c-adef-43b6-af73-7ae92866441e/saml2
-        // TODO: Support sovereign clouds
         if (string.IsNullOrEmpty(uriString))
         {
             return null;
@@ -22,11 +58,10 @@ internal static class EntraIdTenant
 
         Uri uri = new Uri(uriString);
 
-        if (uri.Host != "login.microsoftonline.com")
+        if (!uri.Host.Contains("microsoftonline", StringComparison.OrdinalIgnoreCase))
         {
             return null;
         }
-
         string[]? segments = uri.Segments;
 
         if (segments.Length >= 2 && segments[0] == "/")

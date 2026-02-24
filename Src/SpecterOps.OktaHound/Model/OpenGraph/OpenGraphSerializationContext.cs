@@ -12,7 +12,7 @@ namespace SpecterOps.OktaHound.Model.OpenGraph;
 [JsonSerializable(typeof(int))]
 [JsonSerializable(typeof(long))]
 [JsonSerializable(typeof(List<string>))]
-[JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, IncludeFields = true, IgnoreReadOnlyFields = false)]
+[JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, IncludeFields = true, IgnoreReadOnlyFields = false, UseStringEnumConverter = true)]
 internal partial class OpenGraphSerializationContext : JsonSerializerContext
 {
 }

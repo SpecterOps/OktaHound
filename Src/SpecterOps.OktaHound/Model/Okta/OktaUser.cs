@@ -89,5 +89,5 @@ internal sealed class OktaUser : OktaSecurityPrincipal
         }
     }
 
-    public static OpenGraphEdgeNode CreateEdgeNode(string id, string matchBy = "id") => new(id, NodeKind, matchBy);
+    public static new OpenGraphEdgeNode CreateEdgeNode(string id) => new(id, NodeKind);
 }

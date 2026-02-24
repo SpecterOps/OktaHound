@@ -1,6 +1,8 @@
 <Project>
   <!-- Common properties for all projects -->
   <PropertyGroup>
+    <!-- Target Windows x64 by default, but allow overriding for Linux and macOS builds. -->
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-x64</RuntimeIdentifier>
 
 	  <!-- NuGet config -->
     <RuntimeIdentifiers>win-x64;win-arm64;linux-x64;linux-arm;linux-arm64;osx-arm64;osx-x64</RuntimeIdentifiers>

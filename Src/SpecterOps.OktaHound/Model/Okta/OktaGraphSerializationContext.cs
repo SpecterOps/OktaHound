@@ -16,7 +16,7 @@ namespace SpecterOps.OktaHound.Model;
 [JsonSerializable(typeof(long))]
 [JsonSerializable(typeof(List<string>))]
 [JsonSerializable(typeof(JArray))] // For Okta custom app settings that are arrays but not strongly typed
-[JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, IncludeFields = true, IgnoreReadOnlyFields = false)]
+[JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, IncludeFields = true, IgnoreReadOnlyFields = false, UseStringEnumConverter = true)]
 internal partial class OktaGraphSerializationContext : JsonSerializerContext
 {
 }

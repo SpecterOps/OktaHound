@@ -19,4 +19,20 @@ internal sealed class ActiveDirectoryGroup : OpenGraphNode
         SetProperty("distinguishedname", group.DistinguishedName);
         SetProperty("domainsid", group.DomainSid);
     }
+
+    public static OpenGraphEdgeNode? CreateEdgeNode(string groupName, string? domainFqdn)
+    {
+        if (groupName is null || domainFqdn is null)
+        {
+            return null;
+        }
+
+        OrderedDictionary<string, string> properties = new()
+        {
+            { "samAccountName", groupName }, // Example: IT
+            { "domainFqdn", domainFqdn } // Example: contoso.com
+        };
+
+        return new OpenGraphEdgeNode(properties, NodeKind);
+    }
 }

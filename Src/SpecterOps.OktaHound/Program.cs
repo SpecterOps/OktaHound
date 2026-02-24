@@ -202,14 +202,14 @@ class Program
         }
         catch (IOException e)
         {
-            logger.LogCritical("Error exporting OpenGraph data into JSON: {Message} Exiting.", e.Message);
+            logger.LogCritical(e, "Error exporting OpenGraph data into JSON: {Message} Exiting.", e.Message);
             return 2;
         }
         catch (AggregateException e)
         {
             foreach (var innerEx in e.InnerExceptions)
             {
-                logger.LogCritical("Unexpected error: {Message} Exiting.", innerEx.Message);
+                logger.LogCritical(innerEx, "Unexpected error: {Message} Exiting.", innerEx.Message);
             }
 
             return 3;
@@ -228,7 +228,7 @@ class Program
         }
         catch (Exception e)
         {
-            logger.LogCritical("Unexpected error: {Message} Exiting.", e.Message);
+            logger.LogCritical(e, "Unexpected error: {Message} Exiting.", e.Message);
             return 6;
         }
     }
