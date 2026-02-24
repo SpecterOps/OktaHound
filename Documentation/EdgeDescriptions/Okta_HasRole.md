@@ -1,4 +1,4 @@
-# General Information
+## General Information
 
 The non-traversable `Okta_HasRole` edges represent the role assignments for users in Okta:
 

@@ -1,4 +1,4 @@
-# Overview
+## Overview
 
 The `Okta_Agent` node represents an Okta Agent, which is a component used in Okta's integration with on-premises systems.
 Okta Agents facilitate communication between the Okta cloud and on-premises applications or directories, enabling features such as single sign-on (SSO) and user provisioning.

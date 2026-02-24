@@ -1,4 +1,4 @@
-# General Information
+## General Information
 
 The `Okta_HasRoleAssignment` edges connect users, groups, and applications to their respective `Okta_RoleAssignment` nodes.
 The `Okta_ScopedTo` edges connect the `Okta_RoleAssignment` nodes to the resources they are scoped to, such as the organization or specific groups or applications.

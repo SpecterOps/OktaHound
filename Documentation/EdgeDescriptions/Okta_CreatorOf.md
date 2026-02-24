@@ -1,4 +1,4 @@
-# General Information
+## General Information
 
 The non-traversable `Okta_CreatorOf` edges represent the creator relationships between API Service Integration instances and users in Okta:
 

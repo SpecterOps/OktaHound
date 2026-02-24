@@ -1,4 +1,4 @@
-# General Information
+## General Information
 
 The non-traversable hybrid `Okta_SWA` edges represent Secure Web Authentication relationships between Okta users and their linked accounts in external applications. SWA stores user credentials in Okta and automatically fills them in, which is less secure than federated SSO.
 

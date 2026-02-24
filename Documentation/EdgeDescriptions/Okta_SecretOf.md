@@ -1,4 +1,4 @@
-# General Information
+## General Information
 
 The traversable `Okta_SecretOf` edges represent the relationship between service applications or API service integrations and their associated client secrets, represented by the [Okta_ClientSecret](../Nodes/Okta_ClientSecret.md) nodes.
 

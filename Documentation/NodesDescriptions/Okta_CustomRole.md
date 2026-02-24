@@ -1,4 +1,4 @@
-# Overview
+## Overview
 
 Custom roles can be created with specific [permissions](https://developer.okta.com/docs/api/openapi/okta-management/guides/permissions/)
 and then assigned to [users](Okta_User.md), [groups](Okta_Group.md), and [applications](Okta_Application.md) over [resource sets](Okta_ResourceSet.md).
@@ -10,7 +10,7 @@ and then assigned to [users](Okta_User.md), [groups](Okta_Group.md), and [applic
 
 Custom roles are represented as `Okta_CustomRole` and `Okta_RoleAssignment` nodes in `OktaHound`, similar to built-in roles.
 
-# Abusable Permissions of Custom Roles in Okta
+## Abusable Permissions of Custom Roles in Okta
 
 The following Okta permissions are particularly interesting from an offensive security perspective,
 as they can be abused to escalate privileges in hybrid scenarios:

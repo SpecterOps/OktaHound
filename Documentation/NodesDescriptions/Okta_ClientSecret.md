@@ -1,4 +1,4 @@
-# Overview
+## Overview
 
 Client secrets are used by API service integrations and OIDC applications to authenticate with Okta and obtain access tokens.
 

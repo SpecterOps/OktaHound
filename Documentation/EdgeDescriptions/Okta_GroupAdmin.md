@@ -1,4 +1,4 @@
-# General Information
+## General Information
 
 The traversable `Okta_GroupAdmin` edges represent Group Administrator (also known as User Administrator) role assignments.
 Group Administrators can manage users and groups within their assigned scope.

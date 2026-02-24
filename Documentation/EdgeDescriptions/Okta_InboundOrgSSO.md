@@ -1,4 +1,4 @@
-# General Information
+## General Information
 
 The `Okta_InboundOrgSSO` and `Okta_InboundSSO` hybrid edges connect external tenants and users to Okta entities:
 

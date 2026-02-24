@@ -1,4 +1,4 @@
-# General Information
+## General Information
 
 The non-traversable `Okta_IdpGroupAssignment` edges represent groups automatically assigned to users based on identity provider attributes or user claims:
 

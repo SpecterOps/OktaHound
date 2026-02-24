@@ -1,4 +1,4 @@
-# General Information
+## General Information
 
 The traversable `Okta_OutboundOrgSSO` edges represent the Single Sign-On (SSO) relationships between Okta applications and supported external organizations or tenants, such as GitHub Enterprise or Jamf Pro, using SAML 2.0 or OIDC protocols.
 

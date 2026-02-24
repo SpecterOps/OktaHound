@@ -1,4 +1,4 @@
-# Overview
+## Overview
 
 Okta provides a handful of [built-in administrative roles](https://help.okta.com/en-us/content/topics/security/administrators-admin-comparison.htm) that can be assigned to users, groups, and applications to delegate administrative tasks. These roles have predefined permissions and cannot be modified.
 
@@ -26,7 +26,7 @@ The following roles can either be scoped to specific resources or assigned organ
 
 In `OktaHound`, built-in roles are represented as `Okta_Role` nodes.
 
-# Built-In Role Identifiers
+## Built-In Role Identifiers
 
 When working with roles using the Okta API, the built-in roles are referenced by the following identifiers:
 
@@ -47,7 +47,7 @@ When working with roles using the Okta API, the built-in roles are referenced by
 
 To make the role identifiers unique, the `OktaHound` collector adds the organization domain name as a suffix to each role's ID, e.g., `SUPER_ADMIN@contoso.okta.com`.
 
-# Built-In Role Permissions
+## Built-In Role Permissions
 
 Unlike custom roles, built-in roles have fixed permissions that cannot be changed.
 However, the exact OAuth 2.0 scopes granted to each built-in role are not publicly documented by Okta and cannot even be retrieved via the API.

@@ -1,4 +1,4 @@
-# General Information
+## General Information
 
 The traversable `Okta_ResourceSetContains` edges represent the membership relationships between resource sets and their member entities in Okta:
 

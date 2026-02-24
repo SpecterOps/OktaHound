@@ -1,4 +1,4 @@
-# General Information
+## General Information
 
 The traversable `Okta_ReadPasswordUpdates` edges represent applications that can read password updates over SCIM.
 

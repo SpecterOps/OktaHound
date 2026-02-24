@@ -1,4 +1,4 @@
-# General Information
+## General Information
 
 The traversable `Okta_IdentityProviderFor` edges represent the relationships between identity providers and the users who authenticate through them:
 

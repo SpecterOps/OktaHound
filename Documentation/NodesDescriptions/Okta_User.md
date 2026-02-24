@@ -1,10 +1,10 @@
-# Overview
+## Overview
 
 User objects (AKA People) represent individuals who have access to the Okta organization. Each user has a unique identifier, username in the email address format, and various attributes such as email, first name, last name, and status.
 
 In `OktaHound`, users are represented as `Okta_User` nodes.
 
-# User Status
+## User Status
 
 User status can have [multiple values](https://developer.okta.com/docs/api/openapi/okta-management/management/tag/User), as illustrated below:
 
@@ -27,7 +27,7 @@ To simplify analysis in BloodHound, the `OktaHound` collector maps the **Status*
 > This mapping is a simplification and may not cover all edge cases.
 > Always refer to the actual **Status** attribute for precise user state information.
 
-# Authentication Factors
+## Authentication Factors
 
 Okta supports various authentication factors for multi-factor authentication (MFA),
 such as SMS, email, push notifications, and hardware tokens.
@@ -35,7 +35,7 @@ In case of mobile and desktop applications, these authentication factors are ass
 Other authentication factors, such as YubiKeys and Google Authenticator, are not represented as separate nodes in BloodHound,
 but the number of enrolled factors is stored in the `authenticationFactors` attribute of the `Okta_User` nodes.
 
-# Synchronization with External Directories
+## Synchronization with External Directories
 
 Users can be synchronized from external directories such as Active Directory (AD) or LDAP. When synchronized, certain attributes may be mapped from the external directory to the Okta user profile.
 

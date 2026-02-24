@@ -1,4 +1,4 @@
-# General Information
+## General Information
 
 The non-traversable `Okta_DeviceOf` edges represent the ownership relationships between users and devices in Okta:
 

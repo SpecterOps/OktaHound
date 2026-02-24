@@ -1,4 +1,4 @@
-# General Information
+## General Information
 
 The traversable `Okta_GroupPull` edges represent the group synchronization relationships from applications to Okta:
 

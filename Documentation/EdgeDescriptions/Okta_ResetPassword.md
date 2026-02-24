@@ -1,4 +1,4 @@
-# General Information
+## General Information
 
 The traversable `Okta_ResetPassword` edges represent custom role permissions that allow a principal (user, group, or application)
 to reset passwords or temporary credentials for scoped Okta users.
