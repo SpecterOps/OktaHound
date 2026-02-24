@@ -16,4 +16,4 @@ In `OktaHound`, API service integrations are represented as `Okta_ApiServiceInte
 
 Each API service integration comes with a pre-defined set of OAuth 2.0 scopes to access Okta APIs:
 
-![Okta API service integration scopes in BloodHound](../Screenshots/bloodhound-api-service-integration-scopes.png)
+![Okta API service integration scopes in BloodHound](../Images/bloodhound-api-service-integration-scopes.png)

@@ -26,7 +26,7 @@ A resource set can contain the following object types:
 > Only the marked resource types are currently supported by `OktaHound` as resource set members.
 > Some resource types, such as Workflows, are not accessible via the Okta API at all.
 
-![Okta Resource Set displayed in BloodHound](../Screenshots/bloodhound-resource-set.png)
+![Okta Resource Set displayed in BloodHound](../Images/bloodhound-resource-set.png)
 
 In `OktaHound`, resource sets are represented as `Okta_ResourceSet` nodes.
 

@@ -28,14 +28,14 @@ User name mapping from Okta to SAML 2.0, OpenID Connect (OIDC), and Secure Web A
 
 This application type is the most interesting one from the security perspective, as it represents OAuth 2.0 service (daemon) applications that can be granted machine-to-machine access to Okta APIs, without any user interaction. These applications can be assigned administrative roles, e.g., Super Admin, and OAuth 2.0 scope grants, e.g., `okta.users.manage`. Any API operation must be allowed by both the assigned roles and the granted scopes.
 
-![Okta Application scopes and roles in BloodHound](../Screenshots/bloodhound-app-scopes.png)
+![Okta Application scopes and roles in BloodHound](../Images/bloodhound-app-scopes.png)
 
 > [!WARNING]
 > Research of role mapping and scope grants for API service applications in Okta is still ongoing.
 
 ## Hybrid Identities
 
-![Okta AD agent settings](../Screenshots/okta-ad-agent.png)
+![Okta AD agent settings](../Images/okta-ad-agent.png)
 
 Possibly inbound and outbound control:
 
@@ -103,7 +103,7 @@ graph TB
 
 When integrating Okta with GitHub Enterprise Cloud, each GitHub organization connected to Okta is represented as a separate `Okta_Application` node in BloodHound.
 
-![Properties of the GitHub Application node](../Screenshots/bloodhound-github-properties.png)
+![Properties of the GitHub Application node](../Images/bloodhound-github-properties.png)
 
 > [!WARNING]
 > User mapping between `OktaHound` and `GitHound` is not implemented at this time.
@@ -118,27 +118,27 @@ When integrating Okta with GitHub Enterprise Cloud, each GitHub organization con
 When integrating Okta with Jamf Pro using SAML 2.0, each Jamf Pro instance connected to Okta is represented as a separate `Okta_Application` node in BloodHound.
 The differentiator is the `domainFQDN` property:
 
-![Jamf Pro SAML application in BloodHound](../Screenshots/bloodhound-jamf-saml-properties.png)
+![Jamf Pro SAML application in BloodHound](../Images/bloodhound-jamf-saml-properties.png)
 
 It is also possible to integrate Jamf Pro with Okta using Secure Web Authentication (SWA), but this option is less secure.
 
-![Jamf Pro SWA settings](../Screenshots/app-jamf-swa.png)
+![Jamf Pro SWA settings](../Images/app-jamf-swa.png)
 
 ## Google Workspace
 
 Similarly to the Jamf Pro SAML applications, each Google Workspace (formerly G Suite) instance connected to Okta using SAML 2.0 is represented as a separate `Okta_Application` node in BloodHound and is identified by the `domainFQDN` property:
 
-![Google Workspace SAML application in BloodHound](../Screenshots/bloodhound-google-saml-properties.png)
+![Google Workspace SAML application in BloodHound](../Images/bloodhound-google-saml-properties.png)
 
 The SAML 2.0 protocol should always be preferred to SWA when integrating Okta with Google Workspace:
 
-![Google Workspace sign-in protocol settings](../Screenshots/app-google-protocol-selector.png)
+![Google Workspace sign-in protocol settings](../Images/app-google-protocol-selector.png)
 
 ## Generic SAML 2.0 Applications
 
 The assertion consumer service (ACS) URLs of generic (non-Catalog) Okta SAML 2.0 applications are exposed via the `url` attribute in BloodHound.
 
-![Okta SAML application in BloodHound](../Screenshots/bloodhound-app-saml.png)
+![Okta SAML application in BloodHound](../Images/bloodhound-app-saml.png)
 
 ## Generic Secure Web Authentication (SWA) Applications
 
@@ -146,7 +146,7 @@ Secure Web Authentication (SWA) is an Okta technology that provides Single Sign-
 
 The app's login page URL is exposed via the `url` attribute in BloodHound.
 
-![Okta SWA application in BloodHound](../Screenshots/bloodhound-app-swa.png)
+![Okta SWA application in BloodHound](../Images/bloodhound-app-swa.png)
 
 > [!WARNING]
 > TODO: Fetch a list of stored credentials for SWA applications, if the API allows it.
@@ -163,7 +163,7 @@ The default redirect URI of generic (non-Catalog) Okta OIDC single-page applicat
 
 OIDC applications can be granted OAuth 2.0 scopes to access Okta APIs on behalf of users:
 
-![Okta application OIDC grants](../Screenshots/app-oidc-grants.png)
+![Okta application OIDC grants](../Images/app-oidc-grants.png)
 
 ## SCIM-Enabled Applications
 

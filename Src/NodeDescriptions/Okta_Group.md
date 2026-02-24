@@ -9,7 +9,7 @@ In `OktaHound`, groups are represented as `Okta_Group` nodes.
 
 Similarly to users, groups can also be synchronized from external directories. The Okta API exposes the original Active Directory attributes, which are then collected by `OktaHound`:
 
-![Group synchronized from AD](../Screenshots/bloodhound-ad-synced-group.png)
+![Group synchronized from AD](../Images/bloodhound-ad-synced-group.png)
 
 Nested (transitive) group memberships in Active Directory are always flattened (resolved) when synchronized to Okta, as illustrated below:
 

@@ -39,4 +39,4 @@ but the number of enrolled factors is stored in the `authenticationFactors` attr
 
 Users can be synchronized from external directories such as Active Directory (AD) or LDAP. When synchronized, certain attributes may be mapped from the external directory to the Okta user profile.
 
-![Additional Active Directory attributes](../Screenshots/user-ad-attributes.png)
+![Additional Active Directory attributes](../Images/user-ad-attributes.png)
