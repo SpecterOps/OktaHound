@@ -50,7 +50,7 @@ such as excessive role assignments, weak authentication policies, insecure appli
 It is also important to note that a non-privileged Okta user might have administrative access in connected applications,
 such as GitHub Enterprise Cloud or Amazon Web Services (AWS). Hybrid attack paths between on-premises Active Directory environments and Okta are also possible.
 
-![Okta role assignments displayed in BloodHound](Src/Images/bloodhound-role-assignments.png)
+![Okta role assignments displayed in BloodHound](Documentation/Images/bloodhound-role-assignments.png)
 
 Our research on Okta attack paths is still ongoing.
 Interesting mappings to MITRE ATT&CK is [available from Elastic](https://github.com/elastic/detection-rules/tree/main/rules/integrations/okta).

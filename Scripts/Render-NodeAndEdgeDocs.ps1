@@ -6,7 +6,7 @@
     Reads node kinds and edge kinds from the OktaHound BloodHound extension schema and
     creates one MDX file per kind under Documentation/OfficialDocs/opengraph/extensions/<ExtensionName>/reference.
     
-    Generated files contain frontmatter and the content from Src/NodeDescriptions or Src/EdgeDescriptions.
+    Generated files contain frontmatter and the content from Documentation/NodeDescriptions or Documentation/EdgeDescriptions.
     
     Image paths in the descriptions are rewritten to point to /images/extensions/<ExtensionName>/, 
     and links to other markdown files have their .md extension stripped.
@@ -22,11 +22,11 @@ param (
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string] $NodeDescriptionsDir = (Join-Path -Path $PSScriptRoot -ChildPath '../Src/NodeDescriptions'),
+    [string] $NodeDescriptionsDir = (Join-Path -Path $PSScriptRoot -ChildPath '../Documentation/NodeDescriptions'),
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string] $EdgeDescriptionsDir = (Join-Path -Path $PSScriptRoot -ChildPath '../Src/EdgeDescriptions'),
+    [string] $EdgeDescriptionsDir = (Join-Path -Path $PSScriptRoot -ChildPath '../Documentation/EdgeDescriptions'),
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
