@@ -1,0 +1,13 @@
+## General Information
+
+The traversable `Okta_GroupMembershipAdmin` edges represent Group Membership Administrator role assignments.
+Group Membership Administrators can add and remove members from groups within their assigned scope but cannot modify the groups themselves.
+
+```mermaid
+graph LR
+    u1("Okta_User john\@contoso.com")
+    g1("Okta_Group Marketing")
+    g2("Okta_Group Sales")
+    u1 -- Okta_GroupMembershipAdmin --> g1
+    u1 -- Okta_GroupMembershipAdmin --> g2
+```

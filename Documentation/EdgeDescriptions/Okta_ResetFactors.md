@@ -1,0 +1,13 @@
+## General Information
+
+The traversable `Okta_ResetFactors` edges represent custom role permissions that allow a principal to reset MFA authenticators
+for scoped Okta users. These edges are created when a custom role includes the `okta.users.credentials.resetFactors` or `okta.users.credentials.manage` permissions.
+
+```mermaid
+graph LR
+        u1("Okta_User john\@contoso.com")
+        u2("Okta_User alice\@contoso.com")
+        g1("Okta_Group Tier 1 Support")
+        g1 -- Okta_ResetFactors --> u1
+        u2 -- Okta_ResetFactors --> u1
+```

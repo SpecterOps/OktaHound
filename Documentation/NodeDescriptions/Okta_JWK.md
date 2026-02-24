@@ -1,0 +1,7 @@
+## Overview
+
+JSON Web Keys (JWKs) are used by OAuth 2.0 client applications to authenticate with Okta using the `private_key_jwt` client authentication method.
+This is an asymmetric authentication mechanism where the application possesses a private key and Okta stores the corresponding public key.
+A service application can have multiple JWKs configured for key rotation purposes.
+
+JWKs are represented as `Okta_JWK` nodes in BloodHound.
