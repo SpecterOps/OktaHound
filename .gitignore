@@ -1,4 +1,5 @@
 ## Project-specific ignores
+Documentation/OfficialDocs/
 
 # Secrets
 okta.yaml
