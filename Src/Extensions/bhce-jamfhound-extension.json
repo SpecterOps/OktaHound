@@ -1,0 +1,248 @@
+{
+  "schema": {
+    "name": "JamfHound",
+    "display_name": "JamfHound",
+    "version": "1.0.0",
+    "namespace": "JamfHound"
+  },
+  "node_kinds": [
+    {
+      "name": "jamf_Tenant",
+      "display_name": "JAMF Tenant",
+      "description": "A JAMF Pro Tenant",
+      "is_display_kind": true,
+      "icon": "cloud",
+      "color": "#00C08D"
+    },
+    {
+      "name": "jamf_Account",
+      "display_name": "JAMF Account",
+      "description": "A JAMF account that authenticates to the tenant",
+      "is_display_kind": true,
+      "icon": "circle-user",
+      "color": "#0098BB"
+    },
+    {
+      "name": "jamf_Computer",
+      "display_name": "JAMF Computer",
+      "description": "A macOS or other computer enrolled to JAMF",
+      "is_display_kind": true,
+      "icon": "display",
+      "color": "#D6001C"
+    },
+    {
+      "name": "jamf_Site",
+      "display_name": "JAMF Site",
+      "description": "A site in the JAMF tenant",
+      "is_display_kind": true,
+      "icon": "circle-nodes",
+      "color": "#D67500"
+    },
+    {
+      "name": "jamf_Group",
+      "display_name": "JAMF Group",
+      "description": "A group containing JAMF accounts",
+      "is_display_kind": true,
+      "icon": "people-group",
+      "color": "#F0FC03"
+    },
+    {
+      "name": "jamf_ApiClient",
+      "display_name": "JAMF API Client",
+      "description": "An API client created in the JAMF tenant that can be assigned roles",
+      "is_display_kind": true,
+      "icon": "user-gear",
+      "color": "#8803FC"
+    },
+    {
+      "name": "jamf_DisabledApiClient",
+      "display_name": "JAMF Disabled API Client",
+      "description": "An API client in the JAMF tenant that is disabled",
+      "is_display_kind": true,
+      "icon": "user-gear",
+      "color": "#909090"
+    },
+    {
+      "name": "jamf_ComputerUser",
+      "display_name": "JAMF Computer User",
+      "description": "An end-user assigned to a computer device in a JAMF tenant",
+      "is_display_kind": true,
+      "icon": "circle-user",
+      "color": "#FC03A5"
+    },
+    {
+      "name": "jamf_DisabledAccount",
+      "display_name": "JAMF Disabled Account",
+      "description": "A JAMF Pro account that is not active",
+      "is_display_kind": true,
+      "icon": "circle-user",
+      "color": "#909090"
+    },
+    {
+      "name": "jamf_SSOIntegration",
+      "display_name": "JAMF SSO Integration",
+      "description": "An IDP registered with the JAMF tenant for authentication using SSO",
+      "is_display_kind": true,
+      "icon": "address-card",
+      "color": "#FFFFFF"
+    }
+  ],
+  "relationship_kinds": [
+    {
+      "name": "jamf_Contains",
+      "description": "The source contains the target resource.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_AdminTo",
+      "description": "The source has full administrative control over the target and all resources controlled by the target.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_AdminToSite",
+      "description": "The source has administrative control over the site and all resources controlled by the site. This includes creating policies that impact resources of the site, send or clear MDM commands, remotely administer site devices and computers,  create computer objects for the site.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_UpdateAccounts",
+      "description": "The source possesses the 'Update Accounts' JSS Object permission which allows altering the permissions of existing accounts or groups. If the source is a local Jamf account they can grant themself additional permissions, grant permissions to other accounts, grant permissions to any existing groups, modify members of groups to include adding themselves if the source is a Jamf account, enable disabled accounts, and reset the password of any Jamf account.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_CreateAccounts",
+      "description": "he account possesses the 'Create Accounts' JSS Object permission which allows creating new accounts, including administrators, as well as creating new groups with any permissions and defining Jamf accounts assigned to them.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_ScriptsNonTraversable",
+      "description": "The source can create or update scripts on the target.",
+      "is_traversable": false
+    },
+    {
+      "name": "jamf_CreatePolicies",
+      "description": "The source possesses the 'Create Policies' privilege allowing code execution on the target.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_UpdatePolicies",
+      "description": "The source possesses the 'Update Policies' privilege and at least one policy already exists in the tenant allowing code execution on the target.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_MemberOf",
+      "description": "The source node is a member of the destination node.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_CreateComputerExtensions",
+      "description": "The source can create computer extension attributes executing code on all computers in the tenant.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_UpdateComputerExtensions",
+      "description": "The source can update computer extension attributes and at least one computer extension attribute exists allowing execution of code on all computers in the tenant.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_Create_API_Client_and_Create_Role",
+      "description": "The source possesses the 'Create API Integrations' and 'Create API Roles' permissions, which together allow the creation of new API clients with any permissions in newly assigned roles and retrieving credentials to authenticate with the permissions of the new client.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_Create_API_Client_and_Update_Role",
+      "description": "The source possesses the 'Create API Integrations' and 'Update API Roles' permissions and at least one API role exists in the tenant. Combined these allow the creation of new API clients to assume roles, modifying the permissions of existing roles, and retrieving credentials to authenticate with the permissions of the new client.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_Create_API_Client_and_Assign_Role",
+      "description": "The source possesses the 'Create API Integrations' permission and at least one role has been created in the tenant. Combined these allow the creation of new API clients to assume the permissions of existing roles and retrieving credentials to authenticate with the permissions of the new client.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_Update_API_Client_and_Update_Roles",
+      "description": "The source possesses the 'Update API Integrations' and 'Update API Roles' permissions and at least one Api Client and Role exist in the tenant, which together allow upedating existing API clients with any permissions by updating existing roles.",
+      "is_traversable": false
+    },
+    {
+      "name": "jamf_Update_API_Client_and_Create_Roles",
+      "description": "The source possesses the 'Update API Integrations' and 'Create API Roles' permissions and at least one API client exists in the tenant. Combined these allow updating API clients and assigning new roles created with any included permissions.",
+      "is_traversable": false
+    },
+    {
+      "name": "jamf_Update_API_Client_and_Assign_Role",
+      "description": "The source possesses the 'Update API Integrations' permission and at least one role has been created in the tenant. Combined these allow updating existing API clients to assume the permissions of existing roles.",
+      "is_traversable": false
+    },
+    {
+      "name": "jamf_Update_Self_and_Update_Roles",
+      "description": "The source is an API Client that possesses 'Update API Integrations' and 'Update API Roles' permissions and at least one Role exists in the tenant, which together allows the client to update itself or other Api clients to assign any permissions by updating and assigning a role.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_Update_Self_and_Create_Roles",
+      "description": "The source is an API client that possesses the 'Update API Integrations' and 'Create API Roles' permissions. Combined these allow the API client to update itself or other Api clients and assigning new roles created with any included permissions.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_Update_Self_and_Assign_Roles",
+      "description": "The source is an API client that possesses the 'Update API Integrations' permission and at least one role has been created in the tenant. Combined these allow the Api client to update itself to assume the permissions of existing roles.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_CreateAPIRoles",
+      "description": "The source can create API Roles in the JAMF tenant.",
+      "is_traversable": false
+    },
+    {
+      "name": "jamf_UpdateAPIRoles",
+      "description": "The source can update API Roles in the Jamf tenant.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_AssignedUser",
+      "description": "The specified user is assigned to the source computer.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_MatchedEmail",
+      "description": "The Jamf principal email attribute matched the Jamf account email indicating it is likely the same account.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_MatchedName",
+      "description": "The Jamf principal name or displayname attributes matched the Jamf account name.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_Update_Recurring_Scripts",
+      "description": "The source possesses the 'Update Scripts' permission and there are scripts configured to run repeatedly on target computers in the Jamf tenant. This allows the source to update specific scripts to execute code on the in-scope computers for the policy.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_SSO_Login",
+      "description": "SSO Sources can map attributes to authenticate and inherit the privileges of the target.",
+      "is_traversable": true
+    },
+    {
+      "name": "jamf_Okta_Same_Device",
+      "description": "The Jamf Pro registered computer UDID matches the registered device UDID value in Okta.",
+      "is_traversable": true
+    }
+  ],
+  "environments": [
+    {
+      "environment_kind": "jamf_Tenant",
+      "source_kind": "jamf",
+      "principal_kinds": [
+        "jamf_Account",
+        "jamf_Computer",
+        "jamf_Group",
+        "jamf_ApiClient",
+        "jamf_DisabledApiClient",
+        "jamf_ComputerUser",
+        "jamf_DisabledAccount"
+      ]
+    }
+  ],
+  "relationship_findings": []
+}
