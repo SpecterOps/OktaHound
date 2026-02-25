@@ -1,3 +1,5 @@
+# Okta_InboundSSO
+
 ## Edge Schema
 
 - Source: [AZUser](https://bloodhound.specterops.io/resources/nodes/az-user)

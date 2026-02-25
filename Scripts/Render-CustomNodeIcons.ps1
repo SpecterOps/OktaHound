@@ -50,7 +50,7 @@ param(
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string] $PackageCachePath = (Join-Path -Path $env:TEMP -ChildPath 'BloodHound-IconRender')
+    [string] $PackageCachePath = (Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath 'BloodHound-IconRender')
 )
 
 Set-StrictMode -Version Latest
@@ -344,22 +344,40 @@ function Import-SkiaDependencies {
     [string] $svgModelDll = Import-NuGetLibrary -PackageName 'Svg.Model' -PackageVersion '3.4.1' -TargetFrameworkMoniker $targetFrameworkMoniker -AssemblyName 'Svg.Model' -CacheRoot $CacheRoot
     [string] $svgDll = Import-NuGetLibrary -PackageName 'Svg.Skia' -PackageVersion '3.4.1' -TargetFrameworkMoniker $targetFrameworkMoniker -AssemblyName 'Svg.Skia' -CacheRoot $CacheRoot
 
-    [string] $nativeRoot = Get-NuGetPackage -Name 'SkiaSharp.NativeAssets.Win32' -Version '2.88.9' -CacheRoot $CacheRoot
+    [System.Runtime.InteropServices.Architecture] $processArch = [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture
 
-    [string] $architecture = $env:PROCESSOR_ARCHITECTURE
-    [string] $nativePath = switch ($architecture) {
-        'ARM64' { Join-Path -Path $nativeRoot -ChildPath 'runtimes/win-arm64/native' }
-        'x86' { Join-Path -Path $nativeRoot -ChildPath 'runtimes/win-x86/native' }
-        'AMD64' { Join-Path -Path $nativeRoot -ChildPath 'runtimes/win-x64/native' }
-        default { Join-Path -Path $nativeRoot -ChildPath 'runtimes/win-x64/native' }
-    }
+    if ($IsLinux) {
+        [string] $nativeRoot = Get-NuGetPackage -Name 'SkiaSharp.NativeAssets.Linux.NoDependencies' -Version '2.88.9' -CacheRoot $CacheRoot
 
-    if (-not (Test-Path -Path $nativePath -PathType Container)) {
-        throw "SkiaSharp native assets not found for architecture '$architecture' in $nativeRoot."
-    }
+        [string] $nativePath = switch ($processArch) {
+            ([System.Runtime.InteropServices.Architecture]::Arm64) { Join-Path -Path $nativeRoot -ChildPath 'runtimes/linux-arm64/native' }
+            default { Join-Path -Path $nativeRoot -ChildPath 'runtimes/linux-x64/native' }
+        }
 
-    if (-not ($env:PATH -split ';' | Where-Object { $PSItem -eq $nativePath })) {
-        $env:PATH = "$nativePath;$env:PATH"
+        if (-not (Test-Path -Path $nativePath -PathType Container)) {
+            throw "SkiaSharp native assets not found for architecture '$processArch' in $nativeRoot."
+        }
+
+        # .NET's native library prober searches the managed assembly's directory.
+        # Copy libSkiaSharp.so there so it is found when SkiaSharp is first used.
+        [string] $skiaDir = Split-Path -Path $skiaDll -Parent
+        Copy-Item -Path (Join-Path -Path $nativePath -ChildPath 'libSkiaSharp.so') -Destination $skiaDir -Force
+    } else {
+        [string] $nativeRoot = Get-NuGetPackage -Name 'SkiaSharp.NativeAssets.Win32' -Version '2.88.9' -CacheRoot $CacheRoot
+
+        [string] $nativePath = switch ($processArch) {
+            ([System.Runtime.InteropServices.Architecture]::Arm64) { Join-Path -Path $nativeRoot -ChildPath 'runtimes/win-arm64/native' }
+            ([System.Runtime.InteropServices.Architecture]::X86) { Join-Path -Path $nativeRoot -ChildPath 'runtimes/win-x86/native' }
+            default { Join-Path -Path $nativeRoot -ChildPath 'runtimes/win-x64/native' }
+        }
+
+        if (-not (Test-Path -Path $nativePath -PathType Container)) {
+            throw "SkiaSharp native assets not found for architecture '$processArch' in $nativeRoot."
+        }
+
+        if (-not ($env:PATH -split ';' | Where-Object { $PSItem -eq $nativePath })) {
+            $env:PATH = "$nativePath;$env:PATH"
+        }
     }
 }
 

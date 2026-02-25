@@ -1,3 +1,5 @@
+# Okta_ManagerOf
+
 ## Edge Schema
 
 - Source: [Okta_User](../NodeDescriptions/Okta_User.md)

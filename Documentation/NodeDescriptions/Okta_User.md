@@ -1,3 +1,5 @@
+# Okta_User
+
 ## Overview
 
 User objects (AKA People) represent individuals who have access to the Okta organization. Each user has a unique identifier, username in the email address format, and various attributes such as email, first name, last name, and status.

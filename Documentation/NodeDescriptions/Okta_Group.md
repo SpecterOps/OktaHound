@@ -1,3 +1,5 @@
+# Okta_Group
+
 ## Overview
 
 Groups in Okta are collections of users that can be used to manage access to applications and resources. Groups can be created manually or synchronized from external directories such as Active Directory.

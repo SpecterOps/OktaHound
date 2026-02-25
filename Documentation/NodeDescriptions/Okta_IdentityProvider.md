@@ -1,3 +1,5 @@
+# Okta_IdentityProvider
+
 ## Overview
 
 Identity Providers (IdPs) in Okta represent external authentication sources that can be used to authenticate users. These can include social identity providers (such as Google, Facebook, or Microsoft), enterprise identity providers using SAML or OIDC, or other Okta organizations in an Org2Org configuration.
