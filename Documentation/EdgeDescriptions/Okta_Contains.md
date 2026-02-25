@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Okta_Organization](../NodeDescriptions/Okta_Organization.md)
+- Destination: [Okta_User](../NodeDescriptions/Okta_User.md), [Okta_Group](../NodeDescriptions/Okta_Group.md), [Okta_Device](../NodeDescriptions/Okta_Device.md), [Okta_Application](../NodeDescriptions/Okta_Application.md), [Okta_ApiServiceIntegration](../NodeDescriptions/Okta_ApiServiceIntegration.md), [Okta_ResourceSet](../NodeDescriptions/Okta_ResourceSet.md), [Okta_Role](../NodeDescriptions/Okta_Role.md), [Okta_CustomRole](../NodeDescriptions/Okta_CustomRole.md), [Okta_RoleAssignment](../NodeDescriptions/Okta_RoleAssignment.md), [Okta_Realm](../NodeDescriptions/Okta_Realm.md), [Okta_AgentPool](../NodeDescriptions/Okta_AgentPool.md), [Okta_IdentityProvider](../NodeDescriptions/Okta_IdentityProvider.md), [Okta_AuthorizationServer](../NodeDescriptions/Okta_AuthorizationServer.md), [Okta_Policy](../NodeDescriptions/Okta_Policy.md)
+
 ## General Information
 
 The traversable `Okta_Contains` edges represent the containment relationships between the organization and other entities in Okta. The organization node will have `Okta_Contains` edges to all other nodes in the graph, with some exceptions.

@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Okta_Policy](../NodeDescriptions/Okta_Policy.md)
+- Destination: [Okta_Application](../NodeDescriptions/Okta_Application.md)
+
 ## General Information
 
 The non-traversable `Okta_PolicyMapping` edges represent the association between a policy and the resources to which it is applied.

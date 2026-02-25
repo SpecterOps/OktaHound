@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Okta_Realm](../NodeDescriptions/Okta_Realm.md)
+- Destination: [Okta_User](../NodeDescriptions/Okta_User.md)
+
 ## General Information
 
 The traversable `Okta_RealmContains` edges represent containment relationships between realms and the users assigned to those realms.

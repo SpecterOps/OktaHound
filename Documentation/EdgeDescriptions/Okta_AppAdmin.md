@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Okta_User](../NodeDescriptions/Okta_User.md), [Okta_Group](../NodeDescriptions/Okta_Group.md), [Okta_Application](../NodeDescriptions/Okta_Application.md)
+- Destination: [Okta_Application](../NodeDescriptions/Okta_Application.md), [Okta_ApiServiceIntegration](../NodeDescriptions/Okta_ApiServiceIntegration.md)
+
 ## General Information
 
 The traversable `Okta_AppAdmin` edges represent Application Administrator role assignments.

@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Okta_User](../NodeDescriptions/Okta_User.md), [Okta_Application](../NodeDescriptions/Okta_Application.md), [Okta_ApiServiceIntegration](../NodeDescriptions/Okta_ApiServiceIntegration.md)
+- Destination: [Okta_ApiServiceIntegration](../NodeDescriptions/Okta_ApiServiceIntegration.md)
+
 ## General Information
 
 The non-traversable `Okta_CreatorOf` edges represent the creator relationships between API Service Integration instances and users in Okta:

@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Okta_User](../NodeDescriptions/Okta_User.md), [Okta_Group](../NodeDescriptions/Okta_Group.md), [Okta_Application](../NodeDescriptions/Okta_Application.md)
+- Destination: [Okta_Organization](../NodeDescriptions/Okta_Organization.md)
+
 ## General Information
 
 The traversable `Okta_SuperAdmin` edges represent Super Administrator role assignments to the Okta organization.

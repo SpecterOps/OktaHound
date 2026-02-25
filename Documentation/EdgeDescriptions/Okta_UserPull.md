@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Okta_Application](../NodeDescriptions/Okta_Application.md)
+- Destination: [Okta_User](../NodeDescriptions/Okta_User.md)
+
 ## General Information
 
 The `Okta_UserPull` edges represent user import relationships from external applications to Okta.

@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Okta_Group](../NodeDescriptions/Okta_Group.md)
+- Destination: [Okta_Application](../NodeDescriptions/Okta_Application.md)
+
 ## General Information
 
 The non-traversable `Okta_GroupPush` edges represent the group push assignments to applications.

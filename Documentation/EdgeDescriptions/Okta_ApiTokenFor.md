@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Okta_ApiToken](../NodeDescriptions/Okta_ApiToken.md)
+- Destination: [Okta_User](../NodeDescriptions/Okta_User.md)
+
 ## General Information
 
 The traversable `Okta_ApiTokenFor` edges represent the API token assignments for users in Okta, represented by the [Okta_User](../Nodes/Okta_User.md) nodes:
