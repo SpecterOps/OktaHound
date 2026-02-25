@@ -13,72 +13,72 @@
 
 | Icon | Node Kind | Display Name |
 |------|-----------|--------------|
-| ![Okta_Agent](Icons/Okta_Agent.png) | Okta_Agent | Okta Agent |
-| ![Okta_AgentPool](Icons/Okta_AgentPool.png) | Okta_AgentPool | Okta Agent Pool |
-| ![Okta_ApiServiceIntegration](Icons/Okta_ApiServiceIntegration.png) | Okta_ApiServiceIntegration | Okta API Service Integration |
-| ![Okta_ApiToken](Icons/Okta_ApiToken.png) | Okta_ApiToken | Okta API Token |
-| ![Okta_Application](Icons/Okta_Application.png) | Okta_Application | Okta Application |
-| ![Okta_AuthorizationServer](Icons/Okta_AuthorizationServer.png) | Okta_AuthorizationServer | Okta Authorization Server |
-| ![Okta_ClientSecret](Icons/Okta_ClientSecret.png) | Okta_ClientSecret | Okta Client Secret |
-| ![Okta_CustomRole](Icons/Okta_CustomRole.png) | Okta_CustomRole | Okta Custom Role |
-| ![Okta_Device](Icons/Okta_Device.png) | Okta_Device | Okta Device |
-| ![Okta_Group](Icons/Okta_Group.png) | Okta_Group | Okta Group |
-| ![Okta_IdentityProvider](Icons/Okta_IdentityProvider.png) | Okta_IdentityProvider | Okta Identity Provider |
-| ![Okta_JWK](Icons/Okta_JWK.png) | Okta_JWK | Okta JWK |
-| ![Okta_Organization](Icons/Okta_Organization.png) | Okta_Organization | Okta Organization |
-| ![Okta_Policy](Icons/Okta_Policy.png) | Okta_Policy | Okta Policy |
-| ![Okta_Realm](Icons/Okta_Realm.png) | Okta_Realm | Okta Realm |
-| ![Okta_ResourceSet](Icons/Okta_ResourceSet.png) | Okta_ResourceSet | Okta Resource Set |
-| ![Okta_Role](Icons/Okta_Role.png) | Okta_Role | Okta Role |
-| ![Okta_RoleAssignment](Icons/Okta_RoleAssignment.png) | Okta_RoleAssignment | Okta Role Assignment |
-| ![Okta_User](Icons/Okta_User.png) | Okta_User | Okta User |
+| ![Okta_Agent](Icons/Okta_Agent.png) | [Okta_Agent](NodeDescriptions/Okta_Agent.md) | Okta Agent |
+| ![Okta_AgentPool](Icons/Okta_AgentPool.png) | [Okta_AgentPool](NodeDescriptions/Okta_AgentPool.md) | Okta Agent Pool |
+| ![Okta_ApiServiceIntegration](Icons/Okta_ApiServiceIntegration.png) | [Okta_ApiServiceIntegration](NodeDescriptions/Okta_ApiServiceIntegration.md) | Okta API Service Integration |
+| ![Okta_ApiToken](Icons/Okta_ApiToken.png) | [Okta_ApiToken](NodeDescriptions/Okta_ApiToken.md) | Okta API Token |
+| ![Okta_Application](Icons/Okta_Application.png) | [Okta_Application](NodeDescriptions/Okta_Application.md) | Okta Application |
+| ![Okta_AuthorizationServer](Icons/Okta_AuthorizationServer.png) | [Okta_AuthorizationServer](NodeDescriptions/Okta_AuthorizationServer.md) | Okta Authorization Server |
+| ![Okta_ClientSecret](Icons/Okta_ClientSecret.png) | [Okta_ClientSecret](NodeDescriptions/Okta_ClientSecret.md) | Okta Client Secret |
+| ![Okta_CustomRole](Icons/Okta_CustomRole.png) | [Okta_CustomRole](NodeDescriptions/Okta_CustomRole.md) | Okta Custom Role |
+| ![Okta_Device](Icons/Okta_Device.png) | [Okta_Device](NodeDescriptions/Okta_Device.md) | Okta Device |
+| ![Okta_Group](Icons/Okta_Group.png) | [Okta_Group](NodeDescriptions/Okta_Group.md) | Okta Group |
+| ![Okta_IdentityProvider](Icons/Okta_IdentityProvider.png) | [Okta_IdentityProvider](NodeDescriptions/Okta_IdentityProvider.md) | Okta Identity Provider |
+| ![Okta_JWK](Icons/Okta_JWK.png) | [Okta_JWK](NodeDescriptions/Okta_JWK.md) | Okta JWK |
+| ![Okta_Organization](Icons/Okta_Organization.png) | [Okta_Organization](NodeDescriptions/Okta_Organization.md) | Okta Organization |
+| ![Okta_Policy](Icons/Okta_Policy.png) | [Okta_Policy](NodeDescriptions/Okta_Policy.md) | Okta Policy |
+| ![Okta_Realm](Icons/Okta_Realm.png) | [Okta_Realm](NodeDescriptions/Okta_Realm.md) | Okta Realm |
+| ![Okta_ResourceSet](Icons/Okta_ResourceSet.png) | [Okta_ResourceSet](NodeDescriptions/Okta_ResourceSet.md) | Okta Resource Set |
+| ![Okta_Role](Icons/Okta_Role.png) | [Okta_Role](NodeDescriptions/Okta_Role.md) | Okta Role |
+| ![Okta_RoleAssignment](Icons/Okta_RoleAssignment.png) | [Okta_RoleAssignment](NodeDescriptions/Okta_RoleAssignment.md) | Okta Role Assignment |
+| ![Okta_User](Icons/Okta_User.png) | [Okta_User](NodeDescriptions/Okta_User.md) | Okta User |
 
 ## Edges
 
 | Relationship Kind | Traversable | Description |
 |-------------------|:-----------:|-------------|
-| Okta_AddMember | ✅ | Ability to add or remove members in scoped Okta groups |
-| Okta_ApiTokenFor | ✅ | User ownership of an Okta API token |
-| Okta_AppAdmin | ✅ | Application administrator role assignment |
-| Okta_AppAssignment | ❌ | Assignment of users or groups to an Okta application |
-| Okta_Contains | ✅ | Contains relationship between the Okta organization and its objects |
-| Okta_CreatorOf | ❌ | Creator relationship for API service integrations |
-| Okta_DeviceOf | ❌ | Ownership relationship between a device and its assigned user |
-| Okta_GroupAdmin | ✅ | Group administrator role assignment |
-| Okta_GroupMembershipAdmin | ✅ | Group membership administrator role assignment |
-| Okta_GroupPull | ✅ | Import of group memberships from an external application |
-| Okta_GroupPush | ❌ | Provisioning of group memberships to an external application |
-| Okta_HasAgent | ❌ | Membership of an agent within an agent pool |
-| Okta_HasRole | ❌ | Assignment of a built-in or custom role to a principal |
-| Okta_HasRoleAssignment | ❌ | Relationship between a principal and a role assignment |
-| Okta_HelpDeskAdmin | ✅ | Help desk administrator role assignment |
-| Okta_IdentityProviderFor | ✅ | Trust relationship between an identity provider and Okta users |
-| Okta_IdpGroupAssignment | ❌ | Identity provider group assignment to an Okta group |
-| Okta_InboundOrgSSO | ✅ | Single sign-on from an external organization into Okta |
-| Okta_InboundSSO | ✅ | Single sign-on from an external identity provider into Okta |
-| Okta_KeyOf | ✅ | JSON Web Key associated with an Okta application |
-| Okta_ManageApp | ✅ | Ability to manage scoped Okta applications |
-| Okta_ManagerOf | ❌ | Manager relationship between Okta users |
-| Okta_MemberOf | ✅ | Membership of a user in an Okta group |
-| Okta_MembershipSync | ✅ | Bidirectional synchronization between Okta groups and external groups |
-| Okta_MobileAdmin | ✅ | Mobile administrator role assignment |
-| Okta_OrgAdmin | ✅ | Organization administrator role assignment |
-| Okta_OrgSWA | ❌ | Secure Web Authentication from an Okta application to an external organization |
-| Okta_OutboundOrgSSO | ✅ | Single sign-on from an Okta application to an external organization |
-| Okta_OutboundSSO | ✅ | Single sign-on from Okta to an external identity provider |
-| Okta_PolicyMapping | ❌ | Association of a policy with an Okta application |
-| Okta_ReadPasswordUpdates | ✅ | Application can read password updates over the SCIM protocol |
-| Okta_RealmContains | ✅ | Contains relationship between an Okta realm and its users |
-| Okta_ResetFactors | ✅ | Ability to reset MFA factors for scoped Okta users |
-| Okta_ResetPassword | ✅ | Ability to reset passwords or temporary credentials for scoped Okta users |
-| Okta_ResourceSetContains | ✅ | Membership of objects within an Okta resource set |
-| Okta_ScopedTo | ❌ | Scope relationship between a role assignment and its target |
-| Okta_SecretOf | ✅ | Client secret associated with an application or service integration |
-| Okta_SuperAdmin | ✅ | Super administrator role assignment |
-| Okta_SWA | ❌ | Secure Web Authentication from Okta to an external application |
-| Okta_UserPull | ❌ | Import of users from an external application |
-| Okta_UserPush | ❌ | Provisioning of users to an external application |
-| Okta_UserSync | ❌ | Bidirectional synchronization between Okta users and external identities |
+| [Okta_AddMember](EdgeDescriptions/Okta_AddMember.md) | ✅ | Ability to add or remove members in scoped Okta groups |
+| [Okta_ApiTokenFor](EdgeDescriptions/Okta_ApiTokenFor.md) | ✅ | User ownership of an Okta API token |
+| [Okta_AppAdmin](EdgeDescriptions/Okta_AppAdmin.md) | ✅ | Application administrator role assignment |
+| [Okta_AppAssignment](EdgeDescriptions/Okta_AppAssignment.md) | ❌ | Assignment of users or groups to an Okta application |
+| [Okta_Contains](EdgeDescriptions/Okta_Contains.md) | ✅ | Contains relationship between the Okta organization and its objects |
+| [Okta_CreatorOf](EdgeDescriptions/Okta_CreatorOf.md) | ❌ | Creator relationship for API service integrations |
+| [Okta_DeviceOf](EdgeDescriptions/Okta_DeviceOf.md) | ❌ | Ownership relationship between a device and its assigned user |
+| [Okta_GroupAdmin](EdgeDescriptions/Okta_GroupAdmin.md) | ✅ | Group administrator role assignment |
+| [Okta_GroupMembershipAdmin](EdgeDescriptions/Okta_GroupMembershipAdmin.md) | ✅ | Group membership administrator role assignment |
+| [Okta_GroupPull](EdgeDescriptions/Okta_GroupPull.md) | ✅ | Import of group memberships from an external application |
+| [Okta_GroupPush](EdgeDescriptions/Okta_GroupPush.md) | ❌ | Provisioning of group memberships to an external application |
+| [Okta_HasAgent](EdgeDescriptions/Okta_HasAgent.md) | ❌ | Membership of an agent within an agent pool |
+| [Okta_HasRole](EdgeDescriptions/Okta_HasRole.md) | ❌ | Assignment of a built-in or custom role to a principal |
+| [Okta_HasRoleAssignment](EdgeDescriptions/Okta_HasRoleAssignment.md) | ❌ | Relationship between a principal and a role assignment |
+| [Okta_HelpDeskAdmin](EdgeDescriptions/Okta_HelpDeskAdmin.md) | ✅ | Help desk administrator role assignment |
+| [Okta_IdentityProviderFor](EdgeDescriptions/Okta_IdentityProviderFor.md) | ✅ | Trust relationship between an identity provider and Okta users |
+| [Okta_IdpGroupAssignment](EdgeDescriptions/Okta_IdpGroupAssignment.md) | ❌ | Identity provider group assignment to an Okta group |
+| [Okta_InboundOrgSSO](EdgeDescriptions/Okta_InboundOrgSSO.md) | ✅ | Single sign-on from an external organization into Okta |
+| [Okta_InboundSSO](EdgeDescriptions/Okta_InboundSSO.md) | ✅ | Single sign-on from an external identity provider into Okta |
+| [Okta_KeyOf](EdgeDescriptions/Okta_KeyOf.md) | ✅ | JSON Web Key associated with an Okta application |
+| [Okta_ManageApp](EdgeDescriptions/Okta_ManageApp.md) | ✅ | Ability to manage scoped Okta applications |
+| [Okta_ManagerOf](EdgeDescriptions/Okta_ManagerOf.md) | ❌ | Manager relationship between Okta users |
+| [Okta_MemberOf](EdgeDescriptions/Okta_MemberOf.md) | ✅ | Membership of a user in an Okta group |
+| [Okta_MembershipSync](EdgeDescriptions/Okta_MembershipSync.md) | ✅ | Bidirectional synchronization between Okta groups and external groups |
+| [Okta_MobileAdmin](EdgeDescriptions/Okta_MobileAdmin.md) | ✅ | Mobile administrator role assignment |
+| [Okta_OrgAdmin](EdgeDescriptions/Okta_OrgAdmin.md) | ✅ | Organization administrator role assignment |
+| [Okta_OrgSWA](EdgeDescriptions/Okta_OrgSWA.md) | ❌ | Secure Web Authentication from an Okta application to an external organization |
+| [Okta_OutboundOrgSSO](EdgeDescriptions/Okta_OutboundOrgSSO.md) | ✅ | Single sign-on from an Okta application to an external organization |
+| [Okta_OutboundSSO](EdgeDescriptions/Okta_OutboundSSO.md) | ✅ | Single sign-on from Okta to an external identity provider |
+| [Okta_PolicyMapping](EdgeDescriptions/Okta_PolicyMapping.md) | ❌ | Association of a policy with an Okta application |
+| [Okta_ReadPasswordUpdates](EdgeDescriptions/Okta_ReadPasswordUpdates.md) | ✅ | Application can read password updates over the SCIM protocol |
+| [Okta_RealmContains](EdgeDescriptions/Okta_RealmContains.md) | ✅ | Contains relationship between an Okta realm and its users |
+| [Okta_ResetFactors](EdgeDescriptions/Okta_ResetFactors.md) | ✅ | Ability to reset MFA factors for scoped Okta users |
+| [Okta_ResetPassword](EdgeDescriptions/Okta_ResetPassword.md) | ✅ | Ability to reset passwords or temporary credentials for scoped Okta users |
+| [Okta_ResourceSetContains](EdgeDescriptions/Okta_ResourceSetContains.md) | ✅ | Membership of objects within an Okta resource set |
+| [Okta_ScopedTo](EdgeDescriptions/Okta_ScopedTo.md) | ❌ | Scope relationship between a role assignment and its target |
+| [Okta_SecretOf](EdgeDescriptions/Okta_SecretOf.md) | ✅ | Client secret associated with an application or service integration |
+| [Okta_SuperAdmin](EdgeDescriptions/Okta_SuperAdmin.md) | ✅ | Super administrator role assignment |
+| [Okta_SWA](EdgeDescriptions/Okta_SWA.md) | ❌ | Secure Web Authentication from Okta to an external application |
+| [Okta_UserPull](EdgeDescriptions/Okta_UserPull.md) | ❌ | Import of users from an external application |
+| [Okta_UserPush](EdgeDescriptions/Okta_UserPush.md) | ❌ | Provisioning of users to an external application |
+| [Okta_UserSync](EdgeDescriptions/Okta_UserSync.md) | ❌ | Bidirectional synchronization between Okta users and external identities |
 
 > [!NOTE]
 > This file is automatically generated from the [bhce-okta-extension.json](../Src/Extensions/bhce-okta-extension.json) file

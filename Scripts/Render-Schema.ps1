@@ -1,6 +1,8 @@
 <#
 .SYNOPSIS
     Converts a BloodHound extension file into markdown (*.md).
+.NOTES
+    Version: 2.0
 #>
 
 #Requires -Version 5.1
@@ -13,10 +15,40 @@ param (
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string] $OutputPath = (Join-Path -Path $PSScriptRoot -ChildPath '../Documentation/Schema.md')
+    [string] $OutputPath = (Join-Path -Path $PSScriptRoot -ChildPath '../Documentation/Schema.md'),
+
+    [Parameter(Mandatory = $false)]
+    [AllowNull()]
+    [string] $NodeLinkBasePath = 'NodeDescriptions',
+
+    [Parameter(Mandatory = $false)]
+    [AllowNull()]
+    [string] $EdgeLinkBasePath = 'EdgeDescriptions'
 )
 
 Set-StrictMode -Version Latest
+
+function Get-KindMarkdownLink {
+    [CmdletBinding()]
+    [OutputType([string])]
+    param (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $KindName,
+
+        [Parameter(Mandatory = $false)]
+        [AllowNull()]
+        [string] $LinkBasePath
+    )
+
+    if ($null -eq $LinkBasePath) {
+        return $KindName
+    } elseif ([string]::Empty -eq $LinkBasePath) {
+        return '[{0}]({0}.md)' -f $KindName
+    } else {
+        return '[{0}]({1}/{0}.md)' -f $KindName, $LinkBasePath
+    }
+}
 
 # Parse the JSON file
 [psobject] $json = Get-Content -Path $InputPath | ConvertFrom-Json
@@ -56,7 +88,8 @@ foreach ($nodeKind in $nodeKinds) {
     # Append node-specific markdown
     # Sample: | ![Okta_Organization](Icons/Okta_Organization.png) | Okta_Organization | Okta Organization |
     $markdown += "`n"
-    $markdown += '| ![{0}](Icons/{0}.png) | {0} | {1} |' -f $nodeKind.name, $nodeKind.display_name
+    [string] $nodeKindDisplay = Get-KindMarkdownLink -KindName $nodeKind.name -LinkBasePath $NodeLinkBasePath
+    $markdown += '| ![{0}](Icons/{0}.png) | {1} | {2} |' -f $nodeKind.name, $nodeKindDisplay, $nodeKind.display_name
 }
 
 $markdown += "`n`n"
@@ -73,7 +106,8 @@ foreach ($relationshipKind in $relationshipKinds) {
     # Sample: | OktaUserHasRole | ✅ | Indicates that a user is assigned a role in Okta. |
     $markdown += "`n"
     [string] $traversableIcon = if ($relationshipKind.is_traversable) { '✅' } else { '❌' }
-    $markdown += '| {0} | {1} | {2} |' -f $relationshipKind.name, $traversableIcon, $relationshipKind.description
+    [string] $relationshipKindDisplay = Get-KindMarkdownLink -KindName $relationshipKind.name -LinkBasePath $EdgeLinkBasePath
+    $markdown += '| {0} | {1} | {2} |' -f $relationshipKindDisplay, $traversableIcon, $relationshipKind.description
 }
 
 # Add footer note
