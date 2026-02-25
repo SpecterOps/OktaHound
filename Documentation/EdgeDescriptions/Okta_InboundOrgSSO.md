@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [AZTenant](https://bloodhound.specterops.io/resources/nodes/az-tenant)
+- Destination: [Okta_IdentityProvider](../NodeDescriptions/Okta_IdentityProvider.md)
+
 ## General Information
 
 The `Okta_InboundOrgSSO` and `Okta_InboundSSO` hybrid edges connect external tenants and users to Okta entities:

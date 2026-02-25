@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Okta_IdentityProvider](../NodeDescriptions/Okta_IdentityProvider.md)
+- Destination: [Okta_Group](../NodeDescriptions/Okta_Group.md)
+
 ## General Information
 
 The non-traversable `Okta_IdpGroupAssignment` edges represent groups automatically assigned to users based on identity provider attributes or user claims:

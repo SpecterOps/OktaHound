@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Group](https://bloodhound.specterops.io/resources/nodes/group), [Okta_Group](../NodeDescriptions/Okta_Group.md), [AZGroup](https://bloodhound.specterops.io/resources/nodes/az-group), [SNOWGroup](https://github.com/SpecterOps/SnowHound)
+- Destination: [Okta_Group](../NodeDescriptions/Okta_Group.md), [Group](https://bloodhound.specterops.io/resources/nodes/group), [SNOWGroup](https://github.com/SpecterOps/SnowHound)
+
 ## General Information
 
 The traversable hybrid `Okta_MembershipSync` edges represent the synchronization relationships between groups in external directories and their corresponding groups in Okta:

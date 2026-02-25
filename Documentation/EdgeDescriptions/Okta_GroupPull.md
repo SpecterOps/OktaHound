@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Okta_Application](../NodeDescriptions/Okta_Application.md)
+- Destination: [Okta_Group](../NodeDescriptions/Okta_Group.md)
+
 ## General Information
 
 The traversable `Okta_GroupPull` edges represent the group synchronization relationships from applications to Okta:

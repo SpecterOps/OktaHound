@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Okta_User](../NodeDescriptions/Okta_User.md), [Okta_Group](../NodeDescriptions/Okta_Group.md), [Okta_Application](../NodeDescriptions/Okta_Application.md)
+- Destination: [Okta_RoleAssignment](../NodeDescriptions/Okta_RoleAssignment.md)
+
 ## General Information
 
 The `Okta_HasRoleAssignment` edges connect users, groups, and applications to their respective `Okta_RoleAssignment` nodes.

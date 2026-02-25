@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Okta_JWK](../NodeDescriptions/Okta_JWK.md)
+- Destination: [Okta_Application](../NodeDescriptions/Okta_Application.md)
+
 ## General Information
 
 The traversable `Okta_KeyOf` edges represent the relationships between applications ([Okta_Application](../Nodes/Okta_Application.md)) and their JWKs:

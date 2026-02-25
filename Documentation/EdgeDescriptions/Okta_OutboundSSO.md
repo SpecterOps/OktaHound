@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Okta_User](../NodeDescriptions/Okta_User.md)
+- Destination: [AZUser](https://bloodhound.specterops.io/resources/nodes/az-user), [GHUser](https://github.com/SpecterOps/GitHound), [jamf_Account](https://github.com/SpecterOps/JamfHound), [SNOWUser](https://github.com/SpecterOps/SnowHound)
+
 ## General Information
 
 The traversable hybrid `Okta_OutboundSSO` edges represent Single Sign-On relationships between Okta users and their linked accounts in external applications using federated authentication (SAML 2.0 or OIDC).

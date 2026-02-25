@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Okta_User](../NodeDescriptions/Okta_User.md), [Okta_Group](../NodeDescriptions/Okta_Group.md), [Okta_Application](../NodeDescriptions/Okta_Application.md)
+- Destination: [Okta_User](../NodeDescriptions/Okta_User.md), [Okta_Group](../NodeDescriptions/Okta_Group.md)
+
 ## General Information
 
 The traversable `Okta_GroupAdmin` edges represent Group Administrator (also known as User Administrator) role assignments.

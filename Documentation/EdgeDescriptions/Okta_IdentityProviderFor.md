@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Okta_IdentityProvider](../NodeDescriptions/Okta_IdentityProvider.md)
+- Destination: [Okta_User](../NodeDescriptions/Okta_User.md)
+
 ## General Information
 
 The traversable `Okta_IdentityProviderFor` edges represent the relationships between identity providers and the users who authenticate through them:

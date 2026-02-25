@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Okta_ResourceSet](../NodeDescriptions/Okta_ResourceSet.md)
+- Destination: [Okta_User](../NodeDescriptions/Okta_User.md), [Okta_Group](../NodeDescriptions/Okta_Group.md), [Okta_Application](../NodeDescriptions/Okta_Application.md), [Okta_ApiServiceIntegration](../NodeDescriptions/Okta_ApiServiceIntegration.md), [Okta_Device](../NodeDescriptions/Okta_Device.md), [Okta_AuthorizationServer](../NodeDescriptions/Okta_AuthorizationServer.md), [Okta_IdentityProvider](../NodeDescriptions/Okta_IdentityProvider.md), [Okta_Policy](../NodeDescriptions/Okta_Policy.md)
+
 ## General Information
 
 The traversable `Okta_ResourceSetContains` edges represent the membership relationships between resource sets and their member entities in Okta:

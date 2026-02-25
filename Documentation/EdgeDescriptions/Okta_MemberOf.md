@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Okta_User](../NodeDescriptions/Okta_User.md)
+- Destination: [Okta_Group](../NodeDescriptions/Okta_Group.md)
+
 ## General Information
 
 The traversable `Okta_MemberOf` edges represent the membership relationships between users and groups in Okta:

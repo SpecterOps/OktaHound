@@ -1,3 +1,8 @@
+## Edge Schema
+
+- Source: [Okta_AgentPool](../NodeDescriptions/Okta_AgentPool.md)
+- Destination: [Okta_Agent](../NodeDescriptions/Okta_Agent.md)
+
 ## General Information
 
 `Okta_AgentPool` nodes are connected to their constituent `Okta_Agent` nodes via `Okta_HasAgent` edges. Active Directory Agent Pools and their agents can be visualized in BloodHound as follows:
