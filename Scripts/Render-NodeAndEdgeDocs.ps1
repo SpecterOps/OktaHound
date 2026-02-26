@@ -13,7 +13,7 @@
     - Image paths are rewritten to point to /images/extensions/<ExtensionName>/.
     - Links to ../NodeDescriptions/ are rewritten to ../nodes/.
     - Links to other markdown files have their .md extension stripped.
-    - GitHub-flavored callouts (NOTE, WARNING, TIP) are converted to Mintlify components.
+    - GitHub-flavored callouts (NOTE, IMPORTANT, WARNING, TIP, CAUTION) are converted to Mintlify components.
 #>
 
 #Requires -Version 5.1
@@ -138,16 +138,18 @@ function Convert-Callouts {
         [string] $Markdown
     )
 
-    [regex] $calloutRegex = [regex]'(?m)^> \[!(NOTE|WARNING|TIP)\]\r?\n(?:^> .*(?:\r?\n|$))+'
+    [regex] $calloutRegex = [regex]'(?m)^> \[!(NOTE|IMPORTANT|WARNING|TIP|CAUTION)\]\r?\n(?:^> .*(?:\r?\n|$))+'
 
     return $calloutRegex.Replace($Markdown, {
             param([System.Text.RegularExpressions.Match] $match)
 
             [string] $type = $match.Groups[1].Value
             [string] $tag = switch ($type) {
-                'NOTE' { 'Note' }
+                'NOTE' { 'Info' }
+                'IMPORTANT' { 'Note' }
                 'WARNING' { 'Warning' }
                 'TIP' { 'Tip' }
+                'CAUTION' { 'Danger' }
             }
 
             [string[]] $contentLines = $match.Value -split '\r?\n' |
