@@ -1,3 +1,5 @@
+# Okta_ClientSecret
+
 ## Overview
 
 Client secrets are used by API service integrations and OIDC applications to authenticate with Okta and obtain access tokens.

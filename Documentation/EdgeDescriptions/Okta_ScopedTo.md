@@ -1,3 +1,5 @@
+# Okta_ScopedTo
+
 ## Edge Schema
 
 - Source: [Okta_RoleAssignment](../NodeDescriptions/Okta_RoleAssignment.md)

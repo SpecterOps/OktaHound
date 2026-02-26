@@ -8,9 +8,12 @@
 
     Generated files contain frontmatter and the content from Documentation/NodeDescriptions or Documentation/EdgeDescriptions.
 
-    Image paths in the descriptions are rewritten to point to /images/extensions/<ExtensionName>/,
-    links to ../NodeDescriptions/ are rewritten to ../nodes/, and links to other markdown files
-    have their .md extension stripped.
+    The following transformations are applied to the description content:
+    - H1 headers are removed (the MDX frontmatter title is used instead).
+    - Image paths are rewritten to point to /images/extensions/<ExtensionName>/.
+    - Links to ../NodeDescriptions/ are rewritten to ../nodes/.
+    - Links to other markdown files have their .md extension stripped.
+    - GitHub-flavored callouts (NOTE, WARNING, TIP) are converted to Mintlify components.
 #>
 
 #Requires -Version 5.1
@@ -127,6 +130,36 @@ function Convert-MarkdownLinks {
         })
 }
 
+function Convert-Callouts {
+    [OutputType([string])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [string] $Markdown
+    )
+
+    [regex] $calloutRegex = [regex]'(?m)^> \[!(NOTE|WARNING|TIP)\]\r?\n(?:^> .*(?:\r?\n|$))+'
+
+    return $calloutRegex.Replace($Markdown, {
+            param([System.Text.RegularExpressions.Match] $match)
+
+            [string] $type = $match.Groups[1].Value
+            [string] $tag = switch ($type) {
+                'NOTE' { 'Note' }
+                'WARNING' { 'Warning' }
+                'TIP' { 'Tip' }
+            }
+
+            [string[]] $contentLines = $match.Value -split '\r?\n' |
+                Select-Object -Skip 1 |
+                Where-Object { $_ -ne '' } |
+                ForEach-Object { $_ -replace '^> ?', '' }
+
+            [string] $body = ($contentLines -join "`n").TrimEnd()
+            return "<$tag>`n$body`n</$tag>"
+        })
+}
+
 function New-OfficialDoc {
     [OutputType([void])]
     param(
@@ -165,8 +198,10 @@ function New-OfficialDoc {
     }
 
     [string] $bodyMarkdown = Get-Content -Path $DescriptionFilePath -Raw
+    $bodyMarkdown = $bodyMarkdown -replace '(?m)^# .+\r?\n\r?\n', ''
     $bodyMarkdown = Convert-ImagePaths -Markdown $bodyMarkdown -ExtensionName $ExtensionName
     $bodyMarkdown = Convert-MarkdownLinks -Markdown $bodyMarkdown
+    $bodyMarkdown = Convert-Callouts -Markdown $bodyMarkdown
 
     if (-not [string]::IsNullOrWhiteSpace($Traversable)) {
         $bodyMarkdown = $bodyMarkdown -replace '(?m)^- Destination:.*$', "`$0`n- Traversable: $Traversable"
@@ -245,7 +280,7 @@ foreach ($relationshipKind in $relationshipKinds) {
 
     [string] $descriptionFilePath = Join-Path -Path $EdgeDescriptionsDir -ChildPath "$name.md"
     [string] $outputFilePath = Join-Path -Path $edgesOutputDir -ChildPath "$name.mdx"
-    [string] $traversable = if ([bool] $relationshipKind.is_traversable) { 'Yes' } else { 'No' }
+    [string] $traversable = if ([bool] $relationshipKind.is_traversable) { '✅' } else { '❌' }
 
     New-OfficialDoc -Name $name -Description $description -DescriptionFilePath $descriptionFilePath -OutputFilePath $outputFilePath -ExtensionName $extensionName -Traversable $traversable
 }

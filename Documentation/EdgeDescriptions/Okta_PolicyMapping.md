@@ -1,3 +1,5 @@
+# Okta_PolicyMapping
+
 ## Edge Schema
 
 - Source: [Okta_Policy](../NodeDescriptions/Okta_Policy.md)

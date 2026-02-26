@@ -1,3 +1,5 @@
+# Okta_Policy
+
 ## Overview
 
 Policies in Okta define the rules and conditions that govern authentication, authorization, and security behaviors within an organization. They control aspects such as password requirements, MFA enrollment, session management, and application access.

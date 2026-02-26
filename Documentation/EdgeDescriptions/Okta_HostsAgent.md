@@ -1,8 +1,9 @@
+# Okta_HostsAgent
+
 ## Edge Schema
 
 - Source: [Computer](https://bloodhound.specterops.io/resources/nodes/computer)
 - Destination: [Okta_Agent](../NodeDescriptions/Okta_Agent.md)
-- Traversable: ✅
 
 ## General Information
 

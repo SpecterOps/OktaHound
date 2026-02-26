@@ -1,3 +1,5 @@
+# Okta_UserSync
+
 ## Edge Schema
 
 - Source: [User](https://bloodhound.specterops.io/resources/nodes/user), [Okta_User](../NodeDescriptions/Okta_User.md), [SNOWUser](https://github.com/SpecterOps/SnowHound)

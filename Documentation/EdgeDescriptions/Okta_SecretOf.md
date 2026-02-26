@@ -1,3 +1,5 @@
+# Okta_SecretOf
+
 ## Edge Schema
 
 - Source: [Okta_ClientSecret](../NodeDescriptions/Okta_ClientSecret.md)

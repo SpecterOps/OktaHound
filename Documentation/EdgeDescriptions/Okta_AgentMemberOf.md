@@ -1,8 +1,9 @@
+# Okta_AgentMemberOf
+
 ## Edge Schema
 
 - Source: [Okta_Agent](../NodeDescriptions/Okta_Agent.md)
 - Destination: [Okta_AgentPool](../NodeDescriptions/Okta_AgentPool.md)
-- Traversable: ✅
 
 ## General Information
 

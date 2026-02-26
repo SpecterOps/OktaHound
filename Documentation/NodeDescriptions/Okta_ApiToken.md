@@ -1,3 +1,5 @@
+# Okta_ApiToken
+
 ## Overview
 
 API tokens (also known as SSWS tokens) in Okta are used to authenticate and authorize access to the Okta API. They are typically used by applications and scripts that need to interact with Okta programmatically.

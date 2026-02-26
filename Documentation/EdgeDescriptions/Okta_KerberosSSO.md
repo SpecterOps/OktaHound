@@ -1,8 +1,9 @@
+# Okta_KerberosSSO
+
 ## Edge Schema
 
 - Source: [User](https://bloodhound.specterops.io/resources/nodes/user)
 - Destination: [Okta_Application](../NodeDescriptions/Okta_Application.md)
-- Traversable: ✅
 
 ## General Information
 

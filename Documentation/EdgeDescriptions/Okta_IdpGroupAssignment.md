@@ -1,3 +1,5 @@
+# Okta_IdpGroupAssignment
+
 ## Edge Schema
 
 - Source: [Okta_IdentityProvider](../NodeDescriptions/Okta_IdentityProvider.md)
