@@ -1,5 +1,4 @@
-# OktaHound Extension Schema
-
+# Schema
 ## Metadata
 
 **Name:** OktaHound<br />
