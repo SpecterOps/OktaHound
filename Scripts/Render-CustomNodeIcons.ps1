@@ -8,7 +8,7 @@
     a 2px black border, and a black Font Awesome icon centered inside the circle.
 
 .PARAMETER ImageSize
-    The width and height, in pixels, for the generated PNG icons. Default is 128.
+    The width and height, in pixels, for the generated PNG icons. Default is 32.
 
 .PARAMETER IconScale
     The relative scale for the Font Awesome icon within the circle. Default is 0.55.

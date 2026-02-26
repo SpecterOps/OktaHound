@@ -280,7 +280,7 @@ foreach ($relationshipKind in $relationshipKinds) {
 
     [string] $descriptionFilePath = Join-Path -Path $EdgeDescriptionsDir -ChildPath "$name.md"
     [string] $outputFilePath = Join-Path -Path $edgesOutputDir -ChildPath "$name.mdx"
-    [string] $traversable = if ([bool] $relationshipKind.is_traversable) { 'Yes' } else { 'No' }
+    [string] $traversable = if ([bool] $relationshipKind.is_traversable) { '✅' } else { '❌' }
 
     New-OfficialDoc -Name $name -Description $description -DescriptionFilePath $descriptionFilePath -OutputFilePath $outputFilePath -ExtensionName $extensionName -Traversable $traversable
 }
