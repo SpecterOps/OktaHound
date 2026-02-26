@@ -14,15 +14,19 @@ Support for the following Okta entity types is currently implemented in `OktaHou
     - [x] Generic SAML 2.0 Apps
     - [x] Generic OIDC Apps
     - [x] Generic SWA Apps
+      - [ ] Identifying credentials actually stored in Okta
     - [x] Service Apps
     - [x] SCIM Synchronization
+      - [ ] Hybrid edges targeting the universal SCIM extension
     - [x] GitHub Enterprise Cloud
     - [ ] AWS
       - [x] AWS IAM Identity Center
+        - [ ] Hybrid edges
       - [ ] AWS ClientVPN
       - [ ] AWS Console Password Sign-in
       - [ ] AWS Account Federation
-    - [ ] Entra ID / Azure / Microsoft 365
+    - [x] Entra ID / Azure / Microsoft 365
+      - [ ] Hybrid edges
     - [x] Google Workspace
     - [x] Jamf
       - [x] Jamf Pro SAML
@@ -38,6 +42,8 @@ Support for the following Okta entity types is currently implemented in `OktaHou
   - [x] API Service Integrations
   - [x] Directory Integrations
     - [x] Active Directory
+      - [x] Hybrid edges
+        - [ ]
     - [ ] LDAP
   - [x] Identity Providers
   - [x] Policies
@@ -58,6 +64,8 @@ Support for the following Okta entity types is currently implemented in `OktaHou
   - [ ] ~~Workflows~~ (Gaps in the Okta API)
 - [ ] Okta Identity Governance
   - [ ] Realms
+    - [x] Realm User Assignments
+    - [ ] Realm Role Assignments
   - [ ] Group Ownership
 - [ ] Okta Privileged Access
   - [ ] Service accounts

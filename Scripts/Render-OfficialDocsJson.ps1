@@ -3,8 +3,10 @@
     Generates docs.json navigation metadata for an extension's official docs.
 
 .DESCRIPTION
-    Scans node and edge MDX pages under Documentation/OfficialDocs/opengraph/extensions/<ExtensionName>/reference
-    and writes a docs.json file containing grouped navigation entries for Overview, Nodes, and Edges.
+    Scans MDX pages under Documentation/OfficialDocs/opengraph/extensions/<ExtensionName>
+    and writes a docs.json file with grouped navigation entries.
+
+    The images/ directory and docs.json itself are ignored.
 #>
 
 #Requires -Version 5.1
@@ -17,7 +19,7 @@ param (
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string] $OutputPath = (Join-Path -Path $PSScriptRoot -ChildPath '../Documentation/OfficialDocs/opengraph/extensions/OktaHound/docs.json')
+    [string] $OutputPath = (Join-Path -Path $PSScriptRoot -ChildPath '../Documentation/OfficialDocs/docs.json')
 )
 
 Set-StrictMode -Version Latest
@@ -27,9 +29,24 @@ if (-not (Test-Path -Path $ExtensionRootDir -PathType Container)) {
 }
 
 [string] $extensionName = Split-Path -Path $ExtensionRootDir -Leaf
-[string] $nodesDir = Join-Path -Path $ExtensionRootDir -ChildPath 'reference/nodes'
-[string] $edgesDir = Join-Path -Path $ExtensionRootDir -ChildPath 'reference/edges'
+[string] $referenceDir = Join-Path -Path $ExtensionRootDir -ChildPath 'reference'
+[string] $nodesDir = Join-Path -Path $referenceDir -ChildPath 'nodes'
+[string] $edgesDir = Join-Path -Path $referenceDir -ChildPath 'edges'
 
+# MDX files directly in the extension root (e.g. schema.mdx)
+[string[]] $rootPages = @(Get-ChildItem -Path $ExtensionRootDir -Filter '*.mdx' -File |
+        Sort-Object -Property BaseName |
+        ForEach-Object { "opengraph/extensions/$extensionName/$($_.BaseName)" })
+
+# MDX files directly in reference/ but not in nodes/ or edges/ (e.g. queries.mdx, privilege-zone-selectors.mdx)
+[string[]] $referencePages = @()
+if (Test-Path -Path $referenceDir -PathType Container) {
+    $referencePages = @(Get-ChildItem -Path $referenceDir -Filter '*.mdx' -File |
+            Sort-Object -Property BaseName |
+            ForEach-Object { "opengraph/extensions/$extensionName/reference/$($_.BaseName)" })
+}
+
+# MDX files in reference/nodes/
 [string[]] $nodePages = @()
 if (Test-Path -Path $nodesDir -PathType Container) {
     $nodePages = @(Get-ChildItem -Path $nodesDir -Filter '*.mdx' -File |
@@ -37,6 +54,7 @@ if (Test-Path -Path $nodesDir -PathType Container) {
             ForEach-Object { "opengraph/extensions/$extensionName/reference/nodes/$($_.BaseName)" })
 }
 
+# MDX files in reference/edges/
 [string[]] $edgePages = @()
 if (Test-Path -Path $edgesDir -PathType Container) {
     $edgePages = @(Get-ChildItem -Path $edgesDir -Filter '*.mdx' -File |
@@ -44,23 +62,28 @@ if (Test-Path -Path $edgesDir -PathType Container) {
             ForEach-Object { "opengraph/extensions/$extensionName/reference/edges/$($_.BaseName)" })
 }
 
-[hashtable] $docs = [ordered]@{
+$docs = [ordered]@{
     group = $extensionName
     pages = @(
-        "opengraph/extensions/$extensionName/overview",
-        [ordered]@{
-            group = 'Reference'
-            pages = @(
-                [ordered]@{
-                    group = 'Nodes'
-                    pages = $nodePages
-                },
-                [ordered]@{
-                    group = 'Edges'
-                    pages = $edgePages
-                }
-            )
-        }
+        $rootPages +
+        @(
+            [ordered]@{
+                group = 'Reference'
+                pages = @(
+                    $referencePages +
+                    @(
+                        [ordered]@{
+                            group = 'Nodes'
+                            pages = $nodePages
+                        },
+                        [ordered]@{
+                            group = 'Edges'
+                            pages = $edgePages
+                        }
+                    )
+                )
+            }
+        )
     )
 }
 

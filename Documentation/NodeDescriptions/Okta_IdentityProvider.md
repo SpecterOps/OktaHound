@@ -1,3 +1,5 @@
+# Okta_IdentityProvider
+
 ## Overview
 
 Identity Providers (IdPs) in Okta represent external authentication sources that can be used to authenticate users. These can include social identity providers (such as Google, Facebook, or Microsoft), enterprise identity providers using SAML or OIDC, or other Okta organizations in an Org2Org configuration.
@@ -8,3 +10,38 @@ In `OktaHound`, identity providers are represented as `Okta_IdentityProvider` no
 
 > [!WARNING]
 > The inbound identity provider routing rules and JIT (Just-In-Time) provisioning settings are currently not evaluated by `OktaHound`.
+
+## Properties
+
+| Name | Source | Type | Description |
+| ---- | ------ | ---- | ----------- |
+| `id` | `idp.Id` | `string` | Unique identity provider identifier. |
+| `name` | `idp.Name` | `string` | Identity provider name. |
+| `displayName` | `idp.Name` | `string` | Display label used in BloodHound. |
+| `oktaDomain` | Constructor argument `domainName` | `string` | Okta organization domain where the IdP exists. |
+| `created` | `idp.Created` | `datetime` | IdP creation timestamp. |
+| `issuerMode` | `idp.IssuerMode.Value` | `string` | Issuer mode for the identity provider. |
+| `type` | `idp.Type.Value` | `string` | Identity provider category/type. |
+| `enabled` | `idp.Status == ACTIVE` | `bool` | Whether the IdP is active/enabled. |
+| `autoUserProvisioning` | `idp.Policy.Provisioning.Action == AUTO` | `bool` | Whether automatic user provisioning is enabled. |
+| `governedGroupIds` | Provisioning group assignments/filter | `string[]` | Group IDs governed by this IdP provisioning policy. |
+| `protocolType` | Protocol instance type (`SAML2`, `OIDC`, `OAUTH2`, `MTLS`, etc.) | `string` | Protocol configured for authentication through this IdP. |
+| `url` | Protocol endpoint URL | `string` | Primary authorization/SSO endpoint URL for the IdP. |
+| `entraTenantId` | Derived from SAML endpoint when Entra is detected | `string` | Associated Entra tenant ID when identifiable. |
+
+## Sample Property Values
+
+```yaml
+id: 0oazpi53t1cRNcPL4697
+name: X
+displayName: X
+oktaDomain: contoso.okta.com
+created: 2026-01-31T15:21:37+00:00
+issuerMode: DYNAMIC
+type: MICROSOFT
+enabled: false
+autoUserProvisioning: true
+governedGroupIds: []
+protocolType: OIDC
+url: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
+```

@@ -1,3 +1,5 @@
+# Okta_AgentPool
+
 ## Overview
 
 The `Okta_AgentPool` nodes represent Okta Agent Pools, which are collections of Okta Agents (represented as [Okta_Agent](Okta_Agent.md) nodes) that work together to provide high availability and load balancing for on-premises integrations.
@@ -17,3 +19,25 @@ The following agent pool types are supported by Okta:
 The most common agent pool type is the Active Directory (AD) Agent Pool, which consists of one or more AD Agents that facilitate bi-directional object synchronization between Okta and on-premises Active Directory environments.
 
 ![Okta AD Agent Pools displayed in BloodHound](../Images/bloodhound-ad-agent-pool.png)
+
+## Properties
+
+| Name | Source | Type | Description |
+| ---- | ------ | ---- | ----------- |
+| `id` | `MakeAgentPoolUnique(agentPool.Id)` | `string` | Unique agent pool identifier (domain-qualified). |
+| `name` | `agentPool.Name` | `string` | Name of the Okta agent pool. |
+| `displayName` | `agentPool.Name` | `string` | Display label used in BloodHound. |
+| `oktaDomain` | Constructor argument `domainName` | `string` | Okta organization domain where the pool is defined. |
+| `operationalStatus` | `agentPool.OperationalStatus.Value` | `string` | Current health/operational state of the agent pool. |
+| `type` | `agentPool.Type.Value` | `string` | Agent pool type (for example AD, LDAP, IWA, RADIUS). |
+
+## Sample Property Values
+
+```yaml
+id: 0oaxg9rhdd7ncGCXv697_pool
+name: contoso.local
+displayName: contoso.local
+oktaDomain: contoso.okta.com
+operationalStatus: DISRUPTED
+type: AD
+```

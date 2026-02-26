@@ -1,9 +1,75 @@
+# Okta_Group
+
 ## Overview
 
 Groups in Okta are collections of users that can be used to manage access to applications and resources. Groups can be created manually or synchronized from external directories such as Active Directory.
 The built-in **Everyone** group always contains all users in the Okta organization. Only users can be members of groups and groups cannot be nested.
 
 In `OktaHound`, groups are represented as `Okta_Group` nodes.
+
+## Properties
+
+| Name | Source | Type | Description |
+| ---- | ------ | ---- | ----------- |
+| `id` | `group.Id` | `string` | Unique group identifier. |
+| `name` | `groupProfile.Name` / `adGroupProfile.Name` | `string` | Group name in Okta (or synchronized source). |
+| `displayName` | `groupProfile.Name` / `adGroupProfile.Name` | `string` | Display label used in BloodHound. |
+| `oktaDomain` | Constructor argument `domainName` | `string` | Okta organization domain where the group exists. |
+| `hasRoleAssignments` | `OktaSecurityPrincipal` default | `bool` | Indicates whether role assignments exist for the group principal. |
+| `created` | `group.Created` | `datetime` | Group creation timestamp. |
+| `lastUpdated` | `group.LastUpdated` | `datetime` | Last update timestamp. |
+| `lastMembershipUpdated` | `group.LastMembershipUpdated` | `datetime` | Last membership change timestamp. |
+| `oktaGroupType` | `group.Type.Value` | `string` | Group type (for example `OKTA_GROUP`, `APP_GROUP`, `BUILT_IN`). |
+| `objectClass` | `group.ObjectClass[0]` | `string` | Source object class (for example AD security principal). |
+| `description` | Profile-specific description | `string` | Group description text. |
+| `objectSid` | AD profile only (`adGroupProfile.ObjectSid`) | `string` | SID for synchronized Active Directory groups. |
+| `distinguishedName` | AD profile only (`adGroupProfile.Dn`) | `string` | Active Directory distinguished name. |
+| `samAccountName` | AD profile only (`adGroupProfile.SamAccountName`) | `string` | Active Directory SAM account name. |
+| `domainQualifiedName` | AD profile only (`adGroupProfile.WindowsDomainQualifiedName`) | `string` | Domain-qualified name of the AD group. |
+| `groupScope` | AD profile only (`adGroupProfile.GroupScope`) | `string` | AD group scope (for example global, domainLocal, universal). |
+| `groupType` | AD profile only (`adGroupProfile.GroupType`) | `string` | AD group type classification. |
+| `objectGuid` | AD profile only (`adGroupProfile.ExternalId` decoded) | `string` | Decoded AD object GUID when available. |
+
+## Sample Property Values
+
+Example of a group created directly in Okta:
+
+```yaml
+id: 00gxg12p4kFOkyXLb697
+name: Engineering
+displayName: Engineering
+description: Engineering department group
+oktaDomain: contoso.okta.com
+hasRoleAssignments: false
+oktaGroupType: OKTA_GROUP
+objectClass: okta:user_group
+created: 2025-11-14T08:00:25+00:00
+lastUpdated: 2025-11-14T08:00:25+00:00
+lastMembershipUpdated: 2025-11-14T08:00:25+00:00
+```
+
+Example of a group synchronized from Active Directory:
+
+```yaml
+id: 00gxga7s3yDJ71OzW697
+name: Sales
+displayName: Sales
+description: Sales department group
+oktaDomain: contoso.okta.com
+hasRoleAssignments: false
+oktaGroupType: APP_GROUP
+objectClass: okta:windows_security_principal
+objectSid: S-1-5-21-71365889-924527929-2677699343-2536
+distinguishedName: CN=Sales,CN=Groups,DC=contoso,DC=local
+samAccountName: Sales
+domainQualifiedName: CONTOSO\Sales
+groupScope: Global
+groupType: Security
+objectGuid: 4ab65ef0-ab82-4017-b5ee-1c20facd4d6a
+created: 2025-11-14T12:58:13+00:00
+lastUpdated: 2025-11-14T13:05:44+00:00
+lastMembershipUpdated: 2025-11-14T12:58:13+00:00
+```
 
 ## Synchronization with External Directories
 
@@ -35,4 +101,3 @@ graph TB
     end
     ad == Sync ==> Okta
 ```
-

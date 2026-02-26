@@ -1,3 +1,5 @@
+# Okta_DeviceOf
+
 ## Edge Schema
 
 - Source: [Okta_Device](../NodeDescriptions/Okta_Device.md)

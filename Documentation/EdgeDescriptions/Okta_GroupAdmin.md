@@ -1,3 +1,5 @@
+# Okta_GroupAdmin
+
 ## Edge Schema
 
 - Source: [Okta_User](../NodeDescriptions/Okta_User.md), [Okta_Group](../NodeDescriptions/Okta_Group.md), [Okta_Application](../NodeDescriptions/Okta_Application.md)

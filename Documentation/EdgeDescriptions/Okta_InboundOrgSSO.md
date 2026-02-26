@@ -1,3 +1,5 @@
+# Okta_InboundOrgSSO
+
 ## Edge Schema
 
 - Source: [AZTenant](https://bloodhound.specterops.io/resources/nodes/az-tenant)

@@ -1,3 +1,5 @@
+# Okta_AppAssignment
+
 ## Edge Schema
 
 - Source: [Okta_User](../NodeDescriptions/Okta_User.md), [Okta_Group](../NodeDescriptions/Okta_Group.md)

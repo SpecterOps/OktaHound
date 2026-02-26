@@ -1,3 +1,5 @@
+# Okta_Role
+
 ## Overview
 
 Okta provides a handful of [built-in administrative roles](https://help.okta.com/en-us/content/topics/security/administrators-admin-comparison.htm) that can be assigned to users, groups, and applications to delegate administrative tasks. These roles have predefined permissions and cannot be modified.
@@ -26,6 +28,42 @@ The following roles can either be scoped to specific resources or assigned organ
 
 In `OktaHound`, built-in roles are represented as `Okta_Role` nodes.
 
+## Properties
+
+| Name | Source | Type | Description |
+| ---- | ------ | ---- | ----------- |
+| `id` | Constructor argument `id` | `string` | Unique role identifier. |
+| `name` | Constructor argument `name` | `string` | Role name. |
+| `displayName` | Constructor argument `name` | `string` | Display-friendly role name. |
+| `oktaDomain` | Constructor argument `oktaDomain` | `string` | Okta tenant domain used by the collector. |
+| `description` | Constructor argument `description` | `string` | Role description text when available. |
+| `permissions` | Populated by `FetchOktaBuiltinRolePermissions` | `string[]` | Effective permission labels associated with the role (may be empty if unavailable from API). |
+
+## Sample Property Values
+
+```yaml
+id: APP_ADMIN@contoso.okta.com
+name: Application Administrator
+displayName: Application Administrator
+oktaDomain: contoso.okta.com
+permissions:
+    - okta.apps.manage
+    - okta.apps.read
+    - okta.apps.assignment.manage
+    - okta.apps.clientCredentials.read
+    - okta.users.appAssignment.manage
+    - okta.groups.appAssignment.manage
+    - okta.policies.manage
+    - okta.policies.read
+    - okta.users.read
+    - okta.groups.read
+    - okta.users.userprofile.manage
+    - okta.users.userprofile.read
+    - okta.profilesources.import.run
+    - okta.agents.register
+    - okta.realms.read
+```
+
 ## Built-In Role Identifiers
 
 When working with roles using the Okta API, the built-in roles are referenced by the following identifiers:
@@ -51,6 +89,5 @@ To make the role identifiers unique, the `OktaHound` collector adds the organiza
 
 Unlike custom roles, built-in roles have fixed permissions that cannot be changed.
 However, the exact OAuth 2.0 scopes granted to each built-in role are not publicly documented by Okta and cannot even be retrieved via the API.
-
-> [!WARNING]
-> Research on the exact permissions of built-in roles in Okta is still ongoing.
+We therefore did the mapping by ourselves based on the role descriptions in the Okta documentation.
+Hence, the resulting permissions ingested to BloodHound are best-effort approximations and may not be 100% accurate.

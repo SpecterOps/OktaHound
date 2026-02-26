@@ -1,12 +1,11 @@
-# OktaHound Extension Schema
-
+# Schema
 ## Metadata
 
-**Name:** OktaHound<br>
-**Display Name:** Okta (OktaHound)<br>
-**Version:** 1.1.0<br>
-**Namespace:** Okta<br>
-**Environment Kind:** Okta_Organization<br>
+**Name:** OktaHound<br />
+**Display Name:** Okta (OktaHound)<br />
+**Version:** 1.1.0<br />
+**Namespace:** Okta<br />
+**Environment Kind:** Okta_Organization<br />
 **Source Kind:** Okta
 
 ## Nodes
@@ -38,6 +37,8 @@
 | Relationship Kind | Traversable | Description |
 |-------------------|:-----------:|-------------|
 | [Okta_AddMember](EdgeDescriptions/Okta_AddMember.md) | ✅ | Ability to add or remove members in scoped Okta groups |
+| [Okta_AgentMemberOf](EdgeDescriptions/Okta_AgentMemberOf.md) | ✅ | Membership of an Okta agent in an agent pool |
+| [Okta_AgentPoolFor](EdgeDescriptions/Okta_AgentPoolFor.md) | ✅ | Relationship between an AD agent pool and its backing AD application |
 | [Okta_ApiTokenFor](EdgeDescriptions/Okta_ApiTokenFor.md) | ✅ | User ownership of an Okta API token |
 | [Okta_AppAdmin](EdgeDescriptions/Okta_AppAdmin.md) | ✅ | Application administrator role assignment |
 | [Okta_AppAssignment](EdgeDescriptions/Okta_AppAssignment.md) | ❌ | Assignment of users or groups to an Okta application |
@@ -48,14 +49,15 @@
 | [Okta_GroupMembershipAdmin](EdgeDescriptions/Okta_GroupMembershipAdmin.md) | ✅ | Group membership administrator role assignment |
 | [Okta_GroupPull](EdgeDescriptions/Okta_GroupPull.md) | ✅ | Import of group memberships from an external application |
 | [Okta_GroupPush](EdgeDescriptions/Okta_GroupPush.md) | ❌ | Provisioning of group memberships to an external application |
-| [Okta_HasAgent](EdgeDescriptions/Okta_HasAgent.md) | ❌ | Membership of an agent within an agent pool |
 | [Okta_HasRole](EdgeDescriptions/Okta_HasRole.md) | ❌ | Assignment of a built-in or custom role to a principal |
 | [Okta_HasRoleAssignment](EdgeDescriptions/Okta_HasRoleAssignment.md) | ❌ | Relationship between a principal and a role assignment |
 | [Okta_HelpDeskAdmin](EdgeDescriptions/Okta_HelpDeskAdmin.md) | ✅ | Help desk administrator role assignment |
+| [Okta_HostsAgent](EdgeDescriptions/Okta_HostsAgent.md) | ✅ | Relationship between an AD server and the Okta agent running on that host |
 | [Okta_IdentityProviderFor](EdgeDescriptions/Okta_IdentityProviderFor.md) | ✅ | Trust relationship between an identity provider and Okta users |
 | [Okta_IdpGroupAssignment](EdgeDescriptions/Okta_IdpGroupAssignment.md) | ❌ | Identity provider group assignment to an Okta group |
 | [Okta_InboundOrgSSO](EdgeDescriptions/Okta_InboundOrgSSO.md) | ✅ | Single sign-on from an external organization into Okta |
 | [Okta_InboundSSO](EdgeDescriptions/Okta_InboundSSO.md) | ✅ | Single sign-on from an external identity provider into Okta |
+| [Okta_KerberosSSO](EdgeDescriptions/Okta_KerberosSSO.md) | ✅ | Agentless desktop SSO relationship from on-prem AD user account to Okta AD application |
 | [Okta_KeyOf](EdgeDescriptions/Okta_KeyOf.md) | ✅ | JSON Web Key associated with an Okta application |
 | [Okta_ManageApp](EdgeDescriptions/Okta_ManageApp.md) | ✅ | Ability to manage scoped Okta applications |
 | [Okta_ManagerOf](EdgeDescriptions/Okta_ManagerOf.md) | ❌ | Manager relationship between Okta users |
