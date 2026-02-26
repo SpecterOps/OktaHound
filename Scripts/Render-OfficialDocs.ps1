@@ -47,7 +47,7 @@ Write-Host '== Step 3: Rendering custom queries ==' -ForegroundColor Cyan
 if (-not (Test-Path -Path $queriesOutputDir -PathType Container)) {
     New-Item -Path $queriesOutputDir -ItemType Directory -Force | Out-Null
 }
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-CustomQueries.ps1') -OutputFilePath $queriesOutputPath
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-CustomQueries.ps1') -OutputFilePath $queriesOutputPath -QueriesPath 'https://github.com/SpecterOps/OktaHound/tree/main/Src/Queries'
 
 # Step 4: Render privilege zone selectors MDX
 Write-Host '== Step 4: Rendering privilege zone selectors ==' -ForegroundColor Cyan
