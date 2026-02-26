@@ -7,3 +7,35 @@ These tokens are always associated with a specific user in Okta, and the permiss
 The use of API tokens is generally discouraged in favor of OAuth 2.0 access tokens, as they provide better security and flexibility. However, API tokens are still widely used by Okta customers.
 
 In `OktaHound`, API tokens are represented as `Okta_ApiToken` nodes.
+
+## Properties
+
+| Name | Source | Type | Description |
+| ---- | ------ | ---- | ----------- |
+| `id` | `apiToken.Id` | `string` | Unique API token identifier. |
+| `name` | `apiToken.Name` | `string` | Friendly name of the API token. |
+| `displayName` | `apiToken.Name` | `string` | Display label used in BloodHound. |
+| `oktaDomain` | Constructor argument `domainName` | `string` | Okta organization domain where the token exists. |
+| `userId` | `apiToken.UserId` | `string` | ID of the Okta user that owns the token. |
+| `clientName` | `apiToken.ClientName` | `string` | Client/application name associated with the token. |
+| `created` | `apiToken.Created` | `datetime` | Token creation timestamp. |
+| `lastUpdated` | `apiToken.LastUpdated` | `datetime` | Last update timestamp of token metadata. |
+| `expiresAt` | `apiToken.ExpiresAt` | `datetime` | Token expiration timestamp. |
+| `networkConnection` | `apiToken.Network.Connection` | `string` | Network connection restriction for token usage. |
+| `tokenWindow` | `apiToken.TokenWindow` (ISO-8601 period) | `duration` | Inactivity window converted to `TimeSpan` when present. |
+
+## Sample Property Values
+
+```yaml
+id: 00T36fk75smeJybKx697
+name: Postman
+displayName: Postman
+oktaDomain: contoso.okta.com
+userId: 00uw0o8iizq37KgKP697
+clientName: Okta API
+created: 2025-10-03T10:08:09+00:00
+lastUpdated: 2026-01-31T20:22:42+00:00
+expiresAt: 2026-03-02T20:22:42+00:00
+networkConnection: ANYWHERE
+tokenWindow: 30.00:00:00
+```

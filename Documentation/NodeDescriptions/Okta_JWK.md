@@ -5,3 +5,33 @@ This is an asymmetric authentication mechanism where the application possesses a
 A service application can have multiple JWKs configured for key rotation purposes.
 
 JWKs are represented as `Okta_JWK` nodes in BloodHound.
+
+## Properties
+
+| Name | Source | Type | Description |
+| ---- | ------ | ---- | ----------- |
+| `id` | `jwk.Id` | `string` | Unique JSON Web Key identifier. |
+| `name` | `jwk.Kid` (fallback `jwk.Id`) | `string` | Key identifier used as node name. |
+| `displayName` | `jwk.Kid` (fallback `jwk.Id`) | `string` | Display label used in BloodHound. |
+| `oktaDomain` | Constructor argument `domainName` | `string` | Okta organization domain where the key is configured. |
+| `status` | `jwk.Status.Value` | `string` | Current lifecycle status of the key. |
+| `created` | `jwk.Created` | `datetime` | Key creation timestamp. |
+| `lastUpdated` | `jwk.LastUpdated` | `datetime` | Last update timestamp. |
+| `kid` | `jwk.Kid` | `string` | JSON Web Key identifier (`kid`). |
+| `kty` | `jwk.Kty.Value` | `string` | Key type (`RSA`, `EC`, ...). |
+| `use` | `jwk.Use` | `string` | Intended key usage (`sig`, `enc`). |
+
+## Sample Property Values
+
+```yaml
+id: pksw0py294dQ80EdI697
+name: ncxmNARybDrxlemwkrvyphCYQ2VwMG9cxV95jgVziZ4
+displayName: ncxmNARybDrxlemwkrvyphCYQ2VwMG9cxV95jgVziZ4
+oktaDomain: contoso.okta.com
+status: ACTIVE
+created: 2025-10-02T10:14:44Z
+lastUpdated: 2025-10-02T10:26:27Z
+kid: ncxmNARybDrxlemwkrvyphCYQ2VwMG9cxV95jgVziZ4
+kty: RSA
+use: sig
+```

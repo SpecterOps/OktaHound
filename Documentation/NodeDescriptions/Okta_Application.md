@@ -6,6 +6,121 @@ With the exception of API Service applications, Okta users and groups can be ass
 
 In `OktaHound`, applications are represented as `Okta_Application` nodes.
 
+## Properties
+
+| Name | Source | Type | Description |
+| ---- | ------ | ---- | ----------- |
+| `id` | `application.Id` | `string` | Unique application identifier. |
+| `name` | `application.Label` | `string` | Name/label of the Okta application. |
+| `displayName` | `application.Label` | `string` | Display label used in BloodHound. |
+| `oktaDomain` | Constructor argument `domainName` | `string` | Okta organization domain where the app exists. |
+| `hasRoleAssignments` | `OktaSecurityPrincipal` default | `bool` | Indicates whether role assignments exist for the app principal. |
+| `created` | `application.Created` | `datetime` | Application creation timestamp. |
+| `lastUpdated` | `application.LastUpdated` | `datetime` | Last update timestamp of the app definition. |
+| `status` | `application.Status.Value` | `string` | Current lifecycle status of the application instance. |
+| `signOnMode` | `application.SignOnMode.Value` | `string` | Sign-on protocol mode (for example `OPENID_CONNECT`, `SAML_2_0`, `AUTO_LOGIN`). |
+| `features` | `application.Features[]` | `string[]` | Enabled app capabilities such as SCIM provisioning and password push. |
+| `appType` | Type-specific name field | `string` | App type identifier (for example `office365`, `snowflake`, `githubcloud`). |
+| `clientType` | OIDC only (`OauthClient.ApplicationType.Value`) | `string` | OIDC client type (for example `web`, `native`, `browser`, `service`). |
+| `grantTypes` | OIDC only (`OauthClient.GrantTypes[]`) | `string[]` | OAuth 2.0 grant types allowed for OIDC apps. |
+| `userNameMapping` | App credential template | `string` | Username mapping template used for provisioning/federation. |
+| `url` | App sign-on configuration | `string` | Primary sign-on/ACS/login URL resolved by app type. |
+| `domain` | App-specific settings | `string` | Directory or service domain associated with the app integration. |
+| `domains` | App-specific settings | `string[]` | Domain list associated with the app integration when provided. |
+| `subDomain` | App-specific settings | `string` | Subdomain value used by app-specific integrations. |
+| `regionType` | App-specific settings | `string` | Region suffix/type used by the app integration. |
+| `serviceDomain` | App-specific settings | `string` | Service/API domain used by workflow or API-connected apps. |
+| `awsEnvironmentType` | App-specific settings | `string` | AWS environment identifier for AWS app integrations. |
+| `sessionDuration` | App-specific settings | `integer` | Session duration setting (seconds) for supported app integrations. |
+| `entityID` | SAML settings | `string` | SAML Entity ID for SAML integrations. |
+| `acsURL` | SAML settings | `string` | Assertion Consumer Service (ACS) URL for SAML integrations. |
+| `loginURL` | SWA/SAML settings | `string` | App login URL used by SWA/SAML configurations. |
+| `redirectURI` | OIDC settings | `string` | OIDC redirect URI configured for the integration. |
+| `initiateLoginURI` | OIDC settings | `string` | Okta-initiated login URI for supported OIDC apps. |
+| `microsoftDiscoveryEndpoint` | Microsoft app settings | `string` | OIDC discovery endpoint used by Microsoft integrations. |
+| `microsoftAppId` | Microsoft app settings | `string` | Microsoft application/client ID configured in the integration. |
+| `microsoftTenantId` | Microsoft app settings | `string` | Microsoft Entra tenant GUID associated with the app integration. |
+| `msftTenant` | Microsoft app settings | `string` | Microsoft tenant short name/domain used by the app integration. |
+| `githubOrg` | GitHub app settings | `string` | GitHub organization mapped to the integration. |
+| `appFilter` | App-specific settings | `string` | App-side filter expression value. |
+| `groupFilter` | App-specific settings | `string` | Group filter pattern used for provisioning/mapping. |
+| `filterGroupsByOU` | App-specific settings | `bool` | Whether group filtering by OU is enabled. |
+| `namingContext` | AD-related app settings | `string` | Naming context configured for AD-backed app integration. |
+| `domainSid` | AD-related app settings | `string` | Domain SID associated with AD-backed integration. |
+| `windowsTransportEnabled` | AD-related app settings | `bool` | Indicates if Windows transport is enabled. |
+| `useGroupMapping` | App-specific settings | `bool` | Whether group mapping is enabled for integration. |
+| `joinAllRoles` | AWS app settings | `bool` | Whether all discovered roles are joined/collected. |
+| `roleValuePattern` | AWS app settings | `string` | Role mapping pattern template for AWS role federation. |
+| `requireAdminConsent` | App-specific settings | `bool` | Indicates if admin consent is required. |
+| `afwOnly` | App-specific settings | `bool` | App-specific flag indicating constrained integration behavior. |
+| `wsFedConfigureType` | WS-Fed settings | `string` | WS-Federation configuration mode. |
+| `oauthScopes` | Consent grants (populated later) | `string[]` | OAuth scopes granted to the application in Okta. |
+| `<app-specific settings>` | `Settings.App` additional properties | `mixed` | Additional key/value settings copied from Okta app configuration. |
+
+## Sample Property Values
+
+```yaml
+id: 0oaw0o8ig2p26uphb697
+name: Okta Dashboard
+displayName: Okta Dashboard
+oktaDomain: contoso.okta.com
+hasRoleAssignments: false
+created: 2025-10-02T09:21:32+00:00
+lastUpdated: 2025-10-02T09:21:32+00:00
+status: ACTIVE
+signOnMode: OPENID_CONNECT
+features: []
+appType: okta_enduser
+clientType: web
+grantTypes:
+  - authorization_code
+userNameMapping: ${source.login}
+url: https://example.contoso.com/login
+domain: contoso.com
+domains:
+  - contoso.com
+subDomain: cgxovhz-nr46411
+regionType: com
+serviceDomain: https://oauth.workflows.okta.com
+awsEnvironmentType: aws.amazon
+sessionDuration: 3600
+entityID: https://res-gaenv1-232e2f51-652d-42b1-b1c9-cf38b25638db.auth.us-east-1.amazoncognito.com
+acsURL: https://res-gaenv1-232e2f51-652d-42b1-b1c9-cf38b25638db.auth.us-east-1.amazoncognito.com/saml2/idpresponse
+loginURL: https://jss.acme.com/
+redirectURI: https://contoso.workflows.okta.com/oidc/0oaw0om7262i3vXoJ697/cb
+initiateLoginURI: https://contoso.workflows.okta.com/oidc/0oaw0om7262i3vXoJ697/login
+microsoftDiscoveryEndpoint: https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration
+microsoftAppId: 9539823d-3806-43cf-808d-962b53635c3b
+microsoftTenantId: 996af01c-adef-43b6-af73-7ae92866441e
+msftTenant: dsinternals3
+githubOrg: SpecterTst
+appFilter: okta
+groupFilter: aws_(?{{accountid}}\d+)_(?{{role}}[a-zA-Z0-9+=,.@\-_]+)
+filterGroupsByOU: false
+namingContext: test.local
+domainSid: S-1-5-21-71365889-924527929-2677699343
+windowsTransportEnabled: false
+useGroupMapping: false
+joinAllRoles: false
+roleValuePattern: arn:aws:iam::${accountid}:saml-provider/OKTA,arn:aws:iam::${accountid}:role/${role}
+requireAdminConsent: true
+afwOnly: false
+wsFedConfigureType: AUTO
+oauthScopes:
+  - okta.personal.authenticator.read
+  - okta.users.read.self
+  - okta.personal.manage
+  - okta.personal.authenticator.manage
+  - okta.personal.read
+  - okta.internal.navigation.enduser.read
+  - okta.myAccount.sessions.manage
+  - okta.internal.enduser.manage
+  - okta.enduser.dashboard.manage
+  - okta.users.manage.self
+  - okta.internal.enduser.read
+  - okta.enduser.dashboard.read
+```
+
 ## User Name Mapping
 
 User name mapping from Okta to SAML 2.0, OpenID Connect (OIDC), and Secure Web Authentication (SWA) applications is configurable in the Okta Admin Console, with the default setting being the Okta username pass-through, i.e., `${source.login}`.
@@ -182,4 +297,3 @@ indicating if SCIM is enabled and which protocol capabilities are supported:
 | OPP_SCIM_INCREMENTAL_IMPORTS* | Supports incremental imports of users into the application from Okta |
 | IMPORT_PROFILE_UPDATES    | Supports importing profile updates into Okta from the application |
 | GROUP_PUSH                | Supports pushing groups and group memberships from Okta to the application |
-

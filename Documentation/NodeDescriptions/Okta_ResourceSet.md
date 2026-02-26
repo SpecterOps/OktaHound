@@ -33,3 +33,27 @@ In `OktaHound`, resource sets are represented as `Okta_ResourceSet` nodes.
 > [!NOTE]
 > The built-in resource set `Workflows Resource Set` has the `WORKFLOWS_IAM_POLICY` identifier in all Okta organizations.
 > To make it unique, the `OktaHound` collector adds the organization domain name as a suffix to the resource set's ID, e.g., `WORKFLOWS_IAM_POLICY@contoso.okta.com`.
+
+## Properties
+
+| Name | Source | Type | Description |
+| ---- | ------ | ---- | ----------- |
+| `id` | `MakeResourceSetIdUnique(resourceSet.Id, domainName)` | `string` | Unique resource set identifier (domain-qualified). |
+| `name` | Constructor argument `name` | `string` | Resource set name. |
+| `displayName` | Constructor argument `name` | `string` | Display-friendly resource set name. |
+| `oktaDomain` | Constructor argument `oktaDomain` | `string` | Okta tenant domain used by the collector. |
+| `description` | Constructor argument `description` | `string` | Resource set description text. |
+| `created` | Constructor argument `created` | `datetime` | Resource set creation timestamp. |
+| `lastUpdated` | Constructor argument `lastUpdated` | `datetime` | Last resource set update timestamp. |
+
+## Sample Property Values
+
+```yaml
+id: WORKFLOWS_IAM_POLICY@contoso.okta.com
+name: Workflows Resource Set
+displayName: Workflows Resource Set
+oktaDomain: contoso.okta.com
+description: A resource set managed by Workflows Administrator
+created: 2025-10-22T13:29:26+00:00
+lastUpdated: 2025-10-22T13:29:26+00:00
+```

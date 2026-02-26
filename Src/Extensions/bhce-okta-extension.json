@@ -196,9 +196,24 @@
       "is_traversable": true
     },
     {
-      "name": "Okta_HasAgent",
-      "description": "Membership of an agent within an agent pool",
-      "is_traversable": false
+      "name": "Okta_AgentMemberOf",
+      "description": "Membership of an Okta agent in an agent pool",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_AgentPoolFor",
+      "description": "Relationship between an AD agent pool and its backing AD application",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_KerberosSSO",
+      "description": "Agentless desktop SSO relationship from on-prem AD user account to Okta AD application",
+      "is_traversable": true
+    },
+    {
+      "name": "Okta_HostsAgent",
+      "description": "Relationship between an AD server and the Okta agent running on that host",
+      "is_traversable": true
     },
     {
       "name": "Okta_CreatorOf",

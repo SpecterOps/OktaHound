@@ -26,7 +26,7 @@ This query can be imported into BloodHound from the [ad-agents-hosts.json](../Sr
 Lists all Okta agent pools and their associated agents.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_AgentPool)-[:Okta_HasAgent]->(:Okta_Agent)
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_AgentPool)<-[:Okta_AgentMemberOf]-(:Okta_Agent)
 RETURN p
 LIMIT 1000
 ```

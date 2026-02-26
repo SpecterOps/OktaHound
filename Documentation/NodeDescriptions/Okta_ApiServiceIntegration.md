@@ -12,6 +12,45 @@ API service integrations in Okta represent OAuth 2.0 service (daemon) applicatio
 
 In `OktaHound`, API service integrations are represented as `Okta_ApiServiceIntegration` nodes.
 
+## Properties
+
+| Name | Source | Type | Description |
+| ---- | ------ | ---- | ----------- |
+| `id` | `service.Id` | `string` | Unique API service integration identifier. |
+| `name` | `service.Name` | `string` | Name of the API service integration in Okta. |
+| `displayName` | `service.Name` | `string` | Display label used in BloodHound. |
+| `oktaDomain` | Constructor argument `domainName` | `string` | Okta organization domain where the integration exists. |
+| `appType` | `service.Type` | `string` | Integration/application type identifier. |
+| `oauthScopes` | `service.GrantedScopes` | `string[]` | OAuth 2.0 scopes granted to the integration. |
+| `createdAt` | `service.CreatedAt` | `datetime` | Timestamp when the integration was created. |
+
+## Sample Property Values
+
+```yaml
+id: 0oaz7jy5f2oXnvtmN697
+name: Falcon Shield
+displayName: Falcon Shield
+oktaDomain: contoso.okta.com
+appType: falconshieldapiservice
+oauthScopes:
+  - okta.users.read
+  - okta.oauthIntegrations.read
+  - okta.threatInsights.read
+  - okta.devices.read
+  - okta.apiTokens.read
+  - okta.roles.read
+  - okta.logs.read
+  - okta.groups.read
+  - okta.apps.read
+  - okta.domains.read
+  - okta.factors.read
+  - okta.authenticators.read
+  - okta.policies.read
+  - okta.networkZones.read
+  - okta.features.read
+createdAt: 2026-01-15T12:25:42.000Z
+```
+
 ## Integration OAuth 2.0 Scopes
 
 Each API service integration comes with a pre-defined set of OAuth 2.0 scopes to access Okta APIs:

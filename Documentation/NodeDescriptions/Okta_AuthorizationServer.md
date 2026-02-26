@@ -6,3 +6,35 @@ In `OktaHound`, authorization servers are represented as `Okta_AuthorizationServ
 
 > [!WARNING]
 > The relationships between authorization servers and applications are currently not evaluated by `OktaHound`.
+
+## Properties
+
+| Name | Source | Type | Description |
+| ---- | ------ | ---- | ----------- |
+| `id` | `server.Id` | `string` | Unique authorization server identifier. |
+| `name` | `server.Name` | `string` | Authorization server name. |
+| `displayName` | `server.Name` | `string` | Display label used in BloodHound. |
+| `oktaDomain` | Constructor argument `domainName` | `string` | Okta organization domain where the server exists. |
+| `created` | `server.Created` | `datetime` | Authorization server creation timestamp. |
+| `lastUpdated` | `server.LastUpdated` | `datetime` | Last update timestamp for the server configuration. |
+| `description` | `server.Description` | `string` | Human-readable server description. |
+| `status` | `server.Status.Value` | `string` | Current lifecycle status. |
+| `issuer` | `server.Issuer` | `string` | Token issuer URL. |
+| `issuerMode` | `server.IssuerMode` | `string` | Issuer mode selected in Okta. |
+| `audiences` | `server.Audiences` | `string[]` | Allowed audience values for issued tokens. |
+
+## Sample Property Values
+
+```yaml
+id: ausz6ipkn4u0hDzyf697
+name: app creation
+displayName: app creation
+oktaDomain: contoso.okta.com
+status: INACTIVE
+issuer: https://contoso.okta.com/oauth2/ausz6ipkn4u0hDzyf697
+issuerMode: DYNAMIC
+audiences:
+  - test
+created: 2026-01-14T15:41:28+00:00
+lastUpdated: 2026-01-14T16:09:30+00:00
+```

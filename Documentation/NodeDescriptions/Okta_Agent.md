@@ -7,6 +7,33 @@ One or more agents are grouped into Agent Pools, represented by the [Okta_AgentP
 
 ![Active Directory Agent in BloodHound](../Images/bloodhound-ad-agent.png)
 
-> [!WARNING]
-> Edges between the `Okta_Agent` and AD `Computer` nodes are not created in the current version of `OktaHound`.
-> This functionality is planned for a future release.
+## Properties
+
+| Name | Source | Type | Description |
+| ---- | ------ | ---- | ----------- |
+| `id` | `agent.Id` | `string` | Unique agent identifier. |
+| `name` | `Name` | `string` | Agent name shown in Okta Admin Console. |
+| `displayName` | `Name` | `string` | Display label used in BloodHound. |
+| `oktaDomain` | Constructor argument `domainName` | `string` | Okta organization domain where the agent is registered. |
+| `poolName` | Constructor argument `agentPoolName` | `string` | Name of the parent [Okta_AgentPool](Okta_AgentPool.md). For AD pools this typically corresponds to the synced AD domain. |
+| `operationalStatus` | `OperationalStatus.Value` | `string` | Runtime health/operational state reported by Okta. |
+| `updateStatus` | `UpdateStatus.Value` | `string` | Agent software update state. |
+| `type` | `Type.Value` | `string` | Agent type (for example AD, LDAP, IWA, RADIUS). |
+| `version` | `_Version` | `string` | Agent software version. |
+| `poolId` | `PoolId` | `string` | Identifier of the parent Okta agent pool. |
+| `lastConnection` | `LastConnection` (Unix ms → `DateTimeOffset`) | `datetime` | Timestamp of the last successful agent connection to Okta. |
+
+## Sample Property Values
+
+```yaml
+id: a53xfufl4rqWcHhQo697
+name: LON-SRV01
+displayName: LON-SRV01
+poolId: 0oaxg9rhdd7ncGCXv697
+oktaDomain: contoso.okta.com
+poolName: contoso.local
+operationalStatus: DISRUPTED
+type: AD
+version: 3.22.0
+lastConnection: 2026-01-15T02:29:40+00:00
+```

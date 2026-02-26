@@ -20,3 +20,31 @@ The following [policy types](https://developer.okta.com/docs/api/openapi/okta-ma
 
 The `OktaHound` collector specifically reads the `IDP_DISCOVERY` policies to check
 if the [Agentless Desktop SSO](https://help.okta.com/en-us/content/topics/directory/configuring_agentless_sso.htm) feature is enabled in the organization through at least one such policy.
+
+## Properties
+
+| Name | Source | Type | Description |
+| ---- | ------ | ---- | ----------- |
+| `id` | Constructor argument `id` | `string` | Unique policy identifier. |
+| `name` | Constructor argument `name` | `string` | Policy name. |
+| `displayName` | Constructor argument `name` | `string` | Display-friendly policy name. |
+| `oktaDomain` | Constructor argument `oktaDomain` | `string` | Okta tenant domain used by the collector. |
+| `description` | Constructor argument `description` | `string` | Policy description text. |
+| `type` | Constructor argument `policyType` | `string` | Policy type identifier (for example `OKTA_SIGN_ON`, `ACCESS_POLICY`, `PROFILE_ENROLLMENT`). |
+| `priority` | Constructor argument `priority` | `integer` | Policy evaluation order priority. |
+| `system` | Constructor argument `system` | `bool` | Indicates whether the policy is system-managed. |
+| `created` | Constructor argument `created` | `datetime` | Policy creation timestamp. |
+
+## Sample Property Values
+
+```yaml
+id: rstw0o8il8ktUxo3t697
+name: Okta Account Management Policy
+displayName: Okta Account Management Policy
+oktaDomain: contoso.okta.com
+description: This policy defines how users must authenticate for authenticator enrollment, password reset, or unlock account. Password policy rules control whether to enforce this policy for password reset and unlock account.
+type: ACCESS_POLICY
+priority: 1
+system: false
+created: 2025-10-02T09:21:37+00:00
+```

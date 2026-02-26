@@ -9,3 +9,29 @@ An application can have up to two client secrets configured, to allow for secret
 ![Okta client secret rotation](../Images/app-client-secret-rotation.png)
 
 Client secrets are represented as `Okta_ClientSecret` nodes in BloodHound.
+
+## Properties
+
+| Name | Source | Type | Description |
+| ---- | ------ | ---- | ----------- |
+| `id` | `secret.Id` | `string` | Unique client secret identifier. |
+| `name` | `secret.SecretHash` | `string` | Hash identifier used as secret name/display label. |
+| `displayName` | `secret.SecretHash` | `string` | Display label used in BloodHound. |
+| `oktaDomain` | Constructor argument `domainName` | `string` | Okta organization domain where the secret is defined. |
+| `status` | `secret.Status.Value` | `string` | Current lifecycle status of the secret. |
+| `created` | `secret.Created` | `datetime` | Secret creation timestamp. |
+| `lastUpdated` | `secret.LastUpdated` | `datetime` | Last update timestamp for the secret metadata. |
+| `secret` | `secret.ClientSecret` | `string` | Redacted secret value (typically only trailing characters are exposed by API). |
+
+## Sample Property Values
+
+```yaml
+id: ocsxqwizfyqsf0aVG697
+name: T1e6fl4jGqvPkgd94NKx5g
+displayName: T1e6fl4jGqvPkgd94NKx5g
+oktaDomain: contoso.okta.com
+status: ACTIVE
+created: 2025-11-24T12:24:08.000Z
+lastUpdated: 2025-11-24T12:24:08.000Z
+secret: "<redacted>"
+```

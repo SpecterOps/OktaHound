@@ -10,6 +10,31 @@ and then assigned to [users](Okta_User.md), [groups](Okta_Group.md), and [applic
 
 Custom roles are represented as `Okta_CustomRole` and `Okta_RoleAssignment` nodes in `OktaHound`, similar to built-in roles.
 
+## Properties
+
+| Name | Source | Type | Description |
+| ---- | ------ | ---- | ----------- |
+| `id` | `role.Id` | `string` | Unique custom role identifier. |
+| `name` | `role.Label` | `string` | Name of the custom role. |
+| `displayName` | `role.Label` | `string` | Display label used in BloodHound. |
+| `oktaDomain` | Constructor argument `domainName` | `string` | Okta organization domain where the role is defined. |
+| `created` | `role.Created` | `datetime` | Custom role creation timestamp. |
+| `lastUpdated` | `role.LastUpdated` | `datetime` | Last update timestamp of the role definition. |
+| `permissions` | Populated by `FetchOktaCustomRolePermissions` | `string[]` | Effective permission labels associated with the custom role. |
+
+## Sample Property Values
+
+```yaml
+id: cr0wwdjuk0w96MpFr697
+name: IAM Readers
+displayName: IAM Readers
+oktaDomain: contoso.okta.com
+created: 2025-10-29T12:45:55+00:00
+lastUpdated: 2025-10-30T13:35:36+00:00
+permissions:
+  - okta.iam.read
+```
+
 ## Abusable Permissions of Custom Roles in Okta
 
 The following Okta permissions are particularly interesting from an offensive security perspective,
