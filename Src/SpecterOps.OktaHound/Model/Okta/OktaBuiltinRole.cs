@@ -1,10 +1,14 @@
-﻿using Okta.Sdk.Model;
+﻿using System.Text.Json.Serialization;
+using Okta.Sdk.Model;
 using SpecterOps.OktaHound.Model.OpenGraph;
 
 namespace SpecterOps.OktaHound.Model.Okta;
 
 internal sealed class OktaBuiltinRole : OktaRole
 {
+    [JsonIgnore]
+    private readonly string _originalId;
+
     public const string NodeKind = "Okta_Role";
     public const string ApplicationAdministratorEdgeKind = "Okta_AppAdmin";
     public const string GroupMembershipAdministratorEdgeKind = "Okta_GroupMembershipAdmin";
@@ -15,6 +19,12 @@ internal sealed class OktaBuiltinRole : OktaRole
     public const string HelpDeskAdministratorEdgeKind = "Okta_HelpDeskAdmin";
     public const string HasRoleEdgeKind = "Okta_HasRole";
 
+    /// <summary>
+    /// The original identifier of the built-in role as defined in Okta.
+    /// </summary>
+    [JsonIgnore]
+    public override string OriginalId => _originalId;
+    
     /// <summary>
     /// Represents a collection of all Okta built-in role identifiers.
     /// </summary>
@@ -49,6 +59,7 @@ internal sealed class OktaBuiltinRole : OktaRole
             throw new ArgumentException("Use the OktaCustomRole class for custom roles.");
         }
 
+        _originalId = role.Id;
         Name = role.Label;
         DisplayName = role.Label;
 
@@ -77,7 +88,7 @@ internal sealed class OktaBuiltinRole : OktaRole
     // as the exact mapping of built-in roles to permissions is not officially documented by Okta and may be subject to change.
     private void PopulatePermissions()
     {
-        if (Name == RoleType.APIACCESSMANAGEMENTADMIN.Value)
+        if (OriginalId == RoleType.APIACCESSMANAGEMENTADMIN.Value)
         {
             Permissions = [
                 // API Access Management Administrator
@@ -97,7 +108,7 @@ internal sealed class OktaBuiltinRole : OktaRole
                 "okta.realms.read" // View realms designation
             ];
         }
-        else if (Name == RoleType.APPADMIN.Value)
+        else if (OriginalId == RoleType.APPADMIN.Value)
         {
             Permissions = [
                 // Application Administrator
@@ -118,7 +129,7 @@ internal sealed class OktaBuiltinRole : OktaRole
                 "okta.realms.read" // View realms designation
             ];
         }
-        else if (Name == RoleType.GROUPMEMBERSHIPADMIN.Value)
+        else if (OriginalId == RoleType.GROUPMEMBERSHIPADMIN.Value)
         {
             Permissions = [
                 // Group Membership Administrator
@@ -133,7 +144,7 @@ internal sealed class OktaBuiltinRole : OktaRole
                 "okta.realms.read" // View realms designation
             ];
         }
-        else if (Name == RoleType.HELPDESKADMIN.Value)
+        else if (OriginalId == RoleType.HELPDESKADMIN.Value)
         {
             Permissions = [
                 // Help Desk Administrator
@@ -147,7 +158,7 @@ internal sealed class OktaBuiltinRole : OktaRole
                 "okta.realms.read" // View realms designation
             ];
         }
-        else if (Name == RoleType.MOBILEADMIN.Value)
+        else if (OriginalId == RoleType.MOBILEADMIN.Value)
         {
             Permissions = [
                 // Mobile Administrator
@@ -165,7 +176,7 @@ internal sealed class OktaBuiltinRole : OktaRole
                 "okta.realms.read" // View realms designation
             ];
         }
-        else if (Name == RoleType.ORGADMIN.Value)
+        else if (OriginalId == RoleType.ORGADMIN.Value)
         {
             Permissions = [
                 // Organization Administrator
@@ -212,7 +223,7 @@ internal sealed class OktaBuiltinRole : OktaRole
                 "okta.support.cases.manage" // Grant/manage Okta Support access/cases
             ];
         }
-        else if (Name == RoleType.READONLYADMIN.Value)
+        else if (OriginalId == RoleType.READONLYADMIN.Value)
         {
             Permissions = [
                 // Read-only Administrator
@@ -238,7 +249,7 @@ internal sealed class OktaBuiltinRole : OktaRole
                 "okta.realms.read" // View realms designation
             ];
         }
-        else if (Name == RoleType.REPORTADMIN.Value)
+        else if (OriginalId == RoleType.REPORTADMIN.Value)
         {
             Permissions = [
                 // Report Administrator
@@ -246,14 +257,14 @@ internal sealed class OktaBuiltinRole : OktaRole
                 "okta.logs.read" // View System Log (system events)
             ];
         }
-        else if (Name == RoleType.SUPERADMIN.Value)
+        else if (OriginalId == RoleType.SUPERADMIN.Value)
         {
             Permissions = [
                 // Super Administrator has full org-wide administrative control.
                 "*"
             ];
         }
-        else if (Name == RoleType.USERADMIN.Value)
+        else if (OriginalId == RoleType.USERADMIN.Value)
         {
             Permissions = [
                 // Group Administrator (USER_ADMIN)
@@ -275,7 +286,7 @@ internal sealed class OktaBuiltinRole : OktaRole
                 "okta.groups.manage" // Manage group rules (limitation: applies only if admin has access to all users and groups)
             ];
         }
-        else if (Name == RoleType.APIADMIN.Value)
+        else if (OriginalId == RoleType.APIADMIN.Value)
         {
             // This role is undocumented
             Permissions = [
@@ -284,7 +295,7 @@ internal sealed class OktaBuiltinRole : OktaRole
                 "okta.users.apitokens.clear"
             ];
         }
-        else if (Name == RoleType.ACCESSCERTIFICATIONSADMIN.Value)
+        else if (OriginalId == RoleType.ACCESSCERTIFICATIONSADMIN.Value)
         {
             Permissions = [
                 // Role: ACCESS_CERTIFICATIONS_ADMIN (Access Certifications Administrator)
@@ -296,7 +307,7 @@ internal sealed class OktaBuiltinRole : OktaRole
                 "okta.groups.read" // Read groups
             ];
         }
-        else if (Name == RoleType.ACCESSREQUESTSADMIN.Value)
+        else if (OriginalId == RoleType.ACCESSREQUESTSADMIN.Value)
         {
             Permissions = [
                 // Role: ACCESS_REQUESTS_ADMIN (Access Requests Administrator)
@@ -310,7 +321,7 @@ internal sealed class OktaBuiltinRole : OktaRole
                 "okta.users.appAssignment.manage" // Manage user app assignments
             ];
         }
-        else if (Name == RoleType.WORKFLOWSADMIN.Value)
+        else if (OriginalId == RoleType.WORKFLOWSADMIN.Value)
         {
             Permissions = [
                 // Role: WORKFLOWS_ADMIN (Workflows Administrator)
