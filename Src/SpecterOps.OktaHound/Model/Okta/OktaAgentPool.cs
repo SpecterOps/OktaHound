@@ -6,7 +6,10 @@ namespace SpecterOps.OktaHound.Model.Okta;
 internal sealed class OktaAgentPool : OktaNode
 {
     public const string NodeKind = "Okta_AgentPool";
-    public const string HasAgentEdgeKind = "Okta_HasAgent";
+    public const string AgentPoolForEdgeKind = "Okta_AgentPoolFor";
+    public const string AgentlessDesktopSSOEdgeKind = "Okta_KerberosSSO";
+    private const string TypePropertyName = "type";
+    private const string OperationalStatusPropertyName = "operationalStatus";
 
     [JsonIgnore]
     private string _originalId;
@@ -17,14 +20,23 @@ internal sealed class OktaAgentPool : OktaNode
     [JsonIgnore]
     public override string OriginalId => _originalId;
 
+    [JsonIgnore]
+    public string? Type => GetProperty<string>(TypePropertyName);
+
+    [JsonIgnore]
+    public bool IsActiveDirectoryAgentPool => Type == AgentType.AD;
+
+    [JsonIgnore]
+    public string? ActiveDirectoryDomain => IsActiveDirectoryAgentPool ? Name : null;
+
     public OktaAgentPool(AgentPool agentPool, string domainName) : base(MakeAgentPoolUnique(agentPool.Id), domainName, NodeKind)
     {
         Name = agentPool.Name;
         DisplayName = agentPool.Name;
         _originalId = agentPool.Id;
 
-        SetProperty("operationalStatus", agentPool.OperationalStatus?.Value);
-        SetProperty("type", agentPool.Type?.Value);
+        SetProperty(OperationalStatusPropertyName, agentPool.OperationalStatus?.Value);
+        SetProperty(TypePropertyName, agentPool.Type?.Value);
     }
 
     private static string MakeAgentPoolUnique(string agentPoolId)

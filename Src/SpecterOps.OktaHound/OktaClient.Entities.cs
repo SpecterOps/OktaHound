@@ -533,6 +533,25 @@ partial class OktaClient
                 // Create the (:Okta_Organization)-[:Okta_Contains]->(:Okta_AgentPool) edge
                 _graph.AddEdge(_graph.Organization, agentPoolNode, OktaOrganization.ContainsEdgeKind);
 
+                if (agentPoolNode.IsActiveDirectoryAgentPool)
+                {
+                    _logger.LogTrace("Agent pool {AgentPoolName} ({AgentPoolId}) is an Active Directory agent pool.", agentPoolNode.Name, agentPoolNode.OriginalId);
+
+                    // Add the (:OktaAgentPool)-[:Okta_AgentPoolFor]->(:Okta_Application) edge
+                    var adApplicationNode = OktaApplication.CreateEdgeNode(agentPoolNode.OriginalId);
+                    _graph.AddEdge(agentPoolNode, adApplicationNode, OktaAgentPool.AgentPoolForEdgeKind);
+
+                    // Opportunistically create the Agentless Desktop SSO relationship
+                    // TODO: Enable the DNS check
+                    var onPremSsoAccount = ActiveDirectoryUser.CreateKerberosEdgeNode(_graph.Organization.DomainName, agentPoolNode.ActiveDirectoryDomain!, dnsCheck: false);
+
+                    if (onPremSsoAccount is not null)
+                    {
+                        // Create the (:User)-[:Okta_KerberosSSO]->(:Okta_Application) edge for the on-prem SSO account
+                        _hybridEdgeGraph.AddEdge(onPremSsoAccount, adApplicationNode, OktaAgentPool.AgentlessDesktopSSOEdgeKind);
+                    }
+                }
+
                 int agentCount = 0;
 
                 foreach (var agent in agentPool.Agents ?? [])
@@ -545,8 +564,15 @@ partial class OktaClient
                     OktaAgent agentNode = new(agent, agentPool.Name, _graph.Organization.DomainName);
                     _graph.AddNode(agentNode);
 
-                    // Create the (:Okta_AgentPool)-[:Okta_HasAgent]->(:Okta_Agent) edge
-                    _graph.AddEdge(agentPoolNode, agentNode, OktaAgentPool.HasAgentEdgeKind);
+                    // Create the (:Okta_Agent)-[:Okta_AgentMemberOf]->(:Okta_AgentPool) edge
+                    _graph.AddEdge(agentNode, agentPoolNode, OktaAgent.HasAgentMemberOfEdgeKind);
+
+                    if (agentPoolNode.IsActiveDirectoryAgentPool)
+                    {
+                        // Create the hybrid (:Computer)-[:Okta_HostsAgent]->(:Okta_Agent) edge
+                        var computerNode = ActiveDirectoryComputer.CreateEdgeNode(agent.Name, agentPool.Name);
+                        _hybridEdgeGraph.AddEdge(computerNode!, agentNode, OktaAgent.HostsAgentEdgeKind);
+                    }
                 }
 
                 _logger.LogTrace("Successfully processed {AgentCount} agents in pool {AgentPoolName}.", agentCount, agentPool.Name);

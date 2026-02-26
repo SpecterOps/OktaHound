@@ -67,6 +67,58 @@ internal sealed class ActiveDirectoryUser : OpenGraphNode
         SetProperty("email", GetProfileProperty(user, "email"));
     }
 
+    /// <summary>
+    /// Creates an OpenGraphEdgeNode representing the Kerberos SSO relationship between Okta and Active Directory.
+    /// </summary>
+    /// <param name="oktaDomain">The Okta domain.</param>
+    /// <param name="activeDirectoryDomain">The Active Directory domain.</param>
+    /// <param name="dnsCheck">Whether to perform a DNS check to validate the SPN.</param>
+    /// <returns>An OpenGraphEdgeNode if the SPN is valid; otherwise, null.</returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static OpenGraphEdgeNode? CreateKerberosEdgeNode(string oktaDomain, string activeDirectoryDomain, bool dnsCheck = true)
+    {
+        ArgumentNullException.ThrowIfNull(oktaDomain);
+        ArgumentNullException.ThrowIfNull(activeDirectoryDomain);
+
+        // Translate the Okta domain to SPN, e.g., from contoso.okta.com to HTTP/contoso.kerberos.okta.com
+        // Possible Okta domain suffixes: okta.com, oktapreview.com, okta-emea.com, okta-gov.com, okta.mil, okta-miltest.com, trex-govcloud.com
+        string[] oktaDomainParts = oktaDomain.Split('.');
+
+        if (oktaDomainParts.Length < 2)
+        {
+            throw new ArgumentException("Invalid Okta domain format.", nameof(oktaDomain));
+        }
+
+        string oktaChildDomain = oktaDomainParts[0];
+        string oktaParentDomain = string.Join('.', oktaDomainParts[^2..]);
+        string oktaKerberosDomain = $"{oktaChildDomain}.kerberos.{oktaParentDomain}".ToLowerInvariant();
+        string servicePrincipalName = $"HTTP/{oktaKerberosDomain}";
+
+        if (dnsCheck)
+        {
+            try
+            {
+                // Perform a DNS lookup to check if the SPN is valid, to confirm the SSO feature is enabled in the tenant.
+                // This is a heuristic to avoid creating meaningless edges.
+                _ = System.Net.Dns.GetHostEntry(oktaKerberosDomain);
+            }
+            catch (Exception)
+            {
+                // DNS lookup failed, likely indicating that the SPN does not exist. Skip creating the edge.
+                return null;
+            }
+        }
+
+        OrderedDictionary<string, string> properties = new()
+        {
+            { "serviceprincipalnames", servicePrincipalName }, // Example: HTTP/contoso.kerberos.okta.com
+            { "domain", activeDirectoryDomain.ToUpperInvariant() } // Example: CONTOSO.COM
+        };
+
+        return new OpenGraphEdgeNode(properties, NodeKind);
+    }
+
     private static string GetUserId(AppUser user)
     {
         // Try to get the SID. This only works for inbound users.

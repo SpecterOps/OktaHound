@@ -4,6 +4,9 @@ namespace SpecterOps.OktaHound.Model.Okta;
 
 internal sealed class OktaAgent : OktaNode
 {
+    public const string HostsAgentEdgeKind = "Okta_HostsAgent";
+    public const string HasAgentMemberOfEdgeKind = "Okta_AgentMemberOf";
+
     private const string NodeKind = "Okta_Agent";
 
     public OktaAgent(Agent agent, string agentPoolName, string domainName) : base(agent.Id, domainName, NodeKind)
