@@ -1,5 +1,0 @@
-{
-  "name": "Okta: Organization Administrators",
-  "description": "List all Organization Administrators in an Okta organization.",
-  "query": "MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_OrgAdmin]->(:Okta)\nRETURN p\nLIMIT 1000"
-}

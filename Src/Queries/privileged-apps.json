@@ -1,5 +1,5 @@
 {
   "name": "Okta: Applications with Role Assignments",
-  "description": "Applications in the Okta organization that have roles assigned.",
+  "description": "Applications that have roles assigned.",
   "query": "MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)\nRETURN p\nLIMIT 1000"
 }
