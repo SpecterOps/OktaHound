@@ -13,7 +13,7 @@ internal static class SnowflakeUser
             return null;
         }
 
-        string objectId = $"{accountName}.{userName}"; // Example: CGXOVHZ-NR46411.GFOSTER@SPECTEROPS.IO
+        string objectId = $"{accountName}.{userName}".ToUpperInvariant(); // Example: CGXOVHZ-NR46411.JOHN.DOE@CONTOSO.COM
 
         return new OpenGraphEdgeNode(objectId, NodeKind, NodeMatchType.Id);
     }

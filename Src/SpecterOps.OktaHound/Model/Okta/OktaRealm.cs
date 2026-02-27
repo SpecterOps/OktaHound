@@ -13,7 +13,9 @@ internal sealed class OktaRealm : OktaNode
         DisplayName = realm.Profile?.Name;
 
         SetProperty("created", realm.Created);
+        SetProperty("lastUpdated", realm.LastUpdated);
         SetProperty("isDefault", realm.IsDefault);
         SetProperty("type", realm.Profile?.RealmType?.Value);
+        SetProperty("domains", realm.Profile?.Domains);
     }
 }

@@ -16,7 +16,7 @@ internal static class JamfAccount
         OrderedDictionary<string, string> properties = new()
         {
             { "email", accountName }, // Example: john@contoso.com
-            { "domain_name", domainName } // Example: sol.jamfcloud.com
+            { "domainName", domainName } // Example: sol.jamfcloud.com
         };
 
         return new OpenGraphEdgeNode(properties, NodeKind);

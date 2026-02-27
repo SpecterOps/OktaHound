@@ -13,6 +13,6 @@ internal static class GitHubOrganization
             return null;
         }
 
-        return new OpenGraphEdgeNode(organizationName, NodeKind, NodeMatchType.Id);
+        return new OpenGraphEdgeNode(organizationName, NodeKind, NodeMatchType.Name);
     }
 }

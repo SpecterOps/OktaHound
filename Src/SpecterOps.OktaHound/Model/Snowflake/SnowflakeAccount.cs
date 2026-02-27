@@ -13,6 +13,6 @@ internal static class SnowflakeAccount
             return null;
         }
 
-        return new OpenGraphEdgeNode(accountName, NodeKind, NodeMatchType.Id);
+        return new OpenGraphEdgeNode(accountName.ToUpperInvariant(), NodeKind, NodeMatchType.Id);
     }
 }
