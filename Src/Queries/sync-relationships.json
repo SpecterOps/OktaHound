@@ -1,0 +1,5 @@
+{
+  "name": "Okta: User and Group Synchronization",
+  "description": "Lists all user and group synchronization relationships between Okta and external identity systems such as Active Directory or Snowflake.",
+  "query": "MATCH p = (:Okta_User:Okta_Group)-[:Okta_UserSync|Okta_MembershipSync]-()\nRETURN p\nLIMIT 1000"
+}
