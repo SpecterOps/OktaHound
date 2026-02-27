@@ -16,14 +16,13 @@ Client secrets are represented as `Okta_ClientSecret` nodes in BloodHound.
 
 | Name | Source | Type | Description |
 | ---- | ------ | ---- | ----------- |
-| `id` | `secret.Id` | `string` | Unique client secret identifier. |
-| `name` | `secret.SecretHash` | `string` | Hash identifier used as secret name/display label. |
-| `displayName` | `secret.SecretHash` | `string` | Display label used in BloodHound. |
-| `oktaDomain` | Constructor argument `domainName` | `string` | Okta organization domain where the secret is defined. |
-| `status` | `secret.Status.Value` | `string` | Current lifecycle status of the secret. |
-| `created` | `secret.Created` | `datetime` | Secret creation timestamp. |
-| `lastUpdated` | `secret.LastUpdated` | `datetime` | Last update timestamp for the secret metadata. |
-| `secret` | `secret.ClientSecret` | `string` | Redacted secret value (typically only trailing characters are exposed by API). |
+| `id` | `secret.id` | `string` | Unique client secret identifier. |
+| `name` | `secret.secretHash` | `string` | Hash of the secret value used as name/display label. |
+| `displayName` | `secret.secretHash` | `string` | Display label used in BloodHound. |
+| `oktaDomain` | Collector context (non-API) | `string` | Okta organization domain where the client secret exists. |
+| `status` | `secret.status` | `string` | Current lifecycle status of the secret. |
+| `created` | `secret.created` | `datetime` | Secret creation timestamp. |
+| `lastUpdated` | `secret.lastUpdated` | `datetime` | Last update timestamp for the secret metadata. |
 
 ## Sample Property Values
 
@@ -35,5 +34,8 @@ oktaDomain: contoso.okta.com
 status: ACTIVE
 created: 2025-11-24T12:24:08.000Z
 lastUpdated: 2025-11-24T12:24:08.000Z
-secret: "<redacted>"
 ```
+
+> [!NOTE]
+> For security reasons, the OktaHound collector does not write cleartext client secrets
+> to the OpenGraph JSON, only their hashed identifiers.
