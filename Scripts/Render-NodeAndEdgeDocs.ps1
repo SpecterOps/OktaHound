@@ -3,7 +3,7 @@
     Generates MDX documentation pages for nodes and edges.
 
 .DESCRIPTION
-    Reads node kinds and edge kinds from the OktaHound BloodHound extension schema and
+    Reads node kinds and edge kinds from the BloodHound extension schema and
     creates one MDX file per kind under Documentation/OfficialDocs/opengraph/extensions/<ExtensionName>/reference.
 
     Generated files contain frontmatter and the content from Documentation/NodeDescriptions or Documentation/EdgeDescriptions.
@@ -14,15 +14,17 @@
     - Links to ../NodeDescriptions/ are rewritten to ../nodes/.
     - Links to other markdown files have their .md extension stripped.
     - GitHub-flavored callouts (NOTE, IMPORTANT, WARNING, TIP, CAUTION) are converted to Mintlify components.
+    - Node documentation includes Inbound Edges and Outbound Edges sections (inserted between Overview and
+      Properties), with tables generated from the Edge Schema sections of edge descriptions.
 #>
 
 #Requires -Version 5.1
 
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory = $false)]
+    [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
-    [string] $InputPath = (Join-Path -Path $PSScriptRoot -ChildPath '../Src/Extensions/bhce-okta-extension.json'),
+    [string] $InputPath,
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
@@ -38,6 +40,8 @@ param (
 )
 
 Set-StrictMode -Version Latest
+
+[string] $nodeDescDirName = Split-Path -Leaf $NodeDescriptionsDir
 
 function ConvertTo-YamlSingleQuoted {
     [OutputType([string])]
@@ -97,7 +101,11 @@ function Convert-MarkdownLinks {
     param(
         [Parameter(Mandatory = $true)]
         [AllowEmptyString()]
-        [string] $Markdown
+        [string] $Markdown,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $NodeDescDirName
     )
 
     [regex] $linkRegex = [regex]'(?<!!)\[([^\]]+)\]\(([^)]+)\)'
@@ -125,7 +133,7 @@ function Convert-MarkdownLinks {
             }
 
             [string] $rewrittenPath = $linkPath -replace '\.md(?=($|[?#]))', ''
-            $rewrittenPath = $rewrittenPath -replace '^\.\./NodeDescriptions/', '../nodes/'
+            $rewrittenPath = $rewrittenPath -replace ('^\.\.\/' + [regex]::Escape($NodeDescDirName) + '/'), '../nodes/'
             return '[{0}]({1}{2})' -f $linkText, $rewrittenPath, $titleSuffix
         })
 }
@@ -162,6 +170,136 @@ function Convert-Callouts {
         })
 }
 
+function Get-EdgeSchemaMap {
+    [OutputType([hashtable])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $EdgeDescriptionsDir
+    )
+
+    [hashtable] $map = @{}
+    [regex] $linkRegex = [regex]'\[([^\]]+)\]\(([^)]+)\)'
+
+    foreach ($file in Get-ChildItem -Path $EdgeDescriptionsDir -Filter '*.md') {
+        [string] $content = Get-Content -Path $file.FullName -Raw
+        [string] $edgeName = $file.BaseName
+        [psobject[]] $sources = @()
+        [psobject[]] $destinations = @()
+
+        if ($content -match '(?m)^- Source:\s*(.+)$') {
+            $sources = @($linkRegex.Matches($matches[1]) | ForEach-Object {
+                    [PSCustomObject]@{
+                        Name = $_.Groups[1].Value
+                        Url  = $_.Groups[2].Value
+                    }
+                })
+        }
+
+        if ($content -match '(?m)^- Destination:\s*(.+)$') {
+            $destinations = @($linkRegex.Matches($matches[1]) | ForEach-Object {
+                    [PSCustomObject]@{
+                        Name = $_.Groups[1].Value
+                        Url  = $_.Groups[2].Value
+                    }
+                })
+        }
+
+        $map[$edgeName] = [PSCustomObject]@{
+            Sources      = $sources
+            Destinations = $destinations
+        }
+    }
+
+    return $map
+}
+
+function Format-EdgeTable {
+    [OutputType([string])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $Heading,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $PeerColumnName,
+
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [string[]] $Rows,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $EmptyMessage
+    )
+
+    [string] $result = "`n### $Heading`n`n"
+    if ($Rows.Count -gt 0) {
+        $result += "| Edge Type | $PeerColumnName |`n"
+        $result += "| --------- | $('-' * $PeerColumnName.Length) |`n"
+        $result += ($Rows -join "`n") + "`n"
+    }
+    else {
+        $result += "$EmptyMessage`n"
+    }
+
+    return $result
+}
+
+function New-EdgeSectionMarkdown {
+    [OutputType([string])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $NodeName,
+
+        [Parameter(Mandatory = $true)]
+        [hashtable] $EdgeSchemaMap
+    )
+
+    [System.Collections.Generic.List[string]] $inboundRows = [System.Collections.Generic.List[string]]::new()
+    [System.Collections.Generic.List[string]] $outboundRows = [System.Collections.Generic.List[string]]::new()
+
+    foreach ($edgeName in ($EdgeSchemaMap.Keys | Sort-Object)) {
+        [psobject] $schema = $EdgeSchemaMap[$edgeName]
+        [string] $edgeLink = '[{0}](../edges/{0})' -f $edgeName
+
+        if ($NodeName -in $schema.Destinations.Name) {
+            [string] $sourceLinks = ($schema.Sources | ForEach-Object {
+                    '[{0}]({1})' -f $_.Name, $_.Url
+                }) -join ', '
+            $inboundRows.Add("| $edgeLink | $sourceLinks |")
+        }
+
+        if ($NodeName -in $schema.Sources.Name) {
+            [string] $destLinks = ($schema.Destinations | ForEach-Object {
+                    '[{0}]({1})' -f $_.Name, $_.Url
+                }) -join ', '
+            $outboundRows.Add("| $edgeLink | $destLinks |")
+        }
+    }
+
+    [string] $result = "## Edges`n`n"
+    $result += "<Note>`n"
+    $result += "The tables below list edges defined by the $extensionName extension only. Additional edges to or from this node may be created by other extensions.`n"
+    $result += "</Note>`n"
+
+    $result += Format-EdgeTable `
+        -Heading 'Inbound Edges' `
+        -PeerColumnName 'Source Node Types' `
+        -Rows $inboundRows `
+        -EmptyMessage "No inbound edges are defined by the $extensionName extension for this node."
+
+    $result += Format-EdgeTable `
+        -Heading 'Outbound Edges' `
+        -PeerColumnName 'Destination Node Types' `
+        -Rows $outboundRows `
+        -EmptyMessage "No outbound edges are defined by the $extensionName extension for this node."
+
+    return $result
+}
+
 function New-OfficialDoc {
     [OutputType([void])]
     param(
@@ -185,13 +323,21 @@ function New-OfficialDoc {
         [ValidateNotNullOrEmpty()]
         [string] $ExtensionName,
 
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string] $NodeDescDirName,
+
         [Parameter(Mandatory = $false)]
         [AllowEmptyString()]
         [string] $IconPath,
 
         [Parameter(Mandatory = $false)]
         [AllowEmptyString()]
-        [string] $Traversable
+        [string] $Traversable,
+
+        [Parameter(Mandatory = $false)]
+        [AllowEmptyString()]
+        [string] $EdgeSectionMarkdown
     )
 
     if (-not (Test-Path -Path $DescriptionFilePath -PathType Leaf)) {
@@ -201,13 +347,18 @@ function New-OfficialDoc {
 
     [string] $bodyMarkdown = Get-Content -Path $DescriptionFilePath -Raw
     $bodyMarkdown = $bodyMarkdown -replace '(?m)^# .+\r?\n\r?\n', ''
-    $bodyMarkdown = Convert-ImagePaths -Markdown $bodyMarkdown -ExtensionName $ExtensionName
-    $bodyMarkdown = Convert-MarkdownLinks -Markdown $bodyMarkdown
-    $bodyMarkdown = Convert-Callouts -Markdown $bodyMarkdown
+
+    if (-not [string]::IsNullOrWhiteSpace($EdgeSectionMarkdown)) {
+        $bodyMarkdown = $bodyMarkdown -replace '(?m)^(## Properties)', ($EdgeSectionMarkdown + "`n" + '$1')
+    }
 
     if (-not [string]::IsNullOrWhiteSpace($Traversable)) {
         $bodyMarkdown = $bodyMarkdown -replace '(?m)^- Destination:.*$', "`$0`n- Traversable: $Traversable"
     }
+
+    $bodyMarkdown = Convert-ImagePaths -Markdown $bodyMarkdown -ExtensionName $ExtensionName
+    $bodyMarkdown = Convert-MarkdownLinks -Markdown $bodyMarkdown -NodeDescDirName $NodeDescDirName
+    $bodyMarkdown = Convert-Callouts -Markdown $bodyMarkdown
 
     [string] $iconLine = ''
     if (-not [string]::IsNullOrWhiteSpace($IconPath)) {
@@ -255,6 +406,9 @@ foreach ($directory in @($nodesOutputDir, $edgesOutputDir)) {
     }
 }
 
+# Parse edge schemas for node edge sections
+[hashtable] $edgeSchemaMap = Get-EdgeSchemaMap -EdgeDescriptionsDir $EdgeDescriptionsDir
+
 foreach ($nodeKind in $nodeKinds) {
     [string] $name = [string] $nodeKind.name
     [string] $description = [string] $nodeKind.description
@@ -267,8 +421,9 @@ foreach ($nodeKind in $nodeKinds) {
     [string] $descriptionFilePath = Join-Path -Path $NodeDescriptionsDir -ChildPath "$name.md"
     [string] $outputFilePath = Join-Path -Path $nodesOutputDir -ChildPath "$name.mdx"
     [string] $iconPath = "/images/extensions/$extensionName/$name.png"
+    [string] $edgeSectionMarkdown = New-EdgeSectionMarkdown -NodeName $name -EdgeSchemaMap $edgeSchemaMap
 
-    New-OfficialDoc -Name $name -Description $description -DescriptionFilePath $descriptionFilePath -OutputFilePath $outputFilePath -ExtensionName $extensionName -IconPath $iconPath
+    New-OfficialDoc -Name $name -Description $description -DescriptionFilePath $descriptionFilePath -OutputFilePath $outputFilePath -ExtensionName $extensionName -NodeDescDirName $nodeDescDirName -IconPath $iconPath -EdgeSectionMarkdown $edgeSectionMarkdown
 }
 
 foreach ($relationshipKind in $relationshipKinds) {
@@ -284,5 +439,5 @@ foreach ($relationshipKind in $relationshipKinds) {
     [string] $outputFilePath = Join-Path -Path $edgesOutputDir -ChildPath "$name.mdx"
     [string] $traversable = if ([bool] $relationshipKind.is_traversable) { '✅' } else { '❌' }
 
-    New-OfficialDoc -Name $name -Description $description -DescriptionFilePath $descriptionFilePath -OutputFilePath $outputFilePath -ExtensionName $extensionName -Traversable $traversable
+    New-OfficialDoc -Name $name -Description $description -DescriptionFilePath $descriptionFilePath -OutputFilePath $outputFilePath -ExtensionName $extensionName -NodeDescDirName $nodeDescDirName -Traversable $traversable
 }

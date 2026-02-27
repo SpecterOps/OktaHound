@@ -51,7 +51,7 @@ Write-Host '== Step 4: Rendering privilege zone selectors ==' -ForegroundColor C
 
 # Step 5: Render node and edge documentation MDX files
 Write-Host '== Step 5: Rendering node and edge docs ==' -ForegroundColor Cyan
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-NodeAndEdgeDocs.ps1')
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-NodeAndEdgeDocs.ps1') -InputPath (Join-Path -Path $repoRoot -ChildPath 'Src/Extensions/bhce-okta-extension.json')
 
 # Step 6: Render schema MDX
 Write-Host '== Step 6: Rendering schema ==' -ForegroundColor Cyan
