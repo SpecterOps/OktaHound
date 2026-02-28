@@ -1,6 +1,8 @@
 ﻿using System.CommandLine;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Okta.Sdk.Client;
+using SpecterOps.OktaHound.Database;
 using SpecterOps.OktaHound.Model.Okta;
 using SpecterOps.OktaHound.Model.OpenGraph;
 
@@ -59,6 +61,13 @@ class Program
             skipMfaOption
         };
 
+        Command testCommand = new("test", "Test command for OktaHound")
+        {
+            outputDirectoryOption,
+            oktaDomainOption,
+            oktaApiTokenOption,
+        };
+
         // No need to dispose the cancellation token source, as it is bound to the application lifetime
         CancellationTokenSource tokenSource = new();
 
@@ -71,29 +80,101 @@ class Program
             string? oktaApiToken = parseResult.GetValue(oktaApiTokenOption);
             bool skipMfa = parseResult.GetValue(skipMfaOption);
 
-            // Log messages to the console
-            ILogger logger = CreateConsoleLogger(verbosity);
-
-            // React to Ctrl+C
-            Console.CancelKeyPress += (sender, eventArgs) =>
-            {
-                logger.LogDebug("Cancellation requested via CTRL-C.");
-                eventArgs.Cancel = true;
-                tokenSource.Cancel();
-            };
+            // Initialize the console logger and CTRL-C handler
+            ILogger logger = InitializeConsole(verbosity, tokenSource);
 
             // Launch the main logic
             return FetchAndSaveOktaGraph(outputDirectory, logger, oktaDomain, oktaApiToken, skipMfa, tokenSource.Token);
         });
 
+        testCommand.SetAction(parseResult =>
+        {
+            // Fetch the command line options
+            DirectoryInfo outputDirectory = parseResult.GetRequiredValue(outputDirectoryOption);
+            LogLevel verbosity = parseResult.GetRequiredValue(verboseOption);
+            string? oktaDomain = parseResult.GetValue(oktaDomainOption);
+            string? oktaApiToken = parseResult.GetValue(oktaApiTokenOption);
+
+            // Initialize the console logger and CTRL-C handler
+            ILogger logger = InitializeConsole(verbosity, tokenSource);
+
+            // Launch the main logic
+            return Test(outputDirectory, logger, oktaDomain, oktaApiToken, tokenSource.Token);
+        });
+
         RootCommand rootCommand = new("SpecterOps OktaHound - Okta Data Collector for BloodHound OpenGraph")
         {
             collectCommand,
+            testCommand,
             verboseOption
         };
 
         ParseResult parseResult = rootCommand.Parse(args);
         return parseResult.Invoke();
+    }
+
+    private static async Task<int> Test(
+        DirectoryInfo outputDirectory,
+        ILogger logger,
+        string? domain = null,
+        string? apiToken = null,
+        CancellationToken cancellationToken = default)
+    {
+        await using var dbContext = new AppDbContext(outputDirectory.FullName);
+        await dbContext.Database.EnsureCreatedAsync(cancellationToken);
+
+        // Load Okta configuration and create the Okta client
+        Configuration? oktaConfigFromCommandLine = null;
+
+        if (!string.IsNullOrEmpty(apiToken))
+        {
+            oktaConfigFromCommandLine = new(domain, apiToken);
+        }
+
+        OktaClient oktaClient = new(outputDirectory.FullName, logger, oktaConfigFromCommandLine);
+
+        await oktaClient.DeleteOrganizations(cancellationToken);
+        await oktaClient.DeleteUsers(cancellationToken);
+        await oktaClient.DeleteGroups(cancellationToken);
+        await oktaClient.DeleteApplications(cancellationToken);
+        await oktaClient.DeleteDevices(cancellationToken);
+        await oktaClient.DeleteResourceSets(cancellationToken);
+        await oktaClient.DeleteRealms(cancellationToken);
+        await oktaClient.DeleteBuiltinRoles(cancellationToken);
+        await oktaClient.DeleteCustomRoles(cancellationToken);
+        await oktaClient.DeleteRoleAssignments(cancellationToken);
+        await oktaClient.DeleteApiTokens(cancellationToken);
+        await oktaClient.DeleteAgentPools(cancellationToken);
+        await oktaClient.DeleteAuthorizationServers(cancellationToken);
+        await oktaClient.DeleteIdentityProviders(cancellationToken);
+        await oktaClient.DeleteApiServiceIntegrations(cancellationToken);
+        await oktaClient.DeletePolicies(cancellationToken);
+        await oktaClient.DeleteClientSecrets(cancellationToken);
+        await oktaClient.DeleteJWKs(cancellationToken);
+
+        await oktaClient.CollectOrganization(cancellationToken);
+        await oktaClient.CollectUsers(cancellationToken);
+        await oktaClient.CollectGroups(cancellationToken);
+        await oktaClient.CollectAgentPools(cancellationToken);
+        await oktaClient.CollectOktaDevices(cancellationToken);
+        await oktaClient.CollectOktaResourceSets(cancellationToken);
+        await oktaClient.CollectOktaRealms(cancellationToken);
+        await oktaClient.CollectOktaBuiltInRoles(cancellationToken);
+        await oktaClient.CollectOktaCustomRoles(cancellationToken);
+        await oktaClient.CollectOktaApplications(cancellationToken);
+        await oktaClient.CollectOktaApiTokens(cancellationToken);
+        await oktaClient.CollectOktaAuthorizationServers(cancellationToken);
+        await oktaClient.CollectOktaIdentityProviders(cancellationToken);
+        await oktaClient.CollectOktaApiServiceIntegrations(cancellationToken);
+        await oktaClient.CollectOktaPolicies(cancellationToken);
+
+        await using var stream = new FileStream(Path.Combine(outputDirectory.FullName, "okta-users-test.json"), FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
+        await using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true });
+
+        await oktaClient.ExportOktaGraph(writer, cancellationToken).ConfigureAwait(false);
+
+
+        return 0;
     }
 
     private static async Task<int> FetchAndSaveOktaGraph(
@@ -138,7 +219,7 @@ class Program
                 oktaConfigFromCommandLine = new(domain, apiToken);
             }
 
-            OktaClient oktaClient = new(logger, oktaConfigFromCommandLine);
+            OktaClient oktaClient = new(null, logger, oktaConfigFromCommandLine);
 
             // Fetch the Okta OpenGraph data
             (OktaGraph? oktaGraph, OpenGraph adGraph, OpenGraph hybridEdges) =
@@ -226,6 +307,7 @@ class Program
             logger.LogCritical("Operation timed out: {Message} Exiting.", e.Message);
             return 5;
         }
+        // TODO: Microsoft.EntityFrameworkCore.DbUpdateException
         catch (Exception e)
         {
             logger.LogCritical(e, "Unexpected error: {Message} Exiting.", e.Message);
@@ -253,5 +335,27 @@ class Program
             });
 
         return loggerFactory.CreateLogger(LoggerCategoryName);
+    }
+
+    /// <summary>
+    /// Initializes the console logger and sets up a handler for CTRL-C to trigger cancellation.
+    /// </summary>
+    /// <param name="verbosity">The minimum log level for the logger.</param>
+    /// <param name="tokenSource">The cancellation token source to trigger on CTRL-C.</param>
+    /// <returns>An ILogger instance configured for console output.</returns>
+    private static ILogger InitializeConsole(LogLevel verbosity, CancellationTokenSource tokenSource)
+    {
+        // Log messages to the console
+        ILogger logger = CreateConsoleLogger(verbosity);
+
+        // React to Ctrl+C
+        Console.CancelKeyPress += (sender, eventArgs) =>
+        {
+            logger.LogDebug("Cancellation requested via CTRL-C.");
+            eventArgs.Cancel = true;
+            tokenSource.Cancel();
+        };
+
+        return logger;
     }
 }

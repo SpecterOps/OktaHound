@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Okta.Sdk.Client;
+using SpecterOps.OktaHound.Database;
 using SpecterOps.OktaHound.Model.Okta;
 using SpecterOps.OktaHound.Model.OpenGraph;
 
@@ -44,6 +46,7 @@ internal partial class OktaClient
     private readonly OpenGraph _hybridEdgeGraph = new();
 
     private readonly Configuration _oktaConfig;
+    private readonly string _outputDirectory;
 
     /// <summary>
     /// Represents the logger instance used for logging operations within the application.
@@ -52,7 +55,9 @@ internal partial class OktaClient
 
     private readonly int _concurrentApiCalls;
 
-    public OktaClient(ILogger? logger, Configuration? oktaConfig = null, int concurrentApiCalls = DefaultConcurrentApiCalls)
+    public string OktaDomain { get; private set; } = string.Empty;
+
+    public OktaClient(string outputDirectory, ILogger? logger, Configuration? oktaConfig = null, int concurrentApiCalls = DefaultConcurrentApiCalls)
     {
         if (concurrentApiCalls <= 0)
         {
@@ -63,6 +68,9 @@ internal partial class OktaClient
 
         // Drop events if no logger is provided
         _logger = logger ?? NullLogger.Instance;
+
+        // Store the output directory for later use in the DbContext
+        _outputDirectory = outputDirectory;
 
         // Connect using the okta.yaml configuration file,
         // located in the app directory or in ~/.okta/.
@@ -78,13 +86,16 @@ internal partial class OktaClient
 
         // Override the scopes to ensure we have the required permissions.
         this._oktaConfig.Scopes = RequiredOktaScopes;
+
+        // Extract the domain name from the Okta URL for later use in node creation
+        OktaDomain = new Uri(this._oktaConfig.OktaDomain).Host;
     }
 
     public async Task InitializeOktaGraph(CancellationToken cancellationToken = default)
     {
-        OktaOrganization? orgNode = await FetchOktaOrganization(cancellationToken);
+        // OktaOrganization? orgNode = await FetchOktaOrganization(cancellationToken);
 
-        if (orgNode is null)
+        if (true) // orgNode is null
         {
             // Drop any pre-existing graph to indicate failure.
             _graph = null;
@@ -93,7 +104,7 @@ internal partial class OktaClient
         {
             // Create an empty BloodHound OpenGraph associated with the Org.
             _logger.LogDebug("Initializing the graph...");
-            _graph = new(orgNode);
+            _graph = new(null); // OrgNode
         }
     }
 
@@ -227,5 +238,53 @@ internal partial class OktaClient
         CreateManagerEdges();
 
         return (_graph, _adGraph, _hybridEdgeGraph);
+    }
+
+    public async Task ExportOktaGraph(Utf8JsonWriter writer, CancellationToken cancellationToken = default)
+    {
+        writer.WriteStartObject();
+
+        writer.WritePropertyName("metadata");
+        var metadata = new OpenGraphMetadata("Okta");
+        JsonSerializer.Serialize(writer, metadata, TestSerializationContext.Default.OpenGraphMetadata);
+
+        writer.WritePropertyName("graph");
+        writer.WriteStartObject();
+
+        writer.WritePropertyName("nodes");
+        writer.WriteStartArray();
+
+        await ExportOrganizations(writer, cancellationToken).ConfigureAwait(false);
+        await ExportUsers(writer, cancellationToken).ConfigureAwait(false);
+        await ExportGroups(writer, cancellationToken).ConfigureAwait(false);
+        await ExportApplications(writer, cancellationToken).ConfigureAwait(false);
+        await ExportDevices(writer, cancellationToken).ConfigureAwait(false);
+        await ExportResourceSets(writer, cancellationToken).ConfigureAwait(false);
+        await ExportRealms(writer, cancellationToken).ConfigureAwait(false);
+        await ExportBuiltinRoles(writer, cancellationToken).ConfigureAwait(false);
+        await ExportCustomRoles(writer, cancellationToken).ConfigureAwait(false);
+        await ExportRoleAssignments(writer, cancellationToken).ConfigureAwait(false);
+        await ExportApiTokens(writer, cancellationToken).ConfigureAwait(false);
+        await ExportAgentPools(writer, cancellationToken).ConfigureAwait(false);
+        await ExportAgents(writer, cancellationToken).ConfigureAwait(false);
+        await ExportAuthorizationServers(writer, cancellationToken).ConfigureAwait(false);
+        await ExportIdentityProviders(writer, cancellationToken).ConfigureAwait(false);
+        await ExportApiServiceIntegrations(writer, cancellationToken).ConfigureAwait(false);
+        await ExportPolicies(writer, cancellationToken).ConfigureAwait(false);
+        await ExportClientSecrets(writer, cancellationToken).ConfigureAwait(false);
+        await ExportJWKs(writer, cancellationToken).ConfigureAwait(false);
+
+        writer.WriteEndArray(); // Nodes
+
+        writer.WritePropertyName("edges");
+        writer.WriteStartArray();
+
+
+
+        writer.WriteEndArray(); // Edges
+
+        writer.WriteEndObject(); // Graph
+        writer.WriteEndObject(); // Root object
+        writer.Flush();
     }
 }

@@ -2,8 +2,8 @@
 
 namespace SpecterOps.OktaHound.Model.OpenGraph;
 
-internal readonly struct OpenGraphMetadata(string? sourceKind)
+public readonly struct OpenGraphMetadata(string? sourceKind)
 {
     [JsonPropertyName("source_kind")]
-    public readonly string? SourceKind = sourceKind;
+    public string? SourceKind { get; } = sourceKind;
 }
