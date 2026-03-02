@@ -13,6 +13,11 @@ on:
         type: boolean
         required: false
         default: true
+      fetch_1password_extension:
+        description: Fetch 1PassHound extension
+        type: boolean
+        required: false
+        default: true
 
 permissions:
   contents: write
@@ -48,6 +53,15 @@ jobs:
           curl -fsSL \
             https://raw.githubusercontent.com/SpecterOps/bloodhound-scim-extension/refs/heads/main/bh-scim-extension.json \
             -o bh-scim-extension.json
+
+      - name: Download 1PassHound extension
+        if: ${{ inputs.fetch_1password_extension }}
+        shell: bash
+        working-directory: ${{ env.EXTENSIONS_DIR }}
+        run: |
+          curl -fsSL \
+            https://raw.githubusercontent.com/SpecterOps/1PassHound/refs/heads/main/schema.json \
+            -o bhce-1passhound-extension.json
 
       - name: Detect changes
         id: changes

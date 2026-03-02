@@ -38,6 +38,7 @@ Root/
 │  ├─ Extensions/                            # BloodHound extension schema and metadata
 │  │  ├─ bhce-okta-extension.json            # OktaHound Community extension schema definition
 │  │  ├─ bhce-github-extension.json          # GitHound extension schema definition
+│  │  ├─ bhce-1passhound-extension.json      # 1PassHound extension schema definition
 │  │  ├─ bhce-jamfhound-extension.json       # JamfHound extension schema definition
 │  │  └─ bh-scim-extension.json              # SCIM extension schema definition
 │  ├─ Queries/                               # BloodHound query JSON definitions
