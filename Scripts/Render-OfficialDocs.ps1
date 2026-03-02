@@ -47,7 +47,7 @@ Write-Host '== Step 3: Rendering custom queries ==' -ForegroundColor Cyan
 # Step 4: Render privilege zone selectors MDX
 Write-Host '== Step 4: Rendering privilege zone selectors ==' -ForegroundColor Cyan
 [string] $privilegeZonePath = Join-Path -Path $opengraphRefDir -ChildPath 'privilege-zone-selectors.mdx'
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-PrivilegeZoneSelectors.ps1') -OutputFilePath $privilegeZonePath -SelectorsPath 'https://github.com/SpecterOps/OktaHound/tree/main/Documentation/PrivilegeZoneSelectors' -OfficialDocs
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-PrivilegeZoneSelectors.ps1') -OutputFilePath $privilegeZonePath -SelectorsPath 'https://github.com/SpecterOps/OktaHound/tree/main/Src/PrivilegeZoneSelectors' -OfficialDocs
 
 # Step 5: Render node and edge documentation MDX files
 Write-Host '== Step 5: Rendering node and edge docs ==' -ForegroundColor Cyan

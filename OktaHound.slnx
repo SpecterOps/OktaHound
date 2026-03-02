@@ -5,12 +5,14 @@
     <File Path=".editorconfig" />
     <File Path=".gitignore" />
     <File Path=".github/workflows/autobuild.yml" />
+    <File Path=".github/workflows/fetch-vendored-extensions.yml" />
     <File Path=".github/workflows/update-documentation.yml" />
     <File Path="global.json" />
     <File Path="Src/Directory.Build.props" />
   </Folder>
   <Folder Name="/Documentation/">
     <File Path="Documentation/Queries.md" />
+    <File Path="Documentation/PrivilegeZoneSelectors.md" />
     <File Path="Documentation/Schema.md" />
     <File Path="Documentation/Roadmap.md" />
     <File Path="README.md" />
@@ -21,6 +23,10 @@
   <Folder Name="/Scripts/">
     <File Path="Scripts/Render-CustomQueries.ps1" />
     <File Path="Scripts/Render-CustomNodeIcons.ps1" />
+    <File Path="Scripts/Render-NodeAndEdgeDocs.ps1" />
+    <File Path="Scripts/Render-OfficialDocs.ps1" />
+    <File Path="Scripts/Render-OfficialDocsJson.ps1" />
+    <File Path="Scripts/Render-PrivilegeZoneSelectors.ps1" />
     <File Path="Scripts/Render-Schema.ps1" />
   </Folder>
 </Solution>

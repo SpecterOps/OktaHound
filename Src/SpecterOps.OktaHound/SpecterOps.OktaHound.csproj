@@ -57,6 +57,12 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 	  </Content>
 
+    <!-- Include privilege zone selectors. -->
+	  <Content Include="../PrivilegeZoneSelectors/*.*" LinkBase="privilege-zone-selectors">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
+
     <!-- Group the partial OktaClient class files in Visual Studio. -->
 	  <Compile Update="OktaClient.*.cs">
       <DependentUpon>OktaClient.cs</DependentUpon>

@@ -9,7 +9,7 @@
 param (
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string] $InputDirectory = (Join-Path -Path $PSScriptRoot -ChildPath '../Documentation/PrivilegeZoneSelectors/'),
+    [string] $InputDirectory = (Join-Path -Path $PSScriptRoot -ChildPath '../Src/PrivilegeZoneSelectors/'),
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
@@ -17,7 +17,7 @@ param (
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string] $SelectorsPath = '../Documentation/PrivilegeZoneSelectors',
+    [string] $SelectorsPath = '../Src/PrivilegeZoneSelectors',
 
     [Parameter(Mandatory = $false)]
     [switch] $OfficialDocs
