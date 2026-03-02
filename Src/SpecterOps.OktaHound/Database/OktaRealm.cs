@@ -1,6 +1,6 @@
-﻿using Okta.Sdk.Model;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using Okta.Sdk.Model;
 
 namespace SpecterOps.OktaHound.Database;
 

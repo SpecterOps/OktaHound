@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SpecterOps.OktaHound.Database;
 
@@ -121,6 +121,18 @@ partial class OktaClient
     {
         using var dbContext = new AppDbContext(_outputDirectory);
         await DeleteEntities(dbContext.UserGroupMemberships, "user group memberships", cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task DeleteAppUserAssignments(CancellationToken cancellationToken = default)
+    {
+        using var dbContext = new AppDbContext(_outputDirectory);
+        await DeleteEntities(dbContext.ApplicationUserAssignments, "application user assignments", cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task DeletePrivilegedUsers(CancellationToken cancellationToken = default)
+    {
+        using var dbContext = new AppDbContext(_outputDirectory);
+        await DeleteEntities(dbContext.PrivilegedUsers, "privileged users", cancellationToken).ConfigureAwait(false);
     }
 
     public async Task DeleteUserFactors(CancellationToken cancellationToken = default)

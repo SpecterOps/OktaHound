@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -156,6 +156,9 @@ public sealed class OktaApplication : OktaSecurityPrincipal
 
     [JsonIgnore]
     public List<OktaClientSecret> ClientSecrets { get; set; } = [];
+
+    [JsonIgnore]
+    public List<OktaUser> AssignedUsers { get; set; } = [];
 
     [JsonIgnore]
     public List<OktaGroup> ImportedGroups { get; set; } = [];

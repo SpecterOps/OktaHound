@@ -71,187 +71,42 @@ partial class OktaClient
     public async Task CollectOktaAppUserAssignments(CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching application user assignments...");
+        using var dbContext = new Database.AppDbContext(_outputDirectory);
+        ApplicationUsersApi appUsersApi = new(_oktaConfig);
+        int assignmentCount = 0;
 
-        if (_graph is null)
-        {
-            throw new InvalidOperationException("Okta graph not initialized. Please call InitializeOktaGraph() first.");
-        }
+        var applications = await dbContext.Applications
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
 
-        ParallelOptions concurrency = new()
-        {
-            // The "/api/v1/apps*" endpoint has a much lower rate limit than other APIs, so we do not parallelize the calls.
-            MaxDegreeOfParallelism = 1,
-            CancellationToken = cancellationToken
-        };
-
-        await Parallel.ForEachAsync(_graph.Applications, concurrency, async (appNode, cancellationToken) =>
+        foreach (var appNode in applications)
         {
             try
             {
                 _logger.LogDebug("Fetching user assignments for application {AppName} ({AppId})...", appNode.Name, appNode.Id);
-                ApplicationUsersApi appUsersApi = new(_oktaConfig);
-
-                // If this app represents an AD domain, derive its SID from any associated user account
-                string? domainSid = null;
-                string? domainFQDN = appNode.ActiveDirectoryDomain ?? appNode.Name;
+                int appAssignmentCount = 0;
 
                 await foreach (var appUserAssignment in appUsersApi.ListApplicationUsers(appNode.Id, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
-                    // Pre-create the OktaUser edge node
-                    var oktaUser = OktaUser.CreateEdgeNode(appUserAssignment.Id);
+                    await dbContext.ApplicationUserAssignments
+                    .AddAsync(new Database.OktaApplicationUserAssignment(appUserAssignment, appNode.Id), cancellationToken)
+                    .ConfigureAwait(false);
 
-                    // Login of the user in the target application
-                    string? targetUserName = appUserAssignment.Credentials?.UserName;
-
-                    // Sync direction can be inbound or outbound
-                    bool inbound = false;
-
-                    // Handle hybrid paths first, regardless if the user is assigned directly or through a group membership.
-                    if (appUserAssignment.SyncState == AppUserSyncState.SYNCHRONIZED)
-                    {
-                        // This is a hybrid user
-                        if (appNode.IsActiveDirectory)
-                        {
-                            // This user is synced to/from AD
-
-                            // Heuristics: Outbound synced AD users are scoped through groups.
-                            // Inbound synced users are assigned directly to the AD app.
-                            // Only inbound users have objectSid in the appUser objects.
-                            // ExternalId has BASE64 of objectGuid, regardless of the direction.
-                            inbound = appUserAssignment.Scope == AppUser.ScopeEnum.USER;
-
-                            // Create the User AD node
-                            ActiveDirectoryUser adUser = new(appUserAssignment, domainFQDN);
-                            _adGraph.AddNode(adUser);
-
-                            // Cache the domain SID
-                            domainSid ??= adUser.DomainSid;
-
-                            if (inbound)
-                            {
-                                _logger.LogTrace("User {UserName} ({UserId}) is synchronized FROM Active Directory.", adUser.Name, adUser.Id);
-
-                                // Create the (:User)-[:Okta_UserSync]->(:Okta_User) hybrid edge
-                                _hybridEdgeGraph.AddEdge(adUser, oktaUser, OktaUser.UserSyncEdgeKind);
-                            }
-                            else
-                            {
-                                _logger.LogTrace("User {UserName} ({UserId}) is synchronized TO Active Directory.", adUser.Name, adUser.Id);
-
-                                // Create the (:Okta_User)-[:Okta_UserSync]->(:User) hybrid edge
-                                _hybridEdgeGraph.AddEdge(oktaUser, adUser, OktaUser.UserSyncEdgeKind);
-                            }
-
-                            OpenGraphEdgeNode? domainNode = null;
-
-                            if (domainSid is not null)
-                            {
-                                // We can uniquely match the AD domain node by its SID
-                                domainNode = ActiveDirectoryDomain.CreateEdgeNode(domainSid);
-                            }
-                            else
-                            {
-                                // If only outbound sync is configured for the domain or we are early in the processing,
-                                // the domain SID might not be known yet. We thus identify the domain by FQDN instead of SID,
-                                // which is not 100% reliable.
-                                domainNode = ActiveDirectoryDomain.CreateEdgeNode(appNode.DomainName, NodeMatchType.Name);
-                            }
-
-                            // Add the (:Domain)-[:Contains]->(:User) edge to the AD graph
-                            _adGraph.AddEdge(domainNode, adUser, ActiveDirectoryDomain.ContainsEdgeKind);
-                        }
-                        else if (appNode.IsLdapInterface)
-                        {
-                            // This user is imported from LDAP
-                            inbound = true;
-                        }
-                        else
-                        {
-                            // TODO: Handle sync directions for SCIM users.
-                            inbound = false;
-
-                            // This user is probably synced using SCIM to/from the target app.
-                            OpenGraphEdgeNode? scimUser = appNode.CreateHybridUserNode(targetUserName);
-                            if (scimUser is not null)
-                            {
-                                if (inbound)
-                                {
-                                    // Create the ()-[:Okta_UserSync]->(:Okta_User) hybrid edge
-                                    _hybridEdgeGraph.AddEdge(scimUser, oktaUser, OktaUser.UserSyncEdgeKind);
-                                }
-                                else
-                                {
-                                    // Create the (:Okta_User)-[:Okta_UserSync]->() hybrid edge
-                                    _hybridEdgeGraph.AddEdge(oktaUser, scimUser, OktaUser.UserSyncEdgeKind);
-                                }
-                            }
-                        }
-
-                        // Connect the user to the syncing application as well
-                        if (inbound)
-                        {
-                            // Create the (:Okta_Application)-[:Okta_UserPull]->(:Okta_User) edge
-                            _graph.AddEdge(appNode, oktaUser, OktaUser.UserPullEdgeKind);
-                        }
-                        else if (!appNode.IsOutboundSyncIgnored)
-                        {
-                            // Create the (:Okta_User)-[:Okta_UserPush]->(:Okta_Application) hybrid edge
-                            _graph.AddEdge(oktaUser, appNode, OktaUser.UserPushEdgeKind);
-                        }
-                    }
-
-                    // SSO edges for SAML, OIDC, and SWA app users.
-                    // For users that are not synchronized using SCIM and do not actually exist in the target tenant,
-                    // these edges might become disconnected (missing target nodes). This is expected.
-                    OpenGraphEdge? hybridAuthEdge = appNode.CreateHybridUserSignOnEdge(appUserAssignment.Id, targetUserName);
-
-                    if (hybridAuthEdge is not null)
-                    {
-                        // Add the Okta_OutboundSSO or Okta_SWA edge to the graph.
-                        // Example: (:Okta_User)-[:Okta_OutboundSSO]->(:jamf_jamf_Account)
-                        // Example: (:Okta_User)-[:Okta_SWA]->(:jamf_jamf_Account)
-                        // Example: (:Okta_User)-[:Okta_OutboundSSO]->(:GHUser)
-                        _logger.LogTrace("User {UserId} is mapped as {TargetUserName} in the {AppName} application",
-                            appUserAssignment.Id,
-                            targetUserName,
-                            appNode.Name);
-                        _hybridEdgeGraph.AddEdge(hybridAuthEdge);
-                    }
-
-                    // The (:Okta_Group)-[:Okta_AppAssignment]->(:Okta_Application) edges are handled separately.
-                    if (appUserAssignment.Scope == AppUser.ScopeEnum.USER && !appNode.IsAssignmentIgnored)
-                    {
-                        // TODO: Consider only active user assignments?
-                        _logger.LogTrace("User {UserId} is assigned the {AppName} ({AppId}) application.", appUserAssignment.Id, appNode.Name, appNode.Id);
-
-                        // Create the (:Okta_User)-[:Okta_AppAssignment]->(:Okta_Application) edge
-                        _graph.AddEdge(oktaUser, appNode, OktaApplication.AppAssignmentEdgeKind);
-                    }
-
-                    if (appNode.SupportsPasswordUpdates)
-                    {
-                        // Create the (:Okta_Application)-[:Okta_ReadPasswordUpdates]->(:Okta_User) edge
-                        _logger.LogTrace("Application {AppName} can read password updates for user {UserId}.", appNode.Name, oktaUser.Value);
-                        _graph.AddEdge(appNode, oktaUser, OktaApplication.ReadPasswordUpdatesEdgeKind);
-                    }
+                    appAssignmentCount++;
+                    assignmentCount++;
                 }
 
-                if (domainSid is not null && appNode.ActiveDirectoryDomainSid is null)
-                {
-                    // Add AD domain SID, so that the Domain node can later be created.
-                    appNode.ActiveDirectoryDomainSid = domainSid;
-                }
-
-                _logger.LogTrace("Finished fetching user assignments for application {AppName} ({AppId}).", appNode.Name, appNode.Id);
+                _logger.LogDebug("Fetched {AssignmentCount} user assignments for application {AppName} ({AppId}).", appAssignmentCount, appNode.Name, appNode.Id);
+                await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             }
             catch (ApiException e)
             {
                 var status = (HttpStatusCode)e.ErrorCode;
                 _logger.LogError("Error {ErrorCode} ({Status}) received while trying to fetch Okta app {AppName} ({AppId}) user assignments.", e.ErrorCode, status, appNode.Name, appNode.Id);
             }
-        }).ConfigureAwait(false);
+        }
 
-        _logger.LogInformation("Finished fetching application user assignments.");
+        _logger.LogInformation("Successfully fetched {AssignmentCount} application user assignments.", assignmentCount);
     }
 
     public async Task CollectOktaAppGroupAssignments(CancellationToken cancellationToken = default)
@@ -626,11 +481,7 @@ partial class OktaClient
     public async Task CollectOktaPrivilegedUsers(CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching the list of users with role assignments...");
-
-        if (_graph is null)
-        {
-            throw new InvalidOperationException("Okta graph not initialized. Please call InitializeOktaGraph() first.");
-        }
+        using var dbContext = new Database.AppDbContext(_outputDirectory);
 
         try
         {
@@ -639,23 +490,12 @@ partial class OktaClient
 
             await foreach (RoleAssignedUser privilegedUser in roleAssignmentApi.ListAllUsersWithRoleAssignments(limit: null, cancellationToken).ConfigureAwait(false))
             {
+                var privilegedUserNode = new Database.OktaPrivilegedUser(privilegedUser);
+                await dbContext.PrivilegedUsers.AddAsync(privilegedUserNode, cancellationToken).ConfigureAwait(false);
                 privilegedUserCount++;
-
-                // Mark the user as privileged in the graph
-                OktaUser? userNode = _graph.GetUserById(privilegedUser.Id);
-
-                if (userNode is not null)
-                {
-                    _logger.LogDebug("User {UserName} ({UserId}) has a role assigned.", userNode.Name, userNode.Id);
-                    userNode.HasRoleAssignments = true;
-                }
-                else
-                {
-                    _logger.LogWarning(
-                        "Could not find user {UserId} in the graph while processing the list of users with role assignments. The user might have been deactivated.",
-                        privilegedUser.Id);
-                }
             }
+
+            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
             _logger.LogInformation("Successfully processed {PrivilegedUserCount} users with role assignments.", privilegedUserCount);
         }

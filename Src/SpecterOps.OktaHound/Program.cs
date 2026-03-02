@@ -155,6 +155,8 @@ class Program
         await oktaClient.DeleteJWKs(cancellationToken);
         await oktaClient.DeleteApplicationGrants(cancellationToken);
         await oktaClient.DeleteUserGroupMemberships(cancellationToken);
+        await oktaClient.DeleteAppUserAssignments(cancellationToken);
+        await oktaClient.DeletePrivilegedUsers(cancellationToken);
 
         await oktaClient.CollectOrganization(cancellationToken);
         await oktaClient.CollectUsers(cancellationToken);
@@ -171,9 +173,9 @@ class Program
         await oktaClient.CollectOktaIdentityProviders(cancellationToken);
         await oktaClient.CollectOktaApiServiceIntegrations(cancellationToken);
         await oktaClient.CollectOktaPolicies(cancellationToken);
-        // await oktaClient.CollectOktaPrivilegedUsers(cancellationToken);
+        await oktaClient.CollectOktaPrivilegedUsers(cancellationToken);
         await oktaClient.CollectOktaUserAuthenticationFactors(cancellationToken);
-        // await oktaClient.CollectOktaAppUserAssignments(cancellationToken);
+        await oktaClient.CollectOktaAppUserAssignments(cancellationToken);
         await oktaClient.CollectOktaGroupMemberships(cancellationToken);
         await oktaClient.CollectOktaApplicationGrants(cancellationToken);
         await oktaClient.CollectOktaApplicationSecrets(cancellationToken);

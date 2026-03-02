@@ -1,4 +1,4 @@
-namespace SpecterOps.OktaHound.Database;
+﻿namespace SpecterOps.OktaHound.Database;
 
 public sealed class OktaIdentityProviderGovernedGroup
 {

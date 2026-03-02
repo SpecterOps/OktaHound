@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Okta.Sdk.Model;
@@ -72,6 +72,9 @@ public sealed class OktaUser : OktaEntity
 
     [JsonIgnore]
     public List<OktaGroup> Groups { get; set; } = [];
+
+    [JsonIgnore]
+    public List<OktaApplication> AssignedApplications { get; set; } = [];
 
     [JsonIgnore]
     public List<OktaUserFactor> AuthenticationFactors { get; set; } = [];

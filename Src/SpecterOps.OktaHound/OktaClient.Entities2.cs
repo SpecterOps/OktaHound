@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using Microsoft.Extensions.Logging;
 using Okta.Sdk.Api;
 using Okta.Sdk.Client;

@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using Okta.Sdk.Model;
 
 namespace SpecterOps.OktaHound.Database;
