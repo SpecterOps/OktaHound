@@ -17,7 +17,7 @@ param (
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string] $SelectorsPath = '../Src/PrivilegeZoneSelectors',
+    [string] $SelectorsLinkPath = '../Src/PrivilegeZoneSelectors',
 
     [Parameter(Mandatory = $false)]
     [switch] $OfficialDocs
@@ -48,7 +48,7 @@ $markdown += @'
 The following Cypher selectors define the default Privilege Zone for the OktaHound extension.
 Each selector is defined in a JSON file located in the [PrivilegeZoneSelectors]({0}) directory of the OktaHound repository.
 
-'@ -f $SelectorsPath
+'@ -f $SelectorsLinkPath
 
 Get-ChildItem -File -Path $InputDirectory -Filter '*.json' | Sort-Object -Property Name | ForEach-Object {
     # Parse the JSON content of the privilege zone selector file
@@ -76,7 +76,7 @@ Get-ChildItem -File -Path $InputDirectory -Filter '*.json' | Sort-Object -Proper
 
 This selector is defined in the [{3}]({4}/{3}) file.
 
-'@ -f $title, $description, $cypher, $fileName, $SelectorsPath
+'@ -f $title, $description, $cypher, $fileName, $SelectorsLinkPath
 }
 
 # Normalize line endings to CRLF for Git working tree
