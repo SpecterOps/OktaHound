@@ -44,7 +44,7 @@
       "description": "A device registered in Okta, such as a mobile phone or a computer",
       "is_display_kind": true,
       "icon": "mobile",
-      "color": "#3a5d9c"
+      "color": "#4971bc"
     },
     {
       "name": "Okta_Application",
@@ -68,7 +68,7 @@
       "description": "A resource set containing users, groups, applications, and other Okta objects",
       "is_display_kind": true,
       "icon": "folder",
-      "color": "#3a5d9c"
+      "color": "#e6b65b"
     },
     {
       "name": "Okta_Role",
@@ -76,7 +76,7 @@
       "description": "A built-in role in Okta, such as Super Admin or Group Admin",
       "is_display_kind": true,
       "icon": "clipboard-list",
-      "color": "#025e00"
+      "color": "#3e8e41"
     },
     {
       "name": "Okta_CustomRole",
@@ -84,7 +84,7 @@
       "description": "A custom role in Okta created by an administrator",
       "is_display_kind": true,
       "icon": "clipboard-list",
-      "color": "#025e00"
+      "color": "#3e8e41"
     },
     {
       "name": "Okta_RoleAssignment",
