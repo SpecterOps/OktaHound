@@ -40,6 +40,9 @@ public sealed class OktaGroup : OktaSecurityPrincipal
     public List<OktaIdentityProvider>? GoverningIdentityProviders { get; set; }
 
     [JsonIgnore]
+    public List<OktaUser> Members { get; set; } = [];
+
+    [JsonIgnore]
     [NotMapped]
     public bool MembershipLocked => OktaGroupType == global::Okta.Sdk.Model.GroupType.APPGROUP.Value;
 
@@ -52,24 +55,7 @@ public sealed class OktaGroup : OktaSecurityPrincipal
     public bool IsOktaGroup => ObjectClass == OktaGroupObjectClass;
 
     [JsonIgnore]
-    [NotMapped]
-    public string? DomainSid
-    {
-        get
-        {
-            string? groupSid = ObjectSid;
-
-            if (groupSid is null)
-            {
-                // This is apparently not an AD group
-                return null;
-            }
-
-            // Cut off the RID from the SID, e.g., S-1-5-21-2697957641-2271029196-387917394-500
-            var ridSeparatorIndex = groupSid.LastIndexOf('-');
-            return groupSid[..ridSeparatorIndex];
-        }
-    }
+    public string? DomainSid { get; private set; }
 
     protected override string[] Kinds => [NodeKind];
 
@@ -111,6 +97,9 @@ public sealed class OktaGroup : OktaSecurityPrincipal
             DomainQualifiedName = adGroupProfile.WindowsDomainQualifiedName;
             GroupScope = adGroupProfile.GroupScope;
             GroupType = adGroupProfile.GroupType;
+
+            // Cut off the RID from the SID to get the domain SID, e.g., S-1-5-21-2697957641-2271029196-387917394 from S-1-5-21-2697957641-2271029196-387917394-500
+            DomainSid = GetDomainSid(ObjectSid);
 
             // Base-64 encoded GUID (objectGUID) of the Windows group
             ObjectGuid = DecodeObjectGuid(adGroupProfile.ExternalId);
@@ -157,5 +146,18 @@ public sealed class OktaGroup : OktaSecurityPrincipal
             // Return the original string if it cannot be parsed for some reason
             return base64Guid;
         }
+    }
+
+    private static string? GetDomainSid(string? groupSid)
+    {
+        if (groupSid is null)
+        {
+            // This is apparently not an AD group
+            return null;
+        }
+
+        // Cut off the RID from the SID, e.g., S-1-5-21-2697957641-2271029196-387917394-500
+        var ridSeparatorIndex = groupSid.LastIndexOf('-');
+        return groupSid[..ridSeparatorIndex];
     }
 }

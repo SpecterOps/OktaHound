@@ -5,6 +5,7 @@ namespace SpecterOps.OktaHound.Database;
 // All types that will be serialized to JSON must be listed here
 [JsonSerializable(typeof(OktaEntity))]
 [JsonSerializable(typeof(OktaUser))]
+[JsonSerializable(typeof(OktaUserFactor))]
 [JsonSerializable(typeof(OktaGroup))]
 [JsonSerializable(typeof(OktaOrganization))]
 [JsonSerializable(typeof(OktaAgent))]

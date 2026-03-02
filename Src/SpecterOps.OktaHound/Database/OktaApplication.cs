@@ -152,22 +152,22 @@ public sealed class OktaApplication : OktaSecurityPrincipal
     public List<OktaJWK> JWKs { get; set; } = [];
 
     [JsonIgnore]
+    public List<OktaApplicationGrant> Grants { get; set; } = [];
+
+    [JsonIgnore]
     public List<OktaClientSecret> ClientSecrets { get; set; } = [];
 
     [JsonIgnore]
     public List<OktaGroup> ImportedGroups { get; set; } = [];
 
     [JsonIgnore]
-    [NotMapped]
-    public bool SupportsSCIM => Features?.Contains("SCIM_PROVISIONING") ?? false;
+    public bool SupportsSCIM { get; set; }
 
     [JsonIgnore]
-    [NotMapped]
-    public bool SupportsPasswordUpdates => Features?.Contains("PUSH_PASSWORD_UPDATES") ?? false;
+    public bool SupportsPasswordUpdates { get; set; }
 
     [JsonIgnore]
-    [NotMapped]
-    public bool IsService => ClientType == OpenIdConnectApplicationType.Service.Value;
+    public bool IsService { get; set; }
 
     [JsonIgnore]
     [NotMapped]
@@ -498,6 +498,10 @@ public sealed class OktaApplication : OktaSecurityPrincipal
             */
         }
         // There might be other (undocumented) application types we do not specifically handle yet.
+
+        SupportsSCIM = Features?.Contains("SCIM_PROVISIONING") ?? false;
+        SupportsPasswordUpdates = Features?.Contains("PUSH_PASSWORD_UPDATES") ?? false;
+        IsService = ClientType == OpenIdConnectApplicationType.Service.Value;
     }
 
     protected override void SerializeProperties(Utf8JsonWriter writer)

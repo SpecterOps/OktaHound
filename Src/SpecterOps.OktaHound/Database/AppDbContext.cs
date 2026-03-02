@@ -9,6 +9,11 @@ public sealed class AppDbContext : DbContext
 
     public string DatabasePath { get; }
 
+    /// <summary>
+    /// Indicates whether to enforce foreign key constraints in the SQLite database.
+    /// </summary>
+    public bool EnableForeignKeys { get; }
+
     public DbSet<OktaUser> Users => Set<OktaUser>();
 
     public DbSet<OktaGroup> Groups => Set<OktaGroup>();
@@ -45,7 +50,13 @@ public sealed class AppDbContext : DbContext
 
     public DbSet<OktaJWK> JWKs => Set<OktaJWK>();
 
+    public DbSet<OktaApplicationGrant> ApplicationGrants => Set<OktaApplicationGrant>();
+
+    public DbSet<OktaUserFactor> UserFactors => Set<OktaUserFactor>();
+
     public DbSet<OktaDeviceOwner> DeviceOwners => Set<OktaDeviceOwner>();
+
+    public DbSet<OktaUserGroupMembership> UserGroupMemberships => Set<OktaUserGroupMembership>();
 
     public DbSet<OktaIdentityProviderGovernedGroup> IdentityProviderGovernedGroups => Set<OktaIdentityProviderGovernedGroup>();
 
@@ -53,14 +64,21 @@ public sealed class AppDbContext : DbContext
 
     public DbSet<OktaOrganization> Organizations => Set<OktaOrganization>();
 
-    public AppDbContext(string databaseDirectory)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AppDbContext"/> class.
+    /// </summary>
+    /// <param name="databaseDirectory">The directory where the SQLite database file is located.</param>
+    /// <param name="foreignKeys">Indicates whether to enforce foreign key constraints in the SQLite database.</param>
+    /// <remarks>The foreign key constraints are disabled by default to allow data insertion in any order without needing to worry about dependencies.</remarks>
+    public AppDbContext(string databaseDirectory, bool foreignKeys = false)
     {
         DatabasePath = Path.Combine(databaseDirectory, DatabaseFileName);
+        EnableForeignKeys = foreignKeys;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite($"Data Source={DatabasePath}");
+        optionsBuilder.UseSqlite($"Data Source={DatabasePath};Foreign Keys={EnableForeignKeys}");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -117,11 +135,15 @@ public sealed class AppDbContext : DbContext
         modelBuilder.Entity<OktaApplication>()
             .Property(application => application.CustomProperties)
             .HasConversion(
-                value => JsonSerializer.Serialize(value, (JsonSerializerOptions?)null),
+                value => JsonSerializer.Serialize(value, TestSerializationContext.Default.DictionaryStringString),
                 value => string.IsNullOrWhiteSpace(value)
                     ? new Dictionary<string, string>()
-                    : JsonSerializer.Deserialize<Dictionary<string, string>>(value) ?? new Dictionary<string, string>()
+                    : JsonSerializer.Deserialize(value, TestSerializationContext.Default.DictionaryStringString) ?? new Dictionary<string, string>()
             );
+
+        // Index applications by whether they are service applications, as this is a common query filter
+        modelBuilder.Entity<OktaApplication>()
+            .HasIndex(application => application.IsService);
 
         // User to realm relationship
         modelBuilder.Entity<OktaUser>()
@@ -153,7 +175,7 @@ public sealed class AppDbContext : DbContext
                     .HasOne(join => join.IdentityProvider)
                     .WithMany()
                     .HasForeignKey(join => join.IdentityProviderId)
-                    .OnDelete(DeleteBehavior.NoAction),
+                    .OnDelete(DeleteBehavior.Cascade),
                 join =>
                 {
                     join.HasKey(entity => new { entity.IdentityProviderId, entity.GroupId });
@@ -166,6 +188,14 @@ public sealed class AppDbContext : DbContext
             .WithMany(manager => manager.DirectReports)
             .HasForeignKey(user => user.ManagerId)
             .OnDelete(DeleteBehavior.SetNull)
+            .IsRequired(false);
+
+        // User authentication factors relationship
+        modelBuilder.Entity<OktaUserFactor>()
+            .HasOne(userFactor => userFactor.User)
+            .WithMany(user => user.AuthenticationFactors)
+            .HasForeignKey(userFactor => userFactor.UserId)
+            .OnDelete(DeleteBehavior.NoAction)
             .IsRequired(false);
 
         // API token to user relationship
@@ -183,6 +213,17 @@ public sealed class AppDbContext : DbContext
             .HasForeignKey(jwk => jwk.ApplicationId)
             .OnDelete(DeleteBehavior.NoAction)
             .IsRequired(false);
+
+        // Application grants relationship
+        modelBuilder.Entity<OktaApplicationGrant>()
+            .HasOne(applicationGrant => applicationGrant.Application)
+            .WithMany(application => application.Grants)
+            .HasForeignKey(applicationGrant => applicationGrant.ApplicationId)
+            .OnDelete(DeleteBehavior.NoAction)
+            .IsRequired(true);
+
+        modelBuilder.Entity<OktaApplicationGrant>()
+            .HasKey(applicationGrant => applicationGrant.Id);
 
         // Client secret to application relationship
         modelBuilder.Entity<OktaClientSecret>()
@@ -222,10 +263,30 @@ public sealed class AppDbContext : DbContext
                     .HasOne(deviceOwner => deviceOwner.Device)
                     .WithMany()
                     .HasForeignKey(deviceOwner => deviceOwner.DeviceId)
-                    .OnDelete(DeleteBehavior.NoAction),
+                    .OnDelete(DeleteBehavior.Cascade),
                 join =>
                 {
                     join.HasKey(deviceOwner => new { deviceOwner.DeviceId, deviceOwner.OwnerId });
+                });
+
+        // User to group memberships relationship (many-to-many)
+        modelBuilder.Entity<OktaUser>()
+            .HasMany(user => user.Groups)
+            .WithMany(group => group.Members)
+            .UsingEntity<OktaUserGroupMembership>(
+                right => right
+                    .HasOne(userGroupMembership => userGroupMembership.Group)
+                    .WithMany()
+                    .HasForeignKey(userGroupMembership => userGroupMembership.GroupId)
+                    .OnDelete(DeleteBehavior.NoAction),
+                left => left
+                    .HasOne(userGroupMembership => userGroupMembership.User)
+                    .WithMany()
+                    .HasForeignKey(userGroupMembership => userGroupMembership.UserId)
+                    .OnDelete(DeleteBehavior.NoAction),
+                join =>
+                {
+                    join.HasKey(userGroupMembership => new { userGroupMembership.UserId, userGroupMembership.GroupId });
                 });
 
         base.OnModelCreating(modelBuilder);

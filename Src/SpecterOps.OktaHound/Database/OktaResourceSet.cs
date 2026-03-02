@@ -13,6 +13,7 @@ public sealed class OktaResourceSet : OktaEntity
     public DateTimeOffset? Created { get; set; }
     public DateTimeOffset? LastUpdated { get; set; }
     public string? Description { get; set; }
+    public List<string>? ResourceUris { get; set; }
 
     /// <summary>
     /// The original identifier of the resource set as defined in Okta.

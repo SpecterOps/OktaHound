@@ -48,7 +48,9 @@ public sealed class OktaUser : OktaEntity
 
     public string? CredentialProviderType { get; set; }
     public string? CredentialProviderName { get; set; }
-    public int AuthenticationFactors { get; set; }
+
+    [JsonPropertyName("authenticationFactors")]
+    public int AuthenticationFactorCount => AuthenticationFactors?.Count ?? 0;
 
     [JsonIgnore]
     public OktaRealm? Realm { get; set; }
@@ -67,6 +69,12 @@ public sealed class OktaUser : OktaEntity
 
     [JsonIgnore]
     public List<OktaDevice> OwnedDevices { get; set; } = [];
+
+    [JsonIgnore]
+    public List<OktaGroup> Groups { get; set; } = [];
+
+    [JsonIgnore]
+    public List<OktaUserFactor> AuthenticationFactors { get; set; } = [];
 
     protected override string[] Kinds => [NodeKind];
 

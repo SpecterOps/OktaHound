@@ -1,5 +1,6 @@
 ﻿using System.CommandLine;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Okta.Sdk.Client;
 using SpecterOps.OktaHound.Database;
@@ -134,6 +135,7 @@ class Program
         OktaClient oktaClient = new(outputDirectory.FullName, logger, oktaConfigFromCommandLine);
 
         await oktaClient.DeleteOrganizations(cancellationToken);
+        await oktaClient.DeleteUserFactors(cancellationToken);
         await oktaClient.DeleteUsers(cancellationToken);
         await oktaClient.DeleteGroups(cancellationToken);
         await oktaClient.DeleteApplications(cancellationToken);
@@ -151,6 +153,8 @@ class Program
         await oktaClient.DeletePolicies(cancellationToken);
         await oktaClient.DeleteClientSecrets(cancellationToken);
         await oktaClient.DeleteJWKs(cancellationToken);
+        await oktaClient.DeleteApplicationGrants(cancellationToken);
+        await oktaClient.DeleteUserGroupMemberships(cancellationToken);
 
         await oktaClient.CollectOrganization(cancellationToken);
         await oktaClient.CollectUsers(cancellationToken);
@@ -167,6 +171,21 @@ class Program
         await oktaClient.CollectOktaIdentityProviders(cancellationToken);
         await oktaClient.CollectOktaApiServiceIntegrations(cancellationToken);
         await oktaClient.CollectOktaPolicies(cancellationToken);
+        // await oktaClient.CollectOktaPrivilegedUsers(cancellationToken);
+        await oktaClient.CollectOktaUserAuthenticationFactors(cancellationToken);
+        // await oktaClient.CollectOktaAppUserAssignments(cancellationToken);
+        await oktaClient.CollectOktaGroupMemberships(cancellationToken);
+        await oktaClient.CollectOktaApplicationGrants(cancellationToken);
+        await oktaClient.CollectOktaApplicationSecrets(cancellationToken);
+        await oktaClient.CollectOktaApplicationJsonWebKeys(cancellationToken);
+        // await oktaClient.CollectOktaAppGroupAssignments(cancellationToken);
+        // await oktaClient.CollectOktaAppGroupPushMappings(cancellationToken);
+        await oktaClient.CollectOktaApiServiceIntegrationSecrets(cancellationToken);
+        // await oktaClient.CollectOktaIdentityProviderUsers(cancellationToken);
+        // await oktaClient.CollectOktaCustomRolePermissions(cancellationToken);
+        // await oktaClient.CollectOktaPolicyRules(cancellationToken);
+        // await oktaClient.CollectOktaPolicyMappings(cancellationToken);
+        // await oktaClient.CollectOktaResourceSetMemberships(cancellationToken);
 
         await using var stream = new FileStream(Path.Combine(outputDirectory.FullName, "okta-users-test.json"), FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
         await using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true });
@@ -307,11 +326,15 @@ class Program
             logger.LogCritical("Operation timed out: {Message} Exiting.", e.Message);
             return 5;
         }
-        // TODO: Microsoft.EntityFrameworkCore.DbUpdateException
+        catch (DbUpdateException e)
+        {
+            logger.LogCritical(e, "Database update error: {Message} Exiting.", e.Message);
+            return 6;
+        }
         catch (Exception e)
         {
             logger.LogCritical(e, "Unexpected error: {Message} Exiting.", e.Message);
-            return 6;
+            return 7;
         }
     }
 

@@ -26,7 +26,8 @@ partial class OktaClient
 
     public async Task DeleteDevices(CancellationToken cancellationToken = default)
     {
-        using var dbContext = new AppDbContext(_outputDirectory);
+        // Enable foreign key constraints to ensure that related entities are also deleted
+        using var dbContext = new AppDbContext(_outputDirectory, foreignKeys: true);
         await DeleteEntities(dbContext.Devices, "devices", cancellationToken).ConfigureAwait(false);
     }
 
@@ -68,10 +69,8 @@ partial class OktaClient
 
     public async Task DeleteAgentPools(CancellationToken cancellationToken = default)
     {
-        using var dbContext = new AppDbContext(_outputDirectory);
-
-        // Agents are collected together with agent pools, so we need to delete them both to avoid foreign key constraint violations
-        await DeleteEntities(dbContext.Agents, "agents", cancellationToken).ConfigureAwait(false);
+        // Enable foreign key constraints so deleting pools cascades to related agents.
+        using var dbContext = new AppDbContext(_outputDirectory, foreignKeys: true);
         await DeleteEntities(dbContext.AgentPools, "agent pools", cancellationToken).ConfigureAwait(false);
     }
 
@@ -83,7 +82,8 @@ partial class OktaClient
 
     public async Task DeleteIdentityProviders(CancellationToken cancellationToken = default)
     {
-        using var dbContext = new AppDbContext(_outputDirectory);
+        // Enable foreign key constraints to ensure that related entities are also deleted
+        using var dbContext = new AppDbContext(_outputDirectory, foreignKeys: true);
         await DeleteEntities(dbContext.IdentityProviders, "identity providers", cancellationToken).ConfigureAwait(false);
     }
 
@@ -109,6 +109,24 @@ partial class OktaClient
     {
         using var dbContext = new AppDbContext(_outputDirectory);
         await DeleteEntities(dbContext.JWKs, "JWKs", cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task DeleteApplicationGrants(CancellationToken cancellationToken = default)
+    {
+        using var dbContext = new AppDbContext(_outputDirectory);
+        await DeleteEntities(dbContext.ApplicationGrants, "application grants", cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task DeleteUserGroupMemberships(CancellationToken cancellationToken = default)
+    {
+        using var dbContext = new AppDbContext(_outputDirectory);
+        await DeleteEntities(dbContext.UserGroupMemberships, "user group memberships", cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task DeleteUserFactors(CancellationToken cancellationToken = default)
+    {
+        using var dbContext = new AppDbContext(_outputDirectory);
+        await DeleteEntities(dbContext.UserFactors, "user factors", cancellationToken).ConfigureAwait(false);
     }
 
     public async Task DeleteOrganizations(CancellationToken cancellationToken = default)
