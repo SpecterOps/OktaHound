@@ -2,8 +2,8 @@
 
 ## Edge Schema
 
-- Source: [User](https://bloodhound.specterops.io/resources/nodes/user), [Okta_User](../NodeDescriptions/Okta_User.md), [SNOWUser](https://github.com/SpecterOps/SnowHound)
-- Destination: [Okta_User](../NodeDescriptions/Okta_User.md), [User](https://bloodhound.specterops.io/resources/nodes/user), [AZUser](https://bloodhound.specterops.io/resources/nodes/az-user), [OPUser](https://github.com/SpecterOps/1PassHound), [SNOWUser](https://github.com/SpecterOps/SnowHound)
+- Source: [User](https://bloodhound.specterops.io/resources/nodes/user), [Okta_User](../NodeDescriptions/Okta_User.md), [SNOW_User](https://github.com/SpecterOps/SnowHound)
+- Destination: [Okta_User](../NodeDescriptions/Okta_User.md), [User](https://bloodhound.specterops.io/resources/nodes/user), [AZUser](https://bloodhound.specterops.io/resources/nodes/az-user), [OP_User](https://github.com/SpecterOps/1PassHound), [SNOW_User](https://github.com/SpecterOps/SnowHound)
 
 ## General Information
 
@@ -19,7 +19,7 @@ graph LR
         adu1 -. Okta_UserSync .-> u1
     end
     subgraph snowflake["Snowflake"]
-        snu1("SNOWUser john\@contoso.com")
+        snu1("SNOW_User john\@contoso.com")
         u1 -. Okta_UserSync .-> snu1
     end
 ```

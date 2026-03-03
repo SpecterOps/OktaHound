@@ -3,7 +3,7 @@
 ## Edge Schema
 
 - Source: [Okta_Application](../NodeDescriptions/Okta_Application.md)
-- Destination: [AZTenant](https://bloodhound.specterops.io/resources/nodes/az-tenant), [GHOrganization](https://github.com/SpecterOps/GitHound), [jamf_SSOIntegration](https://github.com/SpecterOps/JamfHound), [SNOWAccount](https://github.com/SpecterOps/SnowHound)
+- Destination: [AZTenant](https://bloodhound.specterops.io/resources/nodes/az-tenant), [GH_Organization](https://github.com/SpecterOps/GitHound), [jamf_SSOIntegration](https://github.com/SpecterOps/JamfHound), [SNOW_Account](https://github.com/SpecterOps/SnowHound)
 
 ## General Information
 
@@ -21,7 +21,7 @@ graph LR
   end
   subgraph "GitHound"
     direction TB
-    ghorg("GHOrganization Contoso")
+    ghorg("GH_Organization Contoso")
     app1 -- Okta_OutboundOrgSSO --> ghorg
   end
   subgraph "JamfHound"

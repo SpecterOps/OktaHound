@@ -84,7 +84,7 @@ This query can be imported into BloodHound from the [group-members.json](../Src/
 Retrieves all hybrid relationships from external systems to Okta.
 
 ```cypher
-MATCH p = (:SNOWBase:GHBase:OPBase:Base:Jamf:AZBase)-[]->(:Okta)
+MATCH p = (:SNOW_Base:GH_Base:OP_Base:Base:Jamf:AZBase)-[]->(:Okta)
 RETURN p
 LIMIT 1000
 ```
@@ -96,7 +96,7 @@ This query can be imported into BloodHound from the [hybrid-inbound.json](../Src
 Retrieves all hybrid relationships from Okta to external systems.
 
 ```cypher
-MATCH p = (:Okta)-[]->(:SNOWBase:GHBase:OPBase:Base:Jamf:AZBase)
+MATCH p = (:Okta)-[]->(:SNOW_Base:GH_Base:OP_Base:Base:Jamf:AZBase)
 RETURN p
 LIMIT 1000
 ```
@@ -378,7 +378,7 @@ This query can be imported into BloodHound from the [stale-privileged-accounts.j
 Secure Web Authentication (SWA) relationships between Okta users and their linked accounts in external applications.
 
 ```cypher
-MATCH p = (:Okta_User)-[:Okta_SWA]->(:GHUser:jamf_Account:OPUser:SNOWUser)
+MATCH p = (:Okta_User)-[:Okta_SWA]->(:GH_User:jamf_Account:OP_User:SNOW_User)
 RETURN p
 LIMIT 1000
 ```

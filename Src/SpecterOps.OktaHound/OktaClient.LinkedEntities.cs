@@ -218,7 +218,7 @@ partial class OktaClient
                         // Add the Okta_OutboundSSO or Okta_SWA edge to the graph.
                         // Example: (:Okta_User)-[:Okta_OutboundSSO]->(:jamf_jamf_Account)
                         // Example: (:Okta_User)-[:Okta_SWA]->(:jamf_jamf_Account)
-                        // Example: (:Okta_User)-[:Okta_OutboundSSO]->(:GHUser)
+                        // Example: (:Okta_User)-[:Okta_OutboundSSO]->(:GH_User)
                         _logger.LogTrace("User {UserId} is mapped as {TargetUserName} in the {AppName} application",
                             appUserAssignment.Id,
                             targetUserName,

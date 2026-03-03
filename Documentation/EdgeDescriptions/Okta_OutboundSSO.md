@@ -3,7 +3,7 @@
 ## Edge Schema
 
 - Source: [Okta_User](../NodeDescriptions/Okta_User.md)
-- Destination: [AZUser](https://bloodhound.specterops.io/resources/nodes/az-user), [GHUser](https://github.com/SpecterOps/GitHound), [jamf_Account](https://github.com/SpecterOps/JamfHound), [SNOWUser](https://github.com/SpecterOps/SnowHound)
+- Destination: [AZUser](https://bloodhound.specterops.io/resources/nodes/az-user), [GH_User](https://github.com/SpecterOps/GitHound), [jamf_Account](https://github.com/SpecterOps/JamfHound), [SNOW_User](https://github.com/SpecterOps/SnowHound)
 
 ## General Information
 
@@ -16,14 +16,14 @@ graph LR
         u2("Okta_User alice\@contoso.com")
     end
     subgraph github["GitHub"]
-        ghu1("GHUser john\@contoso.com")
-        ghu2("GHUser alice\@contoso.com")
+        ghu1("GH_User john\@contoso.com")
+        ghu2("GH_User alice\@contoso.com")
     end
     subgraph jamf["Jamf"]
         jamfu1("jamf_Account john\@contoso.com")
     end
     subgraph snowflake["Snowflake"]
-        snu1("SNOWUser john\@contoso.com")
+        snu1("SNOW_User john\@contoso.com")
     end
     u1 -- Okta_OutboundSSO --> ghu1
     u1 -- Okta_OutboundSSO --> jamfu1
