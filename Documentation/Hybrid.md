@@ -45,8 +45,8 @@ Hybrid edges connect Okta entities to entities from other supported BloodHound c
 |-----------|-------------------|-------------------|-------------|
 | [Okta_OutboundSSO] | [Okta_User] | [jamf_Account] | ✅ |
 | [Okta_SWA] | [Okta_User] | [jamf_Account] | ❌ |
-| [Okta_OutboundOrgSSO] | [Okta_Application] | [jamf_Tenant] | ✅ |
-| [Okta_OrgSWA] | [Okta_Application] | [jamf_Tenant] | ❌ |
+| [Okta_OutboundOrgSSO] | [Okta_Application] | [jamf_SSOIntegration] | ✅ |
+| [Okta_OrgSWA] | [Okta_Application] | [jamf_SSOIntegration] | ❌ |
 
 ## 1Password Business
 
@@ -91,7 +91,7 @@ Hybrid edges connect Okta entities to entities from other supported BloodHound c
 [SNOWUser]: https://github.com/SpecterOps/SnowHound
 [SNOWGroup]: https://github.com/SpecterOps/SnowHound
 [SNOWAccount]: https://github.com/SpecterOps/SnowHound
-[jamf_Tenant]: https://github.com/SpecterOps/JamfHound
+[jamf_SSOIntegration]: https://github.com/SpecterOps/JamfHound
 [jamf_Account]: https://github.com/SpecterOps/JamfHound
 [GHUser]: https://github.com/SpecterOps/GitHound
 [GHOrganization]: https://github.com/SpecterOps/GitHound

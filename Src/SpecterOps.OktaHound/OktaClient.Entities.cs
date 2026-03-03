@@ -451,7 +451,7 @@ partial class OktaClient
 
                 // Try to add the Okta_OutboundOrgSSO edge for SAML and OIDC apps.
                 // A well-known BloodHound collector must exist for the target technology.
-                // Example: (:Okta_Application)-[:Okta_OutboundOrgSSO]->(:jamf_Tenant)
+                // Example: (:Okta_Application)-[:Okta_OutboundOrgSSO]->(:jamf_SSOIntegration)
                 // Example: (:Okta_Application)-[:Okta_OutboundOrgSSO]->(:GHOrganization)
                 OpenGraphEdge? outboundTrustEdge = appNode.CreateOutboundTrustEdge();
 

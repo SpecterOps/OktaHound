@@ -322,7 +322,7 @@ graph TB
   end
   subgraph jamf["Jamf Pro Cloud"]
     direction LR
-    jamft("jamf_Tenant contoso.jamfcloud.com")
+    jamft("jamf_SSOIntegration contoso.jamfcloud.com-SSO")
     jmfu1("jamf_Account john\@contoso.com")
   end
   adu1 -- Okta_UserSync --> u1

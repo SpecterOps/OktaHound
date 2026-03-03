@@ -4,7 +4,7 @@ namespace SpecterOps.OktaHound.Model.Jamf;
 
 internal static class JamfTenant
 {
-    private const string NodeKind = "jamf_Tenant";
+    private const string NodeKind = "jamf_SSOIntegration";
 
     public static OpenGraphEdgeNode? CreateEdgeNode(string? domainName)
     {
@@ -13,6 +13,7 @@ internal static class JamfTenant
             return null;
         }
 
-        return new OpenGraphEdgeNode(domainName, NodeKind, NodeMatchType.Id);
+        string ssoObjectId = $"{domainName}-SSO"; // Example: sol.jamfcloud.com-SSO
+        return new OpenGraphEdgeNode(ssoObjectId, NodeKind, NodeMatchType.Id);
     }
 }

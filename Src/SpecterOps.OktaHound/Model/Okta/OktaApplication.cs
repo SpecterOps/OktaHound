@@ -223,7 +223,7 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
         {
             string? regionType = GetProperty<string>(OnePasswordRegionPropertyName);
             string? subDomain = GetProperty<string>(OnePasswordSubdomainPropertyName);
-            // Example: contoso.1Password.com
+            // Example: contoso.1password.com
             return OnePasswordAccount.GetDomain(subDomain, regionType);
         }
     }
@@ -631,8 +631,8 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
 
         if (endNode is not null && edgeKind is not null)
         {
-            // Example: (:Okta_Application)-[:Okta_OutboundOrgSSO]->(:Jamf_Tenant)
-            // Example: (:Okta_Application)-[:Okta_OrgSWA]->(:Jamf_Tenant)
+            // Example: (:Okta_Application)-[:Okta_OutboundOrgSSO]->(:jamf_SSOIntegration)
+            // Example: (:Okta_Application)-[:Okta_OrgSWA]->(:jamf_SSOIntegration)
             // Example: (:Okta_Application)-[:Okta_OutboundOrgSSO]->(:GHOrganization)
             // Example: (:Okta_Application)-[:Okta_OutboundOrgSSO]->(:AZTenant)
             result = new(this, endNode, edgeKind);

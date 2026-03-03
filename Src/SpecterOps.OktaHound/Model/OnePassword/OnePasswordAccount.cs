@@ -10,8 +10,8 @@ internal static class OnePasswordAccount
     {
         if (regionType != null && subDomain != null)
         {
-            // Example: contoso.1Password.com
-            return $"{subDomain}.1Password.{regionType}";
+            // Example: contoso.1password.com
+            return $"{subDomain}.1password.{regionType}";
         }
         else
         {

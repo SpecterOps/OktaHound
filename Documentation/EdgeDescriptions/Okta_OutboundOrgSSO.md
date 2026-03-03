@@ -3,7 +3,7 @@
 ## Edge Schema
 
 - Source: [Okta_Application](../NodeDescriptions/Okta_Application.md)
-- Destination: [AZTenant](https://bloodhound.specterops.io/resources/nodes/az-tenant), [GHOrganization](https://github.com/SpecterOps/GitHound), [jamf_Tenant](https://github.com/SpecterOps/JamfHound), [SNOWAccount](https://github.com/SpecterOps/SnowHound)
+- Destination: [AZTenant](https://bloodhound.specterops.io/resources/nodes/az-tenant), [GHOrganization](https://github.com/SpecterOps/GitHound), [jamf_SSOIntegration](https://github.com/SpecterOps/JamfHound), [SNOWAccount](https://github.com/SpecterOps/SnowHound)
 
 ## General Information
 
@@ -26,7 +26,7 @@ graph LR
   end
   subgraph "JamfHound"
     direction TB
-    jamf("jamf_Tenant contoso.jamfcloud.com")
+    jamf("jamf_SSOIntegration contoso.jamfcloud.com-SSO")
     app2 -- Okta_OutboundOrgSSO --> jamf
   end
 ```
