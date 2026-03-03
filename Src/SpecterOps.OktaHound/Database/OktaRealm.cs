@@ -31,7 +31,7 @@ public sealed class OktaRealm : OktaEntity
         LastUpdated = realm.LastUpdated;
         IsDefault = realm.IsDefault;
         Type = realm.Profile?.RealmType?.Value;
-        Domains = realm.Profile?.Domains;
+        Domains = realm.Profile?.Domains is { Count: > 0 } domains ? domains : null;
     }
 
     protected override void SerializeProperties(Utf8JsonWriter writer)

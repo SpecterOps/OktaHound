@@ -11,7 +11,7 @@ public sealed class OktaApplicationUserAssignment
     public string Scope { get; set; } = string.Empty;
     public string? Status { get; set; }
     public string? SyncState { get; set; }
-    public Dictionary<string, string> Profile { get; set; } = [];
+    public Dictionary<string, string>? Profile { get; set; }
     public DateTimeOffset? Created { get; set; }
     public DateTimeOffset? StatusChanged { get; set; }
     public DateTimeOffset? PasswordChanged { get; set; }
@@ -49,6 +49,7 @@ public sealed class OktaApplicationUserAssignment
                 continue;
             }
 
+            Profile ??= [];
             Profile[profileProperty.Key] = stringValue;
         }
     }

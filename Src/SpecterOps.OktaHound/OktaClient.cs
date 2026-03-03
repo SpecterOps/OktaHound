@@ -91,6 +91,130 @@ internal partial class OktaClient
         OktaDomain = new Uri(this._oktaConfig.OktaDomain).Host;
     }
 
+    public async Task Collect(CollectionTarget collectionTarget = CollectionTarget.All, bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
+    {
+        if (collectionTarget.HasFlag(CollectionTarget.Organization))
+        {
+            await CollectOrganization(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.Users))
+        {
+            await CollectUsers(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.Groups))
+        {
+            await CollectGroups(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.AgentPools) || collectionTarget.HasFlag(CollectionTarget.Agents))
+        {
+            await CollectAgentPools(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.Devices))
+        {
+            await CollectOktaDevices(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.ResourceSets))
+        {
+            await CollectOktaResourceSets(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.Realms))
+        {
+            await CollectOktaRealms(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.BuiltinRoles))
+        {
+            await CollectOktaBuiltInRoles(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.CustomRoles))
+        {
+            await CollectOktaCustomRoles(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.Applications))
+        {
+            await CollectOktaApplications(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.ApiTokens))
+        {
+            await CollectOktaApiTokens(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.AuthorizationServers))
+        {
+            await CollectOktaAuthorizationServers(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.IdentityProviders))
+        {
+            await CollectOktaIdentityProviders(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.ApiServiceIntegrations))
+        {
+            await CollectOktaApiServiceIntegrations(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.Policies))
+        {
+            await CollectOktaPolicies(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.RoleAssignments))
+        {
+            // await CollectOktaRoleAssignments(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.ClientSecrets))
+        {
+            await CollectOktaApplicationSecrets(clearPreexistingTables, cancellationToken);
+            await CollectOktaApiServiceIntegrationSecrets(cancellationToken: cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.Jwks))
+        {
+            await CollectOktaApplicationJsonWebKeys(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.ApplicationGrants))
+        {
+            await CollectOktaApplicationGrants(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.ApplicationUserAssignments))
+        {
+            await CollectOktaAppUserAssignments(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.ApplicationGroupAssignments))
+        {
+            await CollectOktaAppGroupAssignments(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.UserGroupMemberships))
+        {
+            await CollectOktaGroupMemberships(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.PrivilegedUsers))
+        {
+            await CollectOktaPrivilegedUsers(clearPreexistingTables, cancellationToken);
+        }
+
+        if (collectionTarget.HasFlag(CollectionTarget.UserFactors))
+        {
+            await CollectOktaUserAuthenticationFactors(clearPreexistingTables, cancellationToken);
+        }
+    }
+
     public async Task InitializeOktaGraph(CancellationToken cancellationToken = default)
     {
         // OktaOrganization? orgNode = await FetchOktaOrganization(cancellationToken);

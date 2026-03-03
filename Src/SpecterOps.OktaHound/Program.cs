@@ -12,6 +12,18 @@ namespace SpecterOps.OktaHound;
 class Program
 {
     private const string LoggerCategoryName = "OktaHound";
+    private const int ExitSuccess = 0;
+    private const int ExitExportOutputMissing = 20;
+    private const int ExitExportDatabaseMissing = 21;
+    private const int ExitInvalidDomainWithoutToken = 22;
+    private const int ExitInvalidTokenWithoutDomain = 23;
+    private const int ExitFetchGraphFailed = 24;
+    private const int ExitIoError = 30;
+    private const int ExitAggregateError = 31;
+    private const int ExitCanceled = 32;
+    private const int ExitTimeout = 33;
+    private const int ExitDbUpdateError = 34;
+    private const int ExitUnhandledError = 35;
 
     static int Main(string[] args)
     {
@@ -48,13 +60,21 @@ class Program
             Arity = ArgumentArity.ExactlyOne
         };
 
+        Option<CollectionTarget> collectionTargetOption = new("--targets", "--entities", "-e")
+        {
+            Description = "Entities to collect.",
+            Required = false,
+            DefaultValueFactory = _ => CollectionTarget.All,
+            Arity = ArgumentArity.ExactlyOne
+        };
+
         Option<bool> skipMfaOption = new("--skip-mfa")
         {
             Description = "Skip collecting user authentication factors (MFA).",
             Required = false
         };
 
-        Command collectCommand = new("collect", "Collect and export data from an Okta organization")
+        Command legacyCommand = new("legacy", "Collect and export data from an Okta organization")
         {
             outputDirectoryOption,
             oktaDomainOption,
@@ -62,17 +82,36 @@ class Program
             skipMfaOption
         };
 
-        Command testCommand = new("test", "Test command for OktaHound")
+        Command runCommand = new("run", "Run end-to-end collection, post-processing, and export")
         {
             outputDirectoryOption,
+            collectionTargetOption,
+            oktaDomainOption,
+            oktaApiTokenOption
+        };
+
+        Command collectCommand = new("collect", "Collect data from an Okta organization into the database")
+        {
+            outputDirectoryOption,
+            collectionTargetOption,
             oktaDomainOption,
             oktaApiTokenOption,
+        };
+
+        Command processCommand = new("process", "Run post-processing tasks on collected entities")
+        {
+            outputDirectoryOption
+        };
+
+        Command exportCommand = new("export", "Export data from the local database to JSON")
+        {
+            outputDirectoryOption
         };
 
         // No need to dispose the cancellation token source, as it is bound to the application lifetime
         CancellationTokenSource tokenSource = new();
 
-        collectCommand.SetAction(parseResult =>
+        legacyCommand.SetAction(parseResult =>
         {
             // Fetch the command line options
             DirectoryInfo outputDirectory = parseResult.GetRequiredValue(outputDirectoryOption);
@@ -88,10 +127,30 @@ class Program
             return FetchAndSaveOktaGraph(outputDirectory, logger, oktaDomain, oktaApiToken, skipMfa, tokenSource.Token);
         });
 
-        testCommand.SetAction(parseResult =>
+        runCommand.SetAction(parseResult =>
         {
             // Fetch the command line options
             DirectoryInfo outputDirectory = parseResult.GetRequiredValue(outputDirectoryOption);
+            CollectionTarget collectionTarget = parseResult.GetRequiredValue(collectionTargetOption);
+            LogLevel verbosity = parseResult.GetRequiredValue(verboseOption);
+            string? oktaDomain = parseResult.GetValue(oktaDomainOption);
+            string? oktaApiToken = parseResult.GetValue(oktaApiTokenOption);
+
+            // Initialize the console logger and CTRL-C handler
+            ILogger logger = InitializeConsole(verbosity, tokenSource);
+
+            // Launch end-to-end logic
+            return RunAndCatchExceptions(
+                cancellationToken => CollectAndExport(collectionTarget, outputDirectory, logger, oktaDomain, oktaApiToken, cancellationToken),
+                logger,
+                tokenSource.Token);
+        });
+
+        collectCommand.SetAction(parseResult =>
+        {
+            // Fetch the command line options
+            DirectoryInfo outputDirectory = parseResult.GetRequiredValue(outputDirectoryOption);
+            CollectionTarget collectionTarget = parseResult.GetRequiredValue(collectionTargetOption);
             LogLevel verbosity = parseResult.GetRequiredValue(verboseOption);
             string? oktaDomain = parseResult.GetValue(oktaDomainOption);
             string? oktaApiToken = parseResult.GetValue(oktaApiTokenOption);
@@ -100,13 +159,51 @@ class Program
             ILogger logger = InitializeConsole(verbosity, tokenSource);
 
             // Launch the main logic
-            return Test(outputDirectory, logger, oktaDomain, oktaApiToken, tokenSource.Token);
+            return RunAndCatchExceptions(
+                cancellationToken => Collect(collectionTarget, outputDirectory, logger, oktaDomain, oktaApiToken, cancellationToken),
+                logger,
+                tokenSource.Token);
+        });
+
+        processCommand.SetAction(parseResult =>
+        {
+            // Fetch the command line options
+            DirectoryInfo outputDirectory = parseResult.GetRequiredValue(outputDirectoryOption);
+            LogLevel verbosity = parseResult.GetRequiredValue(verboseOption);
+
+            // Initialize the console logger and CTRL-C handler
+            ILogger logger = InitializeConsole(verbosity, tokenSource);
+
+            // Launch post-processing logic
+            return RunAndCatchExceptions(
+            cancellationToken => PostProcessing(outputDirectory, logger, cancellationToken),
+            logger,
+            tokenSource.Token);
+        });
+
+        exportCommand.SetAction(parseResult =>
+        {
+            // Fetch the command line options
+            DirectoryInfo outputDirectory = parseResult.GetRequiredValue(outputDirectoryOption);
+            LogLevel verbosity = parseResult.GetRequiredValue(verboseOption);
+
+            // Initialize the console logger and CTRL-C handler
+            ILogger logger = InitializeConsole(verbosity, tokenSource);
+
+            // Launch the export logic
+            return RunAndCatchExceptions(
+                cancellationToken => Export(outputDirectory, logger, cancellationToken),
+                logger,
+                tokenSource.Token);
         });
 
         RootCommand rootCommand = new("SpecterOps OktaHound - Okta Data Collector for BloodHound OpenGraph")
         {
+            legacyCommand,
+            runCommand,
             collectCommand,
-            testCommand,
+            processCommand,
+            exportCommand,
             verboseOption
         };
 
@@ -114,7 +211,33 @@ class Program
         return parseResult.Invoke();
     }
 
-    private static async Task<int> Test(
+    private static async Task<int> CollectAndExport(
+        CollectionTarget collectionTarget,
+        DirectoryInfo outputDirectory,
+        ILogger logger,
+        string? domain = null,
+        string? apiToken = null,
+        CancellationToken cancellationToken = default)
+    {
+        int collectResult = await Collect(collectionTarget, outputDirectory, logger, domain, apiToken, cancellationToken).ConfigureAwait(false);
+
+        if (collectResult != ExitSuccess)
+        {
+            return collectResult;
+        }
+
+        int processResult = await PostProcessing(outputDirectory, logger, cancellationToken).ConfigureAwait(false);
+
+        if (processResult != ExitSuccess)
+        {
+            return processResult;
+        }
+
+        return await Export(outputDirectory, logger, cancellationToken).ConfigureAwait(false);
+    }
+
+    private static async Task<int> Collect(
+        CollectionTarget collectionTarget,
         DirectoryInfo outputDirectory,
         ILogger logger,
         string? domain = null,
@@ -122,7 +245,36 @@ class Program
         CancellationToken cancellationToken = default)
     {
         await using var dbContext = new AppDbContext(outputDirectory.FullName);
-        await dbContext.Database.EnsureCreatedAsync(cancellationToken);
+
+        // Check if we are collecting all entities or only a subset.
+        // If only a subset, delete the relevant tables to ensure a clean slate for the new data, but keep the rest of the database intact.
+        bool preexistingDatabase = File.Exists(dbContext.DatabasePath);
+        bool collectAll = collectionTarget == CollectionTarget.All;
+        bool deleteDatabase = collectAll && preexistingDatabase;
+        bool clearIndividualTables = !collectAll && preexistingDatabase;
+
+        if (deleteDatabase)
+        {
+            logger.LogInformation("A pre-existing database was found at {DatabasePath} and will be deleted to ensure a clean slate for the new data.", dbContext.DatabasePath);
+            await dbContext.Database.EnsureDeletedAsync(cancellationToken).ConfigureAwait(false);
+        }
+        else if (!preexistingDatabase)
+        {
+            logger.LogInformation("Creating database at {DatabasePath}...", dbContext.DatabasePath);
+        }
+        else if (clearIndividualTables)
+        {
+            logger.LogInformation("A pre-existing database was found at {DatabasePath}. Only the relevant entities will be deleted to ensure a clean slate for the new data.", dbContext.DatabasePath);
+        }
+
+        var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync(cancellationToken).ConfigureAwait(false);
+
+        if (pendingMigrations.Any())
+        {
+            logger.LogInformation("Applying {MigrationCount} pending database migrations before data collection...", pendingMigrations.Count());
+        }
+
+        await dbContext.Database.MigrateAsync(cancellationToken);
 
         // Load Okta configuration and create the Okta client
         Configuration? oktaConfigFromCommandLine = null;
@@ -134,68 +286,112 @@ class Program
 
         OktaClient oktaClient = new(outputDirectory.FullName, logger, oktaConfigFromCommandLine);
 
-        await oktaClient.DeleteOrganizations(cancellationToken);
-        await oktaClient.DeleteUserFactors(cancellationToken);
-        await oktaClient.DeleteUsers(cancellationToken);
-        await oktaClient.DeleteGroups(cancellationToken);
-        await oktaClient.DeleteApplications(cancellationToken);
-        await oktaClient.DeleteDevices(cancellationToken);
-        await oktaClient.DeleteResourceSets(cancellationToken);
-        await oktaClient.DeleteRealms(cancellationToken);
-        await oktaClient.DeleteBuiltinRoles(cancellationToken);
-        await oktaClient.DeleteCustomRoles(cancellationToken);
-        await oktaClient.DeleteRoleAssignments(cancellationToken);
-        await oktaClient.DeleteApiTokens(cancellationToken);
-        await oktaClient.DeleteAgentPools(cancellationToken);
-        await oktaClient.DeleteAuthorizationServers(cancellationToken);
-        await oktaClient.DeleteIdentityProviders(cancellationToken);
-        await oktaClient.DeleteApiServiceIntegrations(cancellationToken);
-        await oktaClient.DeletePolicies(cancellationToken);
-        await oktaClient.DeleteClientSecrets(cancellationToken);
-        await oktaClient.DeleteJWKs(cancellationToken);
-        await oktaClient.DeleteApplicationGrants(cancellationToken);
-        await oktaClient.DeleteUserGroupMemberships(cancellationToken);
-        await oktaClient.DeleteAppUserAssignments(cancellationToken);
-        await oktaClient.DeletePrivilegedUsers(cancellationToken);
+        await oktaClient.Collect(collectionTarget, clearIndividualTables, cancellationToken).ConfigureAwait(false);
 
-        await oktaClient.CollectOrganization(cancellationToken);
-        await oktaClient.CollectUsers(cancellationToken);
-        await oktaClient.CollectGroups(cancellationToken);
-        await oktaClient.CollectAgentPools(cancellationToken);
-        await oktaClient.CollectOktaDevices(cancellationToken);
-        await oktaClient.CollectOktaResourceSets(cancellationToken);
-        await oktaClient.CollectOktaRealms(cancellationToken);
-        await oktaClient.CollectOktaBuiltInRoles(cancellationToken);
-        await oktaClient.CollectOktaCustomRoles(cancellationToken);
-        await oktaClient.CollectOktaApplications(cancellationToken);
-        await oktaClient.CollectOktaApiTokens(cancellationToken);
-        await oktaClient.CollectOktaAuthorizationServers(cancellationToken);
-        await oktaClient.CollectOktaIdentityProviders(cancellationToken);
-        await oktaClient.CollectOktaApiServiceIntegrations(cancellationToken);
-        await oktaClient.CollectOktaPolicies(cancellationToken);
-        await oktaClient.CollectOktaPrivilegedUsers(cancellationToken);
-        await oktaClient.CollectOktaUserAuthenticationFactors(cancellationToken);
-        await oktaClient.CollectOktaAppUserAssignments(cancellationToken);
-        await oktaClient.CollectOktaGroupMemberships(cancellationToken);
-        await oktaClient.CollectOktaApplicationGrants(cancellationToken);
-        await oktaClient.CollectOktaApplicationSecrets(cancellationToken);
-        await oktaClient.CollectOktaApplicationJsonWebKeys(cancellationToken);
-        // await oktaClient.CollectOktaAppGroupAssignments(cancellationToken);
-        // await oktaClient.CollectOktaAppGroupPushMappings(cancellationToken);
-        await oktaClient.CollectOktaApiServiceIntegrationSecrets(cancellationToken);
-        // await oktaClient.CollectOktaIdentityProviderUsers(cancellationToken);
-        // await oktaClient.CollectOktaCustomRolePermissions(cancellationToken);
-        // await oktaClient.CollectOktaPolicyRules(cancellationToken);
-        // await oktaClient.CollectOktaPolicyMappings(cancellationToken);
-        // await oktaClient.CollectOktaResourceSetMemberships(cancellationToken);
+        return ExitSuccess;
+    }
+
+    private static async Task<int> PostProcessing(
+        DirectoryInfo outputDirectory,
+        ILogger logger,
+        CancellationToken cancellationToken = default)
+    {
+        if (!outputDirectory.Exists)
+        {
+            logger.LogCritical("Output directory {OutputDirectory} does not exist. Collection must happen first. Exiting.", outputDirectory.FullName);
+            return ExitExportOutputMissing;
+        }
+
+        await Task.CompletedTask.ConfigureAwait(false);
+        logger.LogInformation("Post-processing completed successfully.");
+        return ExitSuccess;
+    }
+
+    private static async Task<int> Export(
+        DirectoryInfo outputDirectory,
+        ILogger logger,
+        CancellationToken cancellationToken = default)
+    {
+        if (!outputDirectory.Exists)
+        {
+            logger.LogCritical("Output directory {OutputDirectory} does not exist. Collection must happen first. Exiting.", outputDirectory.FullName);
+            return ExitExportOutputMissing;
+        }
+
+        string databasePath = Path.Combine(outputDirectory.FullName, AppDbContext.DatabaseFileName);
+        if (!File.Exists(databasePath))
+        {
+            logger.LogCritical("Database file {DatabasePath} does not exist. Collection must happen first. Exiting.", databasePath);
+            return ExitExportDatabaseMissing;
+        }
+
+        await using (var dbContext = new AppDbContext(outputDirectory.FullName))
+        {
+            var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync(cancellationToken).ConfigureAwait(false);
+
+            if (pendingMigrations.Any())
+            {
+                logger.LogInformation("Applying {MigrationCount} pending database migrations before export...", pendingMigrations.Count());
+            }
+
+            await dbContext.Database.MigrateAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        OktaClient oktaClient = new(outputDirectory.FullName, logger);
 
         await using var stream = new FileStream(Path.Combine(outputDirectory.FullName, "okta-users-test.json"), FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
         await using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true });
 
         await oktaClient.ExportOktaGraph(writer, cancellationToken).ConfigureAwait(false);
 
+        return ExitSuccess;
+    }
 
-        return 0;
+    private static async Task<int> RunAndCatchExceptions(
+        Func<CancellationToken, Task<int>> operation,
+        ILogger logger,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await operation(cancellationToken).ConfigureAwait(false);
+        }
+        catch (IOException e)
+        {
+            logger.LogCritical(e, "IO error: {Message} Exiting.", e.Message);
+            return ExitIoError;
+        }
+        catch (AggregateException e)
+        {
+            foreach (var innerEx in e.InnerExceptions)
+            {
+                logger.LogCritical(innerEx, "Unexpected error: {Message} Exiting.", innerEx.Message);
+            }
+
+            return ExitAggregateError;
+        }
+        catch (TaskCanceledException)
+        {
+            // CTRL-C pressed or timeout
+            logger.LogCritical("Data collection aborted. Exiting.");
+            return ExitCanceled;
+        }
+        catch (TimeoutException e)
+        {
+            // HTTP connection timeout
+            logger.LogCritical("Operation timed out: {Message} Exiting.", e.Message);
+            return ExitTimeout;
+        }
+        catch (DbUpdateException e)
+        {
+            logger.LogCritical(e, "Database update error: {Message} Exiting.", e.Message);
+            return ExitDbUpdateError;
+        }
+        catch (Exception e)
+        {
+            logger.LogCritical(e, "Unexpected error: {Message} Exiting.", e.Message);
+            return ExitUnhandledError;
+        }
     }
 
     private static async Task<int> FetchAndSaveOktaGraph(
@@ -223,13 +419,13 @@ class Program
             if (string.IsNullOrEmpty(domain) && !string.IsNullOrEmpty(apiToken))
             {
                 logger.LogCritical("The Okta domain must be provided together with the API token. Exiting.");
-                return 7;
+                return ExitInvalidDomainWithoutToken;
             }
 
             if (!string.IsNullOrEmpty(domain) && string.IsNullOrEmpty(apiToken))
             {
                 logger.LogCritical("The API token must be provided together with the Okta domain. Exiting.");
-                return 7;
+                return ExitInvalidTokenWithoutDomain;
             }
 
             // Load Okta configuration and create the Okta client
@@ -240,7 +436,7 @@ class Program
                 oktaConfigFromCommandLine = new(domain, apiToken);
             }
 
-            OktaClient oktaClient = new(null, logger, oktaConfigFromCommandLine);
+            OktaClient oktaClient = new(outputDirectory.FullName, logger, oktaConfigFromCommandLine);
 
             // Fetch the Okta OpenGraph data
             (OktaGraph? oktaGraph, OpenGraph adGraph, OpenGraph hybridEdges) =
@@ -249,7 +445,7 @@ class Program
             if (oktaGraph == null)
             {
                 logger.LogCritical("Could not fetch Okta OpenGraph data. Exiting.");
-                return 1;
+                return ExitFetchGraphFailed;
             }
 
             logger.LogInformation(
@@ -300,12 +496,12 @@ class Program
 
             // Exit successfully
             logger.LogInformation("Export completed successfully.");
-            return 0;
+            return ExitSuccess;
         }
         catch (IOException e)
         {
             logger.LogCritical(e, "Error exporting OpenGraph data into JSON: {Message} Exiting.", e.Message);
-            return 2;
+            return ExitIoError;
         }
         catch (AggregateException e)
         {
@@ -314,29 +510,29 @@ class Program
                 logger.LogCritical(innerEx, "Unexpected error: {Message} Exiting.", innerEx.Message);
             }
 
-            return 3;
+            return ExitAggregateError;
         }
         catch (TaskCanceledException)
         {
             // CTRL-C pressed or timeout
             logger.LogCritical("Data collection aborted. Exiting.");
-            return 4;
+            return ExitCanceled;
         }
         catch (TimeoutException e)
         {
             // HTTP connection timeout
             logger.LogCritical("Operation timed out: {Message} Exiting.", e.Message);
-            return 5;
+            return ExitTimeout;
         }
         catch (DbUpdateException e)
         {
             logger.LogCritical(e, "Database update error: {Message} Exiting.", e.Message);
-            return 6;
+            return ExitDbUpdateError;
         }
         catch (Exception e)
         {
             logger.LogCritical(e, "Unexpected error: {Message} Exiting.", e.Message);
-            return 7;
+            return ExitUnhandledError;
         }
     }
 

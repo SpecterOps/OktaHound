@@ -146,7 +146,7 @@ public sealed class OktaApplication : OktaSecurityPrincipal
     public string? OnePasswordRegionType { get; set; }
     public string? OnePasswordSubDomain { get; set; }
     public bool? FilterGroupsByOU { get; set; }
-    public Dictionary<string, string> CustomProperties { get; set; } = [];
+    public Dictionary<string, string>? CustomProperties { get; set; }
 
     [JsonIgnore]
     public List<OktaJWK> JWKs { get; set; } = [];
@@ -159,6 +159,9 @@ public sealed class OktaApplication : OktaSecurityPrincipal
 
     [JsonIgnore]
     public List<OktaUser> AssignedUsers { get; set; } = [];
+
+    [JsonIgnore]
+    public List<OktaGroup> AssignedGroups { get; set; } = [];
 
     [JsonIgnore]
     public List<OktaGroup> ImportedGroups { get; set; } = [];
@@ -305,7 +308,7 @@ public sealed class OktaApplication : OktaSecurityPrincipal
         Created = application.Created;
         LastUpdated = application.LastUpdated;
         Status = application.Status?.Value;
-        Features = application.Features?.Select(feature => feature.Value).ToList();
+        Features = ToNullIfEmpty(application.Features?.Select(feature => feature.Value));
         SignOnMode = application.SignOnMode?.Value;
 
         if (application is OpenIdConnectApplication oidcApp)
@@ -322,7 +325,7 @@ public sealed class OktaApplication : OktaSecurityPrincipal
             ClientType = oidcApp.Settings?.OauthClient?.ApplicationType?.Value;
 
             // Sample grant types: authorization_code, implicit, refresh_token, client_credentials
-            GrantTypes = oidcApp.Settings?.OauthClient?.GrantTypes?.Select(grant => grant.Value).ToList();
+            GrantTypes = ToNullIfEmpty(oidcApp.Settings?.OauthClient?.GrantTypes?.Select(grant => grant.Value));
 
             // Sample template: ${source.login}
             UserNameMapping = oidcApp.Credentials?.UserNameTemplate?.Template;
@@ -675,6 +678,18 @@ public sealed class OktaApplication : OktaSecurityPrincipal
             return;
         }
 
+        CustomProperties ??= [];
         CustomProperties[key] = stringValue;
+    }
+
+    private static List<string>? ToNullIfEmpty(IEnumerable<string>? values)
+    {
+        if (values is null)
+        {
+            return null;
+        }
+
+        var list = values.ToList();
+        return list.Count == 0 ? null : list;
     }
 }

@@ -54,6 +54,8 @@ public sealed class AppDbContext : DbContext
 
     public DbSet<OktaApplicationUserAssignment> ApplicationUserAssignments => Set<OktaApplicationUserAssignment>();
 
+    public DbSet<OktaApplicationGroupAssignment> ApplicationGroupAssignments => Set<OktaApplicationGroupAssignment>();
+
     public DbSet<OktaPrivilegedUser> PrivilegedUsers => Set<OktaPrivilegedUser>();
 
     public DbSet<OktaUserFactor> UserFactors => Set<OktaUserFactor>();
@@ -139,20 +141,24 @@ public sealed class AppDbContext : DbContext
         modelBuilder.Entity<OktaApplication>()
             .Property(application => application.CustomProperties)
             .HasConversion(
-                value => JsonSerializer.Serialize(value, TestSerializationContext.Default.DictionaryStringString),
-                value => string.IsNullOrWhiteSpace(value)
-                    ? new Dictionary<string, string>()
-                    : JsonSerializer.Deserialize(value, TestSerializationContext.Default.DictionaryStringString) ?? new Dictionary<string, string>()
+                value => SerializeDictionary(value),
+                value => DeserializeDictionary(value)
             );
 
         // App assignment profile JSON persistence
         modelBuilder.Entity<OktaApplicationUserAssignment>()
             .Property(appUserAssignment => appUserAssignment.Profile)
             .HasConversion(
-                value => JsonSerializer.Serialize(value, TestSerializationContext.Default.DictionaryStringString),
-                value => string.IsNullOrWhiteSpace(value)
-                    ? new Dictionary<string, string>()
-                    : JsonSerializer.Deserialize(value, TestSerializationContext.Default.DictionaryStringString) ?? new Dictionary<string, string>()
+                value => SerializeDictionary(value),
+                value => DeserializeDictionary(value)
+            );
+
+        // App group assignment profile JSON persistence
+        modelBuilder.Entity<OktaApplicationGroupAssignment>()
+            .Property(appGroupAssignment => appGroupAssignment.Profile)
+            .HasConversion(
+            value => SerializeDictionary(value),
+            value => DeserializeDictionary(value)
             );
 
         // Index applications by whether they are service applications, as this is a common query filter
@@ -323,6 +329,26 @@ public sealed class AppDbContext : DbContext
                     join.HasKey(appUserAssignment => new { appUserAssignment.ApplicationId, appUserAssignment.UserId });
                 });
 
+        // Application group assignments relationship (many-to-many)
+        modelBuilder.Entity<OktaGroup>()
+            .HasMany(group => group.AssignedApplications)
+            .WithMany(application => application.AssignedGroups)
+            .UsingEntity<OktaApplicationGroupAssignment>(
+                right => right
+                    .HasOne(appGroupAssignment => appGroupAssignment.Application)
+                    .WithMany()
+                    .HasForeignKey(appGroupAssignment => appGroupAssignment.ApplicationId)
+                    .OnDelete(DeleteBehavior.NoAction),
+                left => left
+                    .HasOne(appGroupAssignment => appGroupAssignment.Group)
+                    .WithMany()
+                    .HasForeignKey(appGroupAssignment => appGroupAssignment.GroupId)
+                    .OnDelete(DeleteBehavior.NoAction),
+                join =>
+                {
+                    join.HasKey(appGroupAssignment => new { appGroupAssignment.ApplicationId, appGroupAssignment.GroupId });
+                });
+
         // Privileged users relationship (Id is both PK and FK to OktaUser)
         modelBuilder.Entity<OktaPrivilegedUser>()
             .HasKey(privilegedUser => privilegedUser.Id);
@@ -347,5 +373,26 @@ public sealed class AppDbContext : DbContext
             .HasPrincipalKey(organization => organization.Name)
             .OnDelete(DeleteBehavior.NoAction)
             .IsRequired(false);
+    }
+
+    private static string? SerializeDictionary(Dictionary<string, string>? value)
+    {
+        if (value is null || value.Count == 0)
+        {
+            return null;
+        }
+
+        return JsonSerializer.Serialize(value, TestSerializationContext.Default.DictionaryStringString);
+    }
+
+    private static Dictionary<string, string>? DeserializeDictionary(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        var dictionary = JsonSerializer.Deserialize(value, TestSerializationContext.Default.DictionaryStringString);
+        return dictionary is null || dictionary.Count == 0 ? null : dictionary;
     }
 }

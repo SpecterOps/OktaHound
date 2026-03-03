@@ -30,7 +30,7 @@ public sealed class OktaAuthorizationServer : OktaEntity
         Status = server.Status?.Value;
         Issuer = server.Issuer;
         IssuerMode = server.IssuerMode;
-        Audiences = server.Audiences;
+        Audiences = server.Audiences is { Count: > 0 } audiences ? audiences : null;
         // TODO: Parse server.Credentials
     }
 

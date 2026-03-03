@@ -6,7 +6,7 @@ namespace SpecterOps.OktaHound.Database;
 public enum CollectionTarget
 {
     None = 0,
-    Organizations = 1 << 0,
+    Organization = 1 << 0,
     Users = 1 << 1,
     Groups = 1 << 2,
     AgentPools = 1 << 3,
@@ -25,7 +25,13 @@ public enum CollectionTarget
     RoleAssignments = 1 << 16,
     ClientSecrets = 1 << 17,
     Jwks = 1 << 18,
-    All = Organizations
+    ApplicationGrants = 1 << 19,
+    ApplicationUserAssignments = 1 << 20,
+    ApplicationGroupAssignments = 1 << 21,
+    UserGroupMemberships = 1 << 22,
+    PrivilegedUsers = 1 << 23,
+    UserFactors = 1 << 24,
+    All = Organization
         | Users
         | Groups
         | AgentPools
@@ -44,4 +50,11 @@ public enum CollectionTarget
         | RoleAssignments
         | ClientSecrets
         | Jwks
+        | ApplicationGrants
+        | ApplicationUserAssignments
+        | ApplicationGroupAssignments
+        | UserGroupMemberships
+        | PrivilegedUsers
+        | UserFactors,
+    AllButFactors = All & ~UserFactors
 }

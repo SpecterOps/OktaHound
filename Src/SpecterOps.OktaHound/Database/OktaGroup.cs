@@ -43,6 +43,9 @@ public sealed class OktaGroup : OktaSecurityPrincipal
     public List<OktaUser> Members { get; set; } = [];
 
     [JsonIgnore]
+    public List<OktaApplication> AssignedApplications { get; set; } = [];
+
+    [JsonIgnore]
     [NotMapped]
     public bool MembershipLocked => OktaGroupType == global::Okta.Sdk.Model.GroupType.APPGROUP.Value;
 

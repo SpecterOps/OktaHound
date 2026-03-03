@@ -32,7 +32,7 @@ public sealed class OktaApiServiceIntegration : OktaEntity
     public OktaApiServiceIntegration(APIServiceIntegrationInstance service, string domainName) : base(service.Id, service.Name, domainName)
     {
         DisplayName = service.Name;
-        Permissions = service.GrantedScopes;
+        Permissions = service.GrantedScopes is { Count: > 0 } permissions ? permissions : null;
         IntegrationType = service.Type;
         CreatedById = service.CreatedBy;
 

@@ -9,9 +9,14 @@ namespace SpecterOps.OktaHound;
 
 partial class OktaClient
 {
-    public async Task<bool> CollectOrganization(CancellationToken cancellationToken = default)
+    public async Task<bool> CollectOrganization(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         using var dbContext = new AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteOrganizations(dbContext, cancellationToken).ConfigureAwait(false);
+        }
 
         try
         {
@@ -50,10 +55,15 @@ partial class OktaClient
         }
     }
 
-    public async Task CollectUsers(CancellationToken cancellationToken = default)
+    public async Task CollectUsers(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching users...");
         using var dbContext = new AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteUsers(dbContext, cancellationToken).ConfigureAwait(false);
+        }
 
         try
         {
@@ -81,10 +91,15 @@ partial class OktaClient
         }
     }
 
-    public async Task CollectGroups(CancellationToken cancellationToken = default)
+    public async Task CollectGroups(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching groups...");
         using var dbContext = new AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteGroups(dbContext, cancellationToken).ConfigureAwait(false);
+        }
 
         try
         {
@@ -112,10 +127,15 @@ partial class OktaClient
         }
     }
 
-    public async Task CollectAgentPools(CancellationToken cancellationToken = default)
+    public async Task CollectAgentPools(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching agent pools...");
         using var dbContext = new AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteAgentPools(dbContext, cancellationToken).ConfigureAwait(false);
+        }
 
         try
         {
@@ -159,10 +179,15 @@ partial class OktaClient
         }
     }
 
-    public async Task CollectOktaDevices(CancellationToken cancellationToken = default)
+    public async Task CollectOktaDevices(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching devices...");
         using var dbContext = new AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteDevices(dbContext, cancellationToken).ConfigureAwait(false);
+        }
 
         try
         {
@@ -207,10 +232,15 @@ partial class OktaClient
         }
     }
 
-    public async Task CollectOktaResourceSets(CancellationToken cancellationToken = default)
+    public async Task CollectOktaResourceSets(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching custom resource sets...");
         using var dbContext = new AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteResourceSets(dbContext, cancellationToken).ConfigureAwait(false);
+        }
 
         try
         {
@@ -239,10 +269,15 @@ partial class OktaClient
     }
 
 
-    public async Task CollectOktaRealms(CancellationToken cancellationToken = default)
+    public async Task CollectOktaRealms(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching realms...");
         using var dbContext = new AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteRealms(dbContext, cancellationToken).ConfigureAwait(false);
+        }
 
         try
         {
@@ -282,10 +317,15 @@ partial class OktaClient
         }
     }
 
-    public async Task CollectOktaBuiltInRoles(CancellationToken cancellationToken = default)
+    public async Task CollectOktaBuiltInRoles(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching built-in roles...");
         using var dbContext = new AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteBuiltinRoles(dbContext, cancellationToken).ConfigureAwait(false);
+        }
 
         int roleCount = 0;
         RoleECustomApi roleApi = new(_oktaConfig);
@@ -329,10 +369,15 @@ partial class OktaClient
         }
     }
 
-    public async Task CollectOktaCustomRoles(CancellationToken cancellationToken = default)
+    public async Task CollectOktaCustomRoles(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching custom roles...");
         using var dbContext = new AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteCustomRoles(dbContext, cancellationToken).ConfigureAwait(false);
+        }
 
         try
         {
@@ -366,10 +411,15 @@ partial class OktaClient
         }
     }
 
-    public async Task CollectOktaApplications(CancellationToken cancellationToken = default)
+    public async Task CollectOktaApplications(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching applications...");
         using var dbContext = new AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteApplications(dbContext, cancellationToken).ConfigureAwait(false);
+        }
 
         try
         {
@@ -397,10 +447,15 @@ partial class OktaClient
         }
     }
 
-    public async Task CollectOktaApiTokens(CancellationToken cancellationToken = default)
+    public async Task CollectOktaApiTokens(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching API tokens...");
         using var dbContext = new AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteApiTokens(dbContext, cancellationToken).ConfigureAwait(false);
+        }
 
         try
         {
@@ -428,10 +483,15 @@ partial class OktaClient
         }
     }
 
-    public async Task CollectOktaAuthorizationServers(CancellationToken cancellationToken = default)
+    public async Task CollectOktaAuthorizationServers(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching authorization servers...");
         using var dbContext = new AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteAuthorizationServers(dbContext, cancellationToken).ConfigureAwait(false);
+        }
 
         try
         {
@@ -463,10 +523,15 @@ partial class OktaClient
         }
     }
 
-    public async Task CollectOktaIdentityProviders(CancellationToken cancellationToken = default)
+    public async Task CollectOktaIdentityProviders(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching identity providers...");
         using var dbContext = new AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteIdentityProviders(dbContext, cancellationToken).ConfigureAwait(false);
+        }
 
         try
         {
@@ -513,10 +578,15 @@ partial class OktaClient
         }
     }
 
-    public async Task CollectOktaApiServiceIntegrations(CancellationToken cancellationToken = default)
+    public async Task CollectOktaApiServiceIntegrations(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching API service integrations...");
         using var dbContext = new AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteApiServiceIntegrations(dbContext, cancellationToken).ConfigureAwait(false);
+        }
 
         try
         {
@@ -553,10 +623,15 @@ partial class OktaClient
         }
     }
 
-    public async Task CollectOktaPolicies(CancellationToken cancellationToken = default)
+    public async Task CollectOktaPolicies(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching policies...");
         using var dbContext = new AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeletePolicies(dbContext, cancellationToken).ConfigureAwait(false);
+        }
 
         PolicyApi policyApi = new(_oktaConfig);
         int policyCount = 0;

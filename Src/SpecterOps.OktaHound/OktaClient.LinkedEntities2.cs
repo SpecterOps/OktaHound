@@ -13,10 +13,16 @@ namespace SpecterOps.OktaHound;
 
 partial class OktaClient
 {
-    public async Task CollectOktaApplicationGrants(CancellationToken cancellationToken = default)
+    public async Task CollectOktaApplicationGrants(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching application grants...");
         using var dbContext = new Database.AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteApplicationGrants(dbContext, cancellationToken).ConfigureAwait(false);
+        }
+
         ApplicationGrantsApi appGrantsApi = new(_oktaConfig);
         int grantCount = 0;
 
@@ -68,10 +74,16 @@ partial class OktaClient
         _logger.LogInformation("Successfully fetched {GrantCount} application grants.", grantCount);
     }
 
-    public async Task CollectOktaAppUserAssignments(CancellationToken cancellationToken = default)
+    public async Task CollectOktaAppUserAssignments(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching application user assignments...");
         using var dbContext = new Database.AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteAppUserAssignments(dbContext, cancellationToken).ConfigureAwait(false);
+        }
+
         ApplicationUsersApi appUsersApi = new(_oktaConfig);
         int assignmentCount = 0;
 
@@ -88,9 +100,10 @@ partial class OktaClient
 
                 await foreach (var appUserAssignment in appUsersApi.ListApplicationUsers(appNode.Id, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
+                    var assignmentNode = new Database.OktaApplicationUserAssignment(appUserAssignment, appNode.Id);
                     await dbContext.ApplicationUserAssignments
-                    .AddAsync(new Database.OktaApplicationUserAssignment(appUserAssignment, appNode.Id), cancellationToken)
-                    .ConfigureAwait(false);
+                        .AddAsync(assignmentNode, cancellationToken)
+                        .ConfigureAwait(false);
 
                     appAssignmentCount++;
                     assignmentCount++;
@@ -109,68 +122,53 @@ partial class OktaClient
         _logger.LogInformation("Successfully fetched {AssignmentCount} application user assignments.", assignmentCount);
     }
 
-    public async Task CollectOktaAppGroupAssignments(CancellationToken cancellationToken = default)
+    public async Task CollectOktaAppGroupAssignments(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching application group assignments...");
+        using var dbContext = new Database.AppDbContext(_outputDirectory);
 
-        if (_graph is null)
+        if (clearPreexistingTables)
         {
-            throw new InvalidOperationException("Okta graph not initialized. Please call InitializeOktaGraph() first.");
+            await DeleteAppGroupAssignments(dbContext, cancellationToken).ConfigureAwait(false);
         }
 
-        ParallelOptions concurrency = new()
-        {
-            // The "/api/v1/apps*" endpoint has a much lower rate limit than other APIs, so we do not parallelize the calls.
-            MaxDegreeOfParallelism = 1,
-            CancellationToken = cancellationToken
-        };
+        ApplicationGroupsApi appGroupsApi = new(_oktaConfig);
+        int assignmentCount = 0;
 
-        await Parallel.ForEachAsync(_graph.Applications, concurrency, async (appNode, cancellationToken) =>
+        var applications = await dbContext.Applications
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        foreach (var appNode in applications)
         {
             try
             {
                 _logger.LogDebug("Fetching group assignments for application {AppName} ({AppId})...", appNode.Name, appNode.Id);
-                ApplicationGroupsApi appGroupsApi = new(_oktaConfig);
-
-                // Try to resolve the domain SIDs of apps representing AD domains
-                string? domainSid = appNode.ActiveDirectoryDomainSid;
+                int appAssignmentCount = 0;
 
                 await foreach (var appGroupAssignment in appGroupsApi.ListApplicationGroupAssignments(appNode.Id, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
-                    // TODO: Only consider active group assignments
-
                     _logger.LogTrace("Group {GroupId} is assigned the {AppName} ({AppId}) application.", appGroupAssignment.Id, appNode.Name, appNode.Id);
 
-                    // Create the (:Okta_Group)-[:Okta_AppAssignment]->(:Okta_Application) edge
-                    var groupNode = OktaGroup.CreateEdgeNode(appGroupAssignment.Id);
-                    _graph.AddEdge(groupNode, appNode, OktaApplication.AppAssignmentEdgeKind);
+                    await dbContext.ApplicationGroupAssignments
+                        .AddAsync(new Database.OktaApplicationGroupAssignment(appGroupAssignment, appNode.Id), cancellationToken)
+                        .ConfigureAwait(false);
 
-                    if (domainSid is null && appNode.IsActiveDirectory)
-                    {
-                        // Try to fetch the group and cache its domain SID
-                        OktaGroup? group = _graph.GetGroup(appGroupAssignment.Id);
-                        domainSid = group?.DomainSid;
-                    }
-
-                    // Sync edges are handled when fetching the group itself.
+                    appAssignmentCount++;
+                    assignmentCount++;
                 }
 
-                if (domainSid is not null && appNode.ActiveDirectoryDomainSid is null)
-                {
-                    // Add AD domain SID, so that the Domain node can later be created.
-                    appNode.ActiveDirectoryDomainSid = domainSid;
-                }
-
-                _logger.LogTrace("Finished fetching group assignments for application {AppName} ({AppId}).", appNode.Name, appNode.Id);
+                _logger.LogDebug("Fetched {AssignmentCount} group assignments for application {AppName} ({AppId}).", appAssignmentCount, appNode.Name, appNode.Id);
+                await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             }
             catch (ApiException e)
             {
                 var status = (HttpStatusCode)e.ErrorCode;
                 _logger.LogError("Error {ErrorCode} ({Status}) received while trying to fetch Okta app {AppName} ({AppId}) group assignments.", e.ErrorCode, status, appNode.Name, appNode.Id);
             }
-        }).ConfigureAwait(false);
+        }
 
-        _logger.LogInformation("Finished fetching application group assignments.");
+        _logger.LogInformation("Successfully fetched {AssignmentCount} application group assignments.", assignmentCount);
     }
 
     public async Task CollectOktaAppGroupPushMappings(CancellationToken cancellationToken = default)
@@ -301,7 +299,7 @@ partial class OktaClient
                     resourceUris.Add(resourceUri);
                 }
 
-                resourceSetNode.ResourceUris = resourceUris;
+                resourceSetNode.ResourceUris = resourceUris.Count == 0 ? null : resourceUris;
             }
             catch (ApiException e)
             {
@@ -466,7 +464,11 @@ partial class OktaClient
                 Permissions permissions = await roleApi.ListRolePermissionsAsync(customRoleNode.Id, cancellationToken).ConfigureAwait(false);
 
                 // Ignore permission conditions and add their list to the role properties.
-                customRoleNode.Permissions = [.. permissions._Permissions.Select(item => item.Label)];
+                customRoleNode.Permissions = permissions._Permissions
+                    .Select(item => item.Label)
+                    .ToList() is { Count: > 0 } rolePermissions
+                        ? rolePermissions
+                        : null;
             }
             catch (ApiException e)
             {
@@ -478,10 +480,27 @@ partial class OktaClient
         _logger.LogInformation("Finished fetching custom role permissions.");
     }
 
-    public async Task CollectOktaPrivilegedUsers(CancellationToken cancellationToken = default)
+    public async Task CollectOktaRoleAssignments(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
+    {
+        using var dbContext = new Database.AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteRoleAssignments(dbContext, cancellationToken).ConfigureAwait(false);
+        }
+
+        _logger.LogWarning("Collection target {CollectionTarget} is selected, but collection is not yet implemented in the DB-first pipeline.", Database.CollectionTarget.RoleAssignments);
+    }
+
+    public async Task CollectOktaPrivilegedUsers(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching the list of users with role assignments...");
         using var dbContext = new Database.AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeletePrivilegedUsers(dbContext, cancellationToken).ConfigureAwait(false);
+        }
 
         try
         {
@@ -615,10 +634,16 @@ partial class OktaClient
         _logger.LogInformation("Finished fetching Okta policy mappings.");
     }
 
-    public async Task CollectOktaApplicationSecrets(CancellationToken cancellationToken = default)
+    public async Task CollectOktaApplicationSecrets(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching application secrets...");
         using var dbContext = new Database.AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteClientSecrets(dbContext, cancellationToken).ConfigureAwait(false);
+        }
+
         ApplicationSSOPublicKeysApi ssoApi = new(_oktaConfig);
         int secretCount = 0;
         var serviceApps = await dbContext.Applications
@@ -652,10 +677,16 @@ partial class OktaClient
         _logger.LogInformation("Successfully fetched {SecretCount} application client secrets.", secretCount);
     }
 
-    public async Task CollectOktaApplicationJsonWebKeys(CancellationToken cancellationToken = default)
+    public async Task CollectOktaApplicationJsonWebKeys(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching application JSON Web Keys...");
         using var dbContext = new Database.AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteJWKs(dbContext, cancellationToken).ConfigureAwait(false);
+        }
+
         ApplicationSSOPublicKeysApi publicKeyApi = new(_oktaConfig);
         int keyCount = 0;
 
@@ -715,10 +746,16 @@ partial class OktaClient
         _logger.LogInformation("Successfully fetched {KeyCount} application JSON Web Keys.", keyCount);
     }
 
-    public async Task CollectOktaApiServiceIntegrationSecrets(CancellationToken cancellationToken = default)
+    public async Task CollectOktaApiServiceIntegrationSecrets(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching API service integration secrets...");
         using var dbContext = new Database.AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteClientSecrets(dbContext, cancellationToken).ConfigureAwait(false);
+        }
+
         ApiServiceIntegrationsApi integrationsApi = new(_oktaConfig);
         int secretCount = 0;
 
@@ -748,10 +785,16 @@ partial class OktaClient
         _logger.LogInformation("Successfully fetched {SecretCount} API service integration secrets.", secretCount);
     }
 
-    public async Task CollectOktaGroupMemberships(CancellationToken cancellationToken = default)
+    public async Task CollectOktaGroupMemberships(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching group memberships...");
         using var dbContext = new Database.AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteUserGroupMemberships(dbContext, cancellationToken).ConfigureAwait(false);
+        }
+
         GroupApi groupApi = new(_oktaConfig);
         int membershipCount = 0;
 
@@ -793,10 +836,16 @@ partial class OktaClient
         _logger.LogInformation("Successfully fetched {MembershipCount} group memberships.", membershipCount);
     }
 
-    public async Task CollectOktaUserAuthenticationFactors(CancellationToken cancellationToken = default)
+    public async Task CollectOktaUserAuthenticationFactors(bool clearPreexistingTables = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching user authentication factors...");
         using var dbContext = new Database.AppDbContext(_outputDirectory);
+
+        if (clearPreexistingTables)
+        {
+            await DeleteUserFactors(dbContext, cancellationToken).ConfigureAwait(false);
+        }
+
         UserFactorApi authFactorsApi = new(_oktaConfig);
         var users = await dbContext.Users.ToListAsync(cancellationToken).ConfigureAwait(false);
 

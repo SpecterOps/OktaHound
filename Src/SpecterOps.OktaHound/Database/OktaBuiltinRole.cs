@@ -341,8 +341,8 @@ public sealed class OktaBuiltinRole : OktaRole
         }
         else
         {
-            // Unsupported role type - assign empty permissions to avoid null reference issues
-            Permissions = [];
+            // Unsupported role type
+            Permissions = null;
         }
     }
 
