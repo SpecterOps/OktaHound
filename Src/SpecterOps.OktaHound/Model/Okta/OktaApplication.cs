@@ -593,7 +593,7 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
             // Entra ID groups are matched by their display name and tenant ID, e.g., "Test" + 8cb4e812-3974-4f6d-bc74-abcfcd70f252
             Office365ApplicationType => EntraIdGroup.CreateEdgeNode(groupProfile.Name, EntraTenantId),
 
-            // TODO: Add mapping for SNOWGroup
+            // TODO: Add mapping for SNOW_Group
             SnowflakeApplicationType => null,
             // TODO: Add support for Org2Org group push mappings
             // TODO: Add support for additional applications
@@ -633,7 +633,7 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
         {
             // Example: (:Okta_Application)-[:Okta_OutboundOrgSSO]->(:jamf_SSOIntegration)
             // Example: (:Okta_Application)-[:Okta_OrgSWA]->(:jamf_SSOIntegration)
-            // Example: (:Okta_Application)-[:Okta_OutboundOrgSSO]->(:GHOrganization)
+            // Example: (:Okta_Application)-[:Okta_OutboundOrgSSO]->(:GH_Organization)
             // Example: (:Okta_Application)-[:Okta_OutboundOrgSSO]->(:AZTenant)
             result = new(this, endNode, edgeKind);
 

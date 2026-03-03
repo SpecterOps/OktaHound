@@ -31,10 +31,10 @@ Hybrid edges connect Okta entities to entities from other supported BloodHound c
 
 | Edge Type | Source Node Kinds | Target Node Kinds | Traversable |
 |-----------|-------------------|-------------------|-------------|
-| [Okta_OutboundSSO] | [Okta_User] | [GHUser] | ✅ |
-| [Okta_SWA] | [Okta_User] | [GHUser] | ❌ |
-| [Okta_OutboundOrgSSO] | [Okta_Application] | [GHOrganization] | ✅ |
-| [Okta_OrgSWA] | [Okta_Application] | [GHOrganization] | ❌ |
+| [Okta_OutboundSSO] | [Okta_User] | [GH_User] | ✅ |
+| [Okta_SWA] | [Okta_User] | [GH_User] | ❌ |
+| [Okta_OutboundOrgSSO] | [Okta_Application] | [GH_Organization] | ✅ |
+| [Okta_OrgSWA] | [Okta_Application] | [GH_Organization] | ❌ |
 
 > [!WARNING]
 > GitHub user synchronization has not yet been tested with `OktaHound`.
@@ -52,9 +52,9 @@ Hybrid edges connect Okta entities to entities from other supported BloodHound c
 
 | Edge Type | Source Node Kinds | Target Node Kinds | Traversable |
 |-----------|-------------------|-------------------|-------------|
-| [Okta_UserSync] | [Okta_User] | [OPUser] | ❌ |
-| [Okta_SWA] | [Okta_User] | [OPUser] | ❓ |
-| [Okta_OrgSWA] | [Okta_Application] | [OPAccount] | ❌ |
+| [Okta_UserSync] | [Okta_User] | [OP_User] | ❌ |
+| [Okta_SWA] | [Okta_User] | [OP_User] | ❓ |
+| [Okta_OrgSWA] | [Okta_Application] | [OP_Account] | ❌ |
 
 > [!WARNING]
 > 1Password Business user provisioning has not yet been tested with `OktaHound`.
@@ -63,14 +63,14 @@ Hybrid edges connect Okta entities to entities from other supported BloodHound c
 
 | Edge Type | Source Node Kinds | Target Node Kinds | Traversable |
 |-----------|-------------------|-------------------|-------------|
-| [Okta_UserSync] | [Okta_User] | [SNOWUser] | ❌ |
-|              | [SNOWUser] | [Okta_User] | ❌ |
-| [Okta_OutboundSSO] | [Okta_User] | [SNOWUser] | ✅ |
-| [Okta_SWA] | [Okta_User] | [SNOWUser] | ❓ |
-| [Okta_OutboundOrgSSO] | [Okta_Application] | [SNOWAccount] | ✅ |
-| [Okta_OrgSWA] | [Okta_Application] | [SNOWAccount] | ❌ |
-| [Okta_MembershipSync] | [Okta_Group] | [SNOWGroup] | ✅ |
-|                      | [SNOWGroup] | [Okta_Group] | ✅ |
+| [Okta_UserSync] | [Okta_User] | [SNOW_User] | ❌ |
+|              | [SNOW_User] | [Okta_User] | ❌ |
+| [Okta_OutboundSSO] | [Okta_User] | [SNOW_User] | ✅ |
+| [Okta_SWA] | [Okta_User] | [SNOW_User] | ❓ |
+| [Okta_OutboundOrgSSO] | [Okta_Application] | [SNOW_Account] | ✅ |
+| [Okta_OrgSWA] | [Okta_Application] | [SNOW_Account] | ❌ |
+| [Okta_MembershipSync] | [Okta_Group] | [SNOW_Group] | ✅ |
+|                      | [SNOW_Group] | [Okta_Group] | ✅ |
 
 ## Okta Org2Org
 
@@ -88,15 +88,15 @@ Hybrid edges connect Okta entities to entities from other supported BloodHound c
 [AZTenant]: https://bloodhound.specterops.io/resources/nodes/az-tenant
 [AZUser]: https://bloodhound.specterops.io/resources/nodes/az-user
 [AZGroup]: https://bloodhound.specterops.io/resources/nodes/az-group
-[SNOWUser]: https://github.com/SpecterOps/SnowHound
-[SNOWGroup]: https://github.com/SpecterOps/SnowHound
-[SNOWAccount]: https://github.com/SpecterOps/SnowHound
+[SNOW_User]: https://github.com/SpecterOps/SnowHound
+[SNOW_Group]: https://github.com/SpecterOps/SnowHound
+[SNOW_Account]: https://github.com/SpecterOps/SnowHound
 [jamf_SSOIntegration]: https://github.com/SpecterOps/JamfHound
 [jamf_Account]: https://github.com/SpecterOps/JamfHound
-[GHUser]: https://github.com/SpecterOps/GitHound
-[GHOrganization]: https://github.com/SpecterOps/GitHound
-[OPAccount]: https://github.com/SpecterOps/1PassHound
-[OPUser]: https://github.com/SpecterOps/1PassHound
+[GH_User]: https://github.com/SpecterOps/GitHound
+[GH_Organization]: https://github.com/SpecterOps/GitHound
+[OP_Account]: https://github.com/SpecterOps/1PassHound
+[OP_User]: https://github.com/SpecterOps/1PassHound
 [Okta_HostsAgent]: <../Documentation/EdgeDescriptions/Okta_HostsAgent.md>
 [Okta_KerberosSSO]: <../Documentation/EdgeDescriptions/Okta_KerberosSSO.md>
 [Okta_MembershipSync]: <../Documentation/EdgeDescriptions/Okta_MembershipSync.md>

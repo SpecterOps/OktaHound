@@ -3,7 +3,7 @@
 ## Edge Schema
 
 - Source: [Okta_User](../NodeDescriptions/Okta_User.md)
-- Destination: [GHUser](https://github.com/SpecterOps/GitHound), [jamf_Account](https://github.com/SpecterOps/JamfHound), [OPUser](https://github.com/SpecterOps/1PassHound), [SNOWUser](https://github.com/SpecterOps/SnowHound)
+- Destination: [GH_User](https://github.com/SpecterOps/GitHound), [jamf_Account](https://github.com/SpecterOps/JamfHound), [OP_User](https://github.com/SpecterOps/1PassHound), [SNOW_User](https://github.com/SpecterOps/SnowHound)
 
 ## General Information
 
@@ -16,8 +16,8 @@ graph LR
         u2("Okta_User alice\@contoso.com")
     end
     subgraph op["1Password Business"]
-        opu1("OPUser john\@contoso.com")
-        opu2("OPUser alice\@contoso.com")
+        opu1("OP_User john\@contoso.com")
+        opu2("OP_User alice\@contoso.com")
     end
     u1 -. Okta_SWA .-> opu1
     u2 -. Okta_SWA .-> opu2

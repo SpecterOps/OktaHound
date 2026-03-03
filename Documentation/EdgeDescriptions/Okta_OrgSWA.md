@@ -3,7 +3,7 @@
 ## Edge Schema
 
 - Source: [Okta_Application](../NodeDescriptions/Okta_Application.md)
-- Destination: [GHOrganization](https://github.com/SpecterOps/GitHound), [jamf_SSOIntegration](https://github.com/SpecterOps/JamfHound), [OPAccount](https://github.com/SpecterOps/1PassHound), [SNOWAccount](https://github.com/SpecterOps/SnowHound)
+- Destination: [GH_Organization](https://github.com/SpecterOps/GitHound), [jamf_SSOIntegration](https://github.com/SpecterOps/JamfHound), [OP_Account](https://github.com/SpecterOps/1PassHound), [SNOW_Account](https://github.com/SpecterOps/SnowHound)
 
 ## General Information
 

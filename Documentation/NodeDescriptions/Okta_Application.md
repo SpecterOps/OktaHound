@@ -316,9 +316,9 @@ graph TB
   end
   subgraph gh["GitHub Enterprise Cloud"]
     direction LR
-    ghorg("GHOrganization Contoso")
-    ghu1("GHUser john\@contoso.com")
-    ghorg -- GHContains --> ghu1
+    ghorg("GH_Organization Contoso")
+    ghu1("GH_User john\@contoso.com")
+    ghorg -- GH_Contains --> ghu1
   end
   subgraph jamf["Jamf Pro Cloud"]
     direction LR

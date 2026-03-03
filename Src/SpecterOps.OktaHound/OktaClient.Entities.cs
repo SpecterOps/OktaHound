@@ -163,7 +163,7 @@ partial class OktaClient
                     {
                         // Create a hybrid edge for non-AD apps (AD groups are already handled above)
                         // Example: (:AZGroup)-[:Okta_MembershipSync]->(:Okta_Group)
-                        // TODO: (:SNOWGroup)-[:Okta_MembershipSync]->(:Okta_Group)
+                        // TODO: (:SNOW_Group)-[:Okta_MembershipSync]->(:Okta_Group)
                         // TODO: (:Okta_Group)-[:Okta_MembershipSync]->(:Okta_Group)
                         OpenGraphEdgeNode? hybridGroup = appNode.CreateHybridGroupEdgeNode(sourceGroupProfile);
                         if (hybridGroup is not null)
@@ -452,7 +452,7 @@ partial class OktaClient
                 // Try to add the Okta_OutboundOrgSSO edge for SAML and OIDC apps.
                 // A well-known BloodHound collector must exist for the target technology.
                 // Example: (:Okta_Application)-[:Okta_OutboundOrgSSO]->(:jamf_SSOIntegration)
-                // Example: (:Okta_Application)-[:Okta_OutboundOrgSSO]->(:GHOrganization)
+                // Example: (:Okta_Application)-[:Okta_OutboundOrgSSO]->(:GH_Organization)
                 OpenGraphEdge? outboundTrustEdge = appNode.CreateOutboundTrustEdge();
 
                 if (outboundTrustEdge is not null)

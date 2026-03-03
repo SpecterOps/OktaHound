@@ -2,8 +2,8 @@
 
 ## Edge Schema
 
-- Source: [Group](https://bloodhound.specterops.io/resources/nodes/group), [Okta_Group](../NodeDescriptions/Okta_Group.md), [AZGroup](https://bloodhound.specterops.io/resources/nodes/az-group), [SNOWGroup](https://github.com/SpecterOps/SnowHound)
-- Destination: [Okta_Group](../NodeDescriptions/Okta_Group.md), [Group](https://bloodhound.specterops.io/resources/nodes/group), [SNOWGroup](https://github.com/SpecterOps/SnowHound)
+- Source: [Group](https://bloodhound.specterops.io/resources/nodes/group), [Okta_Group](../NodeDescriptions/Okta_Group.md), [AZGroup](https://bloodhound.specterops.io/resources/nodes/az-group), [SNOW_Group](https://github.com/SpecterOps/SnowHound)
+- Destination: [Okta_Group](../NodeDescriptions/Okta_Group.md), [Group](https://bloodhound.specterops.io/resources/nodes/group), [SNOW_Group](https://github.com/SpecterOps/SnowHound)
 
 ## General Information
 
@@ -22,7 +22,7 @@ graph TB
     g2 -- Okta_MembershipSync --> adg2
   end
   subgraph snow["Snowflake"]
-    snowg1("SNOWGroup IT")
+    snowg1("SNOW_Group IT")
     g1 -- Okta_MembershipSync --> snowg1
   end
 ```
