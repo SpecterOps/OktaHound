@@ -10,7 +10,6 @@
 
     The following transformations are applied to the description content:
     - H1 headers are removed (the MDX frontmatter title is used instead).
-    - Image paths are rewritten to point to /images/extensions/<ExtensionName>/.
     - Links to ../NodeDescriptions/ are rewritten to ../nodes/.
     - Links to other markdown files have their .md extension stripped.
     - GitHub-flavored callouts (NOTE, IMPORTANT, WARNING, TIP, CAUTION) are converted to Mintlify components.
@@ -36,7 +35,11 @@ param (
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string] $OutputRootDir = (Join-Path -Path $PSScriptRoot -ChildPath '../Documentation/OfficialDocs/opengraph/extensions')
+    [string] $OutputRootDir = (Join-Path -Path $PSScriptRoot -ChildPath '../Documentation/OfficialDocs/opengraph/extensions'),
+
+    [Parameter(Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [string] $IconBasePath = 'Icons'
 )
 
 Set-StrictMode -Version Latest
@@ -92,7 +95,7 @@ function Convert-ImagePaths {
                 return $match.Value
             }
 
-            return '![{0}](/images/extensions/{1}/{2}{3})' -f $altText, $ExtensionName, $fileName, $titleSuffix
+            return '![{0}]({1}/{2}{3})' -f $altText, $IconBasePath, $fileName, $titleSuffix
         })
 }
 
@@ -420,7 +423,7 @@ foreach ($nodeKind in $nodeKinds) {
 
     [string] $descriptionFilePath = Join-Path -Path $NodeDescriptionsDir -ChildPath "$name.md"
     [string] $outputFilePath = Join-Path -Path $nodesOutputDir -ChildPath "$name.mdx"
-    [string] $iconPath = "/images/extensions/$extensionName/$name.png"
+    [string] $iconPath = "$IconBasePath/$name.png"
     [string] $edgeSectionMarkdown = New-EdgeSectionMarkdown -NodeName $name -EdgeSchemaMap $edgeSchemaMap
 
     New-OfficialDoc -Name $name -Description $description -DescriptionFilePath $descriptionFilePath -OutputFilePath $outputFilePath -ExtensionName $extensionName -NodeDescDirName $nodeDescDirName -IconPath $iconPath -EdgeSectionMarkdown $edgeSectionMarkdown
