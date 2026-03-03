@@ -399,7 +399,7 @@ if ([string]::IsNullOrWhiteSpace($extensionName)) {
     throw "schema.name is missing in extension file: $InputPath"
 }
 
-[string] $referenceRoot = Join-Path -Path (Join-Path -Path $OutputRootDir -ChildPath $extensionName) -ChildPath 'reference'
+[string] $referenceRoot = Join-Path -Path (Join-Path -Path $OutputRootDir -ChildPath $extensionName.ToLower()) -ChildPath 'reference'
 [string] $nodesOutputDir = Join-Path -Path $referenceRoot -ChildPath 'nodes'
 [string] $edgesOutputDir = Join-Path -Path $referenceRoot -ChildPath 'edges'
 

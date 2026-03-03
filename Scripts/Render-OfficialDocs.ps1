@@ -29,6 +29,7 @@ $ErrorActionPreference = 'Stop'
 # Parse extension JSON to derive the extension name
 [psobject] $extensionJson = Get-Content -Path $ExtensionFile | ConvertFrom-Json
 [string] $extensionName = $extensionJson.schema.name
+[string] $extensionSlug = $extensionName.ToLower()
 
 if ([string]::IsNullOrEmpty($GitHubBaseUrl)) {
     $GitHubBaseUrl = 'https://github.com/SpecterOps/{0}' -f $extensionName
@@ -37,9 +38,9 @@ $GitHubBaseUrl = $GitHubBaseUrl.TrimEnd('/')
 
 [string] $repoRoot = Join-Path -Path $PSScriptRoot -ChildPath '..'
 [string] $officialDocsDir = Join-Path -Path $repoRoot -ChildPath 'Documentation/OfficialDocs'
-[string] $imagesOutputDirRelPath = '/images/extensions/{0}/reference' -f $extensionName
+[string] $imagesOutputDirRelPath = '/images/extensions/{0}/reference' -f $extensionSlug
 [string] $imagesOutputDirFullPath = Join-Path -Path $officialDocsDir -ChildPath $imagesOutputDirRelPath
-[string] $opengraphRefDir = Join-Path -Path $officialDocsDir -ChildPath ('opengraph/extensions/{0}/reference' -f $extensionName)
+[string] $opengraphRefDir = Join-Path -Path $officialDocsDir -ChildPath ('opengraph/extensions/{0}/reference' -f $extensionSlug)
 
 # Step 0: Clean the output directory
 Write-Host '== Step 0: Cleaning output directory ==' -ForegroundColor Cyan
@@ -82,7 +83,7 @@ Write-Host '== Step 6: Rendering schema ==' -ForegroundColor Cyan
 
 # Step 7: Render official docs navigation JSON
 Write-Host '== Step 7: Rendering docs.json ==' -ForegroundColor Cyan
-[string] $extensionOfficialDocsDir = Join-Path -Path $officialDocsDir -ChildPath ('opengraph/extensions/{0}' -f $extensionName)
+[string] $extensionOfficialDocsDir = Join-Path -Path $officialDocsDir -ChildPath ('opengraph/extensions/{0}' -f $extensionSlug)
 & (Join-Path -Path $PSScriptRoot -ChildPath 'Render-OfficialDocsJson.ps1') -ExtensionRootDir $extensionOfficialDocsDir
 
 Write-Host '== Done ==' -ForegroundColor Green

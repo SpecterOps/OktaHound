@@ -15,7 +15,7 @@
 param (
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string] $ExtensionRootDir = (Join-Path -Path $PSScriptRoot -ChildPath '../Documentation/OfficialDocs/opengraph/extensions/OktaHound'),
+    [string] $ExtensionRootDir = (Join-Path -Path $PSScriptRoot -ChildPath '../Documentation/OfficialDocs/opengraph/extensions/oktahound'),
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
