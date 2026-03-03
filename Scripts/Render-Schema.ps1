@@ -87,7 +87,7 @@ if ($OfficialDocs) {
 ---
 title: Schema
 description: The OpenGraph extension schema for OktaHound
-icon: table
+icon: circle-nodes
 ---
 
 <img noZoom src="/assets/enterprise-AND-community-edition-pill-tag.svg" alt="Applies to BloodHound Enterprise and CE"/>
