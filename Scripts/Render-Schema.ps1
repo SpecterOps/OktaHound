@@ -51,15 +51,20 @@ function Get-KindMarkdownLink {
         [string] $LinkBasePath,
 
         [Parameter(Mandatory = $false)]
-        [string] $Extension = ''
+        [string] $Extension = '',
+
+        [Parameter(Mandatory = $false)]
+        [switch] $LowercasePath
     )
+
+    [string] $pathName = if ($LowercasePath) { $KindName.ToLower() } else { $KindName }
 
     if ($null -eq $LinkBasePath) {
         return $KindName
     } elseif ([string]::Empty -eq $LinkBasePath) {
-        return '[{0}]({0}{1})' -f $KindName, $Extension
+        return '[{0}]({1}{2})' -f $KindName, $pathName, $Extension
     } else {
-        return '[{0}]({1}/{0}{2})' -f $KindName, $LinkBasePath, $Extension
+        return '[{0}]({1}/{2}{3})' -f $KindName, $LinkBasePath, $pathName, $Extension
     }
 }
 
@@ -155,8 +160,8 @@ foreach ($nodeKind in $nodeKinds) {
     # Append node-specific markdown
     # Sample: | ![Okta_Organization](Icons/Okta_Organization.png) | Okta_Organization | Okta Organization |
     $markdown += "`n"
-    [string] $nodeKindDisplay = Get-KindMarkdownLink -KindName $nodeKind.name -LinkBasePath $NodeLinkBasePath -Extension $linkExtension
-    $markdown += '| ![{0}]({1}/{0}.png) | {2} | {3} |' -f $nodeKind.name, $IconBasePath, $nodeKindDisplay, $nodeKind.display_name
+    [string] $nodeKindDisplay = Get-KindMarkdownLink -KindName $nodeKind.name -LinkBasePath $NodeLinkBasePath -Extension $linkExtension -LowercasePath:$OfficialDocs
+    $markdown += '| ![{0}]({1}/{2}.png) | {3} | {4} |' -f $nodeKind.name, $IconBasePath, $nodeKind.name.ToLower(), $nodeKindDisplay, $nodeKind.display_name
 }
 
 $markdown += "`n`n"
@@ -173,7 +178,7 @@ foreach ($relationshipKind in $relationshipKinds) {
     # Sample: | OktaUserHasRole | ✅ | Indicates that a user is assigned a role in Okta. |
     $markdown += "`n"
     [string] $traversableIcon = if ($relationshipKind.is_traversable) { '✅' } else { '❌' }
-    [string] $relationshipKindDisplay = Get-KindMarkdownLink -KindName $relationshipKind.name -LinkBasePath $EdgeLinkBasePath -Extension $linkExtension
+    [string] $relationshipKindDisplay = Get-KindMarkdownLink -KindName $relationshipKind.name -LinkBasePath $EdgeLinkBasePath -Extension $linkExtension -LowercasePath:$OfficialDocs
     $markdown += '| {0} | {1} | {2} |' -f $relationshipKindDisplay, $traversableIcon, $relationshipKind.description
 }
 

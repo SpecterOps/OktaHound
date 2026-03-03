@@ -2,7 +2,7 @@
 The following Cypher selectors define the default Privilege Zone for the OktaHound extension.
 Each selector is defined in a JSON file located in the [PrivilegeZoneSelectors](../Src/PrivilegeZoneSelectors) directory of the OktaHound repository.
 
-## Organization
+## Okta: Organization
 
 Organization nodes in Okta.
 
@@ -13,7 +13,7 @@ RETURN n
 
 This selector is defined in the [organization.json](../Src/PrivilegeZoneSelectors/organization.json) file.
 
-## Tier Zero Devices
+## Okta: Tier Zero Devices
 
 Devices associated with principals who have SUPER_ADMIN or ORG_ADMIN role assignments.
 
@@ -26,7 +26,7 @@ RETURN n
 
 This selector is defined in the [tier0-devices.json](../Src/PrivilegeZoneSelectors/tier0-devices.json) file.
 
-## Tier Zero Principals
+## Okta: Tier Zero Principals
 
 Principals with SUPER_ADMIN or ORG_ADMIN role assignments.
 

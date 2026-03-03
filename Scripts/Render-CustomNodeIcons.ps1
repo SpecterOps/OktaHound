@@ -504,7 +504,7 @@ function New-NodeIcon {
 
     try {
         [string] $safeName = Get-SafeFileName -Name $NodeName
-        [string] $outputFile = Join-Path -Path $OutputDir -ChildPath "$safeName.png"
+        [string] $outputFile = Join-Path -Path $OutputDir -ChildPath "$($safeName.ToLower()).png"
 
         # Fetch and parse the Font Awesome SVG icon
         [SkiaSharp.SKPicture] $picture = Get-FontAwesomeIcon -IconName $Icon

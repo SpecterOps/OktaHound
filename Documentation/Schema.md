@@ -16,25 +16,25 @@
 
 | Icon | Node Kind | Display Name |
 |------|-----------|--------------|
-| ![Okta_Agent](Icons/Okta_Agent.png) | [Okta_Agent](NodeDescriptions/Okta_Agent.md) | Okta Agent |
-| ![Okta_AgentPool](Icons/Okta_AgentPool.png) | [Okta_AgentPool](NodeDescriptions/Okta_AgentPool.md) | Okta Agent Pool |
-| ![Okta_ApiServiceIntegration](Icons/Okta_ApiServiceIntegration.png) | [Okta_ApiServiceIntegration](NodeDescriptions/Okta_ApiServiceIntegration.md) | Okta API Service Integration |
-| ![Okta_ApiToken](Icons/Okta_ApiToken.png) | [Okta_ApiToken](NodeDescriptions/Okta_ApiToken.md) | Okta API Token |
-| ![Okta_Application](Icons/Okta_Application.png) | [Okta_Application](NodeDescriptions/Okta_Application.md) | Okta Application |
-| ![Okta_AuthorizationServer](Icons/Okta_AuthorizationServer.png) | [Okta_AuthorizationServer](NodeDescriptions/Okta_AuthorizationServer.md) | Okta Authorization Server |
-| ![Okta_ClientSecret](Icons/Okta_ClientSecret.png) | [Okta_ClientSecret](NodeDescriptions/Okta_ClientSecret.md) | Okta Client Secret |
-| ![Okta_CustomRole](Icons/Okta_CustomRole.png) | [Okta_CustomRole](NodeDescriptions/Okta_CustomRole.md) | Okta Custom Role |
-| ![Okta_Device](Icons/Okta_Device.png) | [Okta_Device](NodeDescriptions/Okta_Device.md) | Okta Device |
-| ![Okta_Group](Icons/Okta_Group.png) | [Okta_Group](NodeDescriptions/Okta_Group.md) | Okta Group |
-| ![Okta_IdentityProvider](Icons/Okta_IdentityProvider.png) | [Okta_IdentityProvider](NodeDescriptions/Okta_IdentityProvider.md) | Okta Identity Provider |
-| ![Okta_JWK](Icons/Okta_JWK.png) | [Okta_JWK](NodeDescriptions/Okta_JWK.md) | Okta JWK |
-| ![Okta_Organization](Icons/Okta_Organization.png) | [Okta_Organization](NodeDescriptions/Okta_Organization.md) | Okta Organization |
-| ![Okta_Policy](Icons/Okta_Policy.png) | [Okta_Policy](NodeDescriptions/Okta_Policy.md) | Okta Policy |
-| ![Okta_Realm](Icons/Okta_Realm.png) | [Okta_Realm](NodeDescriptions/Okta_Realm.md) | Okta Realm |
-| ![Okta_ResourceSet](Icons/Okta_ResourceSet.png) | [Okta_ResourceSet](NodeDescriptions/Okta_ResourceSet.md) | Okta Resource Set |
-| ![Okta_Role](Icons/Okta_Role.png) | [Okta_Role](NodeDescriptions/Okta_Role.md) | Okta Role |
-| ![Okta_RoleAssignment](Icons/Okta_RoleAssignment.png) | [Okta_RoleAssignment](NodeDescriptions/Okta_RoleAssignment.md) | Okta Role Assignment |
-| ![Okta_User](Icons/Okta_User.png) | [Okta_User](NodeDescriptions/Okta_User.md) | Okta User |
+| ![Okta_Agent](Icons/okta_agent.png) | [Okta_Agent](NodeDescriptions/Okta_Agent.md) | Okta Agent |
+| ![Okta_AgentPool](Icons/okta_agentpool.png) | [Okta_AgentPool](NodeDescriptions/Okta_AgentPool.md) | Okta Agent Pool |
+| ![Okta_ApiServiceIntegration](Icons/okta_apiserviceintegration.png) | [Okta_ApiServiceIntegration](NodeDescriptions/Okta_ApiServiceIntegration.md) | Okta API Service Integration |
+| ![Okta_ApiToken](Icons/okta_apitoken.png) | [Okta_ApiToken](NodeDescriptions/Okta_ApiToken.md) | Okta API Token |
+| ![Okta_Application](Icons/okta_application.png) | [Okta_Application](NodeDescriptions/Okta_Application.md) | Okta Application |
+| ![Okta_AuthorizationServer](Icons/okta_authorizationserver.png) | [Okta_AuthorizationServer](NodeDescriptions/Okta_AuthorizationServer.md) | Okta Authorization Server |
+| ![Okta_ClientSecret](Icons/okta_clientsecret.png) | [Okta_ClientSecret](NodeDescriptions/Okta_ClientSecret.md) | Okta Client Secret |
+| ![Okta_CustomRole](Icons/okta_customrole.png) | [Okta_CustomRole](NodeDescriptions/Okta_CustomRole.md) | Okta Custom Role |
+| ![Okta_Device](Icons/okta_device.png) | [Okta_Device](NodeDescriptions/Okta_Device.md) | Okta Device |
+| ![Okta_Group](Icons/okta_group.png) | [Okta_Group](NodeDescriptions/Okta_Group.md) | Okta Group |
+| ![Okta_IdentityProvider](Icons/okta_identityprovider.png) | [Okta_IdentityProvider](NodeDescriptions/Okta_IdentityProvider.md) | Okta Identity Provider |
+| ![Okta_JWK](Icons/okta_jwk.png) | [Okta_JWK](NodeDescriptions/Okta_JWK.md) | Okta JWK |
+| ![Okta_Organization](Icons/okta_organization.png) | [Okta_Organization](NodeDescriptions/Okta_Organization.md) | Okta Organization |
+| ![Okta_Policy](Icons/okta_policy.png) | [Okta_Policy](NodeDescriptions/Okta_Policy.md) | Okta Policy |
+| ![Okta_Realm](Icons/okta_realm.png) | [Okta_Realm](NodeDescriptions/Okta_Realm.md) | Okta Realm |
+| ![Okta_ResourceSet](Icons/okta_resourceset.png) | [Okta_ResourceSet](NodeDescriptions/Okta_ResourceSet.md) | Okta Resource Set |
+| ![Okta_Role](Icons/okta_role.png) | [Okta_Role](NodeDescriptions/Okta_Role.md) | Okta Role |
+| ![Okta_RoleAssignment](Icons/okta_roleassignment.png) | [Okta_RoleAssignment](NodeDescriptions/Okta_RoleAssignment.md) | Okta Role Assignment |
+| ![Okta_User](Icons/okta_user.png) | [Okta_User](NodeDescriptions/Okta_User.md) | Okta User |
 
 ## Edges
 

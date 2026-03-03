@@ -95,7 +95,7 @@ function Convert-ImagePaths {
                 return $match.Value
             }
 
-            return '![{0}]({1}/{2}{3})' -f $altText, $IconBasePath, $fileName, $titleSuffix
+            return '![{0}]({1}/{2}{3})' -f $altText, $IconBasePath, $fileName.ToLower(), $titleSuffix
         })
 }
 
@@ -137,7 +137,7 @@ function Convert-MarkdownLinks {
 
             [string] $rewrittenPath = $linkPath -replace '\.md(?=($|[?#]))', ''
             $rewrittenPath = $rewrittenPath -replace ('^\.\.\/' + [regex]::Escape($NodeDescDirName) + '/'), '../nodes/'
-            return '[{0}]({1}{2})' -f $linkText, $rewrittenPath, $titleSuffix
+            return '[{0}]({1}{2})' -f $linkText, $rewrittenPath.ToLower(), $titleSuffix
         })
 }
 
@@ -266,7 +266,7 @@ function New-EdgeSectionMarkdown {
 
     foreach ($edgeName in ($EdgeSchemaMap.Keys | Sort-Object)) {
         [psobject] $schema = $EdgeSchemaMap[$edgeName]
-        [string] $edgeLink = '[{0}](../edges/{0})' -f $edgeName
+        [string] $edgeLink = '[{0}](../edges/{1})' -f $edgeName, $edgeName.ToLower()
 
         if ($NodeName -in $schema.Destinations.Name) {
             [string] $sourceLinks = ($schema.Sources | ForEach-Object {
@@ -422,8 +422,8 @@ foreach ($nodeKind in $nodeKinds) {
     }
 
     [string] $descriptionFilePath = Join-Path -Path $NodeDescriptionsDir -ChildPath "$name.md"
-    [string] $outputFilePath = Join-Path -Path $nodesOutputDir -ChildPath "$name.mdx"
-    [string] $iconPath = "$IconBasePath/$name.png"
+    [string] $outputFilePath = Join-Path -Path $nodesOutputDir -ChildPath "$($name.ToLower()).mdx"
+    [string] $iconPath = "$IconBasePath/$($name.ToLower()).png"
     [string] $edgeSectionMarkdown = New-EdgeSectionMarkdown -NodeName $name -EdgeSchemaMap $edgeSchemaMap
 
     New-OfficialDoc -Name $name -Description $description -DescriptionFilePath $descriptionFilePath -OutputFilePath $outputFilePath -ExtensionName $extensionName -NodeDescDirName $nodeDescDirName -IconPath $iconPath -EdgeSectionMarkdown $edgeSectionMarkdown
@@ -439,7 +439,7 @@ foreach ($relationshipKind in $relationshipKinds) {
     }
 
     [string] $descriptionFilePath = Join-Path -Path $EdgeDescriptionsDir -ChildPath "$name.md"
-    [string] $outputFilePath = Join-Path -Path $edgesOutputDir -ChildPath "$name.mdx"
+    [string] $outputFilePath = Join-Path -Path $edgesOutputDir -ChildPath "$($name.ToLower()).mdx"
     [string] $traversable = if ([bool] $relationshipKind.is_traversable) { '✅' } else { '❌' }
 
     New-OfficialDoc -Name $name -Description $description -DescriptionFilePath $descriptionFilePath -OutputFilePath $outputFilePath -ExtensionName $extensionName -NodeDescDirName $nodeDescDirName -Traversable $traversable
