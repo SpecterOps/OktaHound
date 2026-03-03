@@ -37,9 +37,10 @@ Root/
 ├─ Src/                                      # Source code for the application and tests
 │  ├─ Extensions/                            # BloodHound extension schema and metadata
 │  │  ├─ bhce-okta-extension.json            # OktaHound Community extension schema definition
-│  │  ├─ bhce-github-extension.json          # GitHound extension schema definition
-│  │  ├─ bhce-1passhound-extension.json      # 1PassHound extension schema definition
-│  │  ├─ bhce-jamfhound-extension.json       # JamfHound extension schema definition
+│  │  ├─ bhce-github-extension.json          # GitHub extension schema definition
+│  │  ├─ bhce-1password-extension.json       # 1Password extension schema definition
+│  │  ├─ bhce-jamf-extension.json            # Jamf extension schema definition
+│  │  ├─ bhce-snowflake-extension.json       # Snowflake extension schema definition
 │  │  └─ bh-scim-extension.json              # SCIM extension schema definition
 │  ├─ Queries/                               # BloodHound query JSON definitions
 │  ├─ PrivilegeZoneSelectors/                # Privilege zone selector JSON definitions
