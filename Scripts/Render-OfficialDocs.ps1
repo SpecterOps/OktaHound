@@ -11,16 +11,35 @@
 
 [CmdletBinding()]
 [OutputType([void])]
-param()
+param(
+    [Parameter(Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [string] $ExtensionFile = (Join-Path -Path $PSScriptRoot -ChildPath '../Src/Extensions/bhce-okta-extension.json'),
+
+    [Parameter(Mandatory = $false)]
+    [string] $GitHubBaseUrl = '',
+
+    [Parameter(Mandatory = $false)]
+    [string] $TitlePrefix = ''
+)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+# Parse extension JSON to derive the extension name
+[psobject] $extensionJson = Get-Content -Path $ExtensionFile | ConvertFrom-Json
+[string] $extensionName = $extensionJson.schema.name
+
+if ([string]::IsNullOrEmpty($GitHubBaseUrl)) {
+    $GitHubBaseUrl = 'https://github.com/SpecterOps/{0}' -f $extensionName
+}
+$GitHubBaseUrl = $GitHubBaseUrl.TrimEnd('/')
+
 [string] $repoRoot = Join-Path -Path $PSScriptRoot -ChildPath '..'
 [string] $officialDocsDir = Join-Path -Path $repoRoot -ChildPath 'Documentation/OfficialDocs'
-[string] $imagesOutputDirRelPath = '/images/extensions/OktaHound/reference'
+[string] $imagesOutputDirRelPath = '/images/extensions/{0}/reference' -f $extensionName
 [string] $imagesOutputDirFullPath = Join-Path -Path $officialDocsDir -ChildPath $imagesOutputDirRelPath
-[string] $opengraphRefDir = Join-Path -Path $officialDocsDir -ChildPath 'opengraph/extensions/OktaHound/reference'
+[string] $opengraphRefDir = Join-Path -Path $officialDocsDir -ChildPath ('opengraph/extensions/{0}/reference' -f $extensionName)
 
 # Step 0: Clean the output directory
 Write-Host '== Step 0: Cleaning output directory ==' -ForegroundColor Cyan
@@ -33,7 +52,7 @@ New-Item -Path $opengraphRefDir -ItemType Directory -Force | Out-Null
 # Step 1: Render custom node icons into the official docs images directory
 Write-Host '== Step 1: Rendering custom node icons ==' -ForegroundColor Cyan
 [string] $packageCachePath = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath 'BloodHound-IconRender'
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-CustomNodeIcons.ps1') -OutputDir $imagesOutputDirFullPath -PackageCachePath $packageCachePath
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-CustomNodeIcons.ps1') -InputFile $ExtensionFile -OutputDir $imagesOutputDirFullPath -PackageCachePath $packageCachePath
 
 # Step 2: Copy static images from Documentation/Images to the official docs images directory
 Write-Host '== Step 2: Copying static images ==' -ForegroundColor Cyan
@@ -43,24 +62,27 @@ Copy-Item -Path (Join-Path -Path $sourceImagesDir -ChildPath '*') -Destination $
 # Step 3: Render custom queries MDX
 Write-Host '== Step 3: Rendering custom queries ==' -ForegroundColor Cyan
 [string] $queriesOutputPath = Join-Path -Path $opengraphRefDir -ChildPath 'queries.mdx'
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-CustomQueries.ps1') -OutputFilePath $queriesOutputPath -QueriesPath 'https://github.com/SpecterOps/OktaHound/tree/main/Src/Queries' -OfficialDocs
+[string] $queriesGitHubPath = '{0}/tree/main/Src/Queries' -f $GitHubBaseUrl
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-CustomQueries.ps1') -OutputFilePath $queriesOutputPath -QueriesPath $queriesGitHubPath -ExtensionName $extensionName -TitlePrefix $TitlePrefix -OfficialDocs
 
 # Step 4: Render privilege zone selectors MDX
 Write-Host '== Step 4: Rendering privilege zone selectors ==' -ForegroundColor Cyan
 [string] $privilegeZonePath = Join-Path -Path $opengraphRefDir -ChildPath 'privilege-zone-selectors.mdx'
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-PrivilegeZoneSelectors.ps1') -OutputFilePath $privilegeZonePath -SelectorsLinkPath 'https://github.com/SpecterOps/OktaHound/tree/main/Src/PrivilegeZoneSelectors' -OfficialDocs
+[string] $selectorsGitHubPath = '{0}/tree/main/Src/PrivilegeZoneSelectors' -f $GitHubBaseUrl
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-PrivilegeZoneSelectors.ps1') -OutputFilePath $privilegeZonePath -SelectorsLinkPath $selectorsGitHubPath -ExtensionName $extensionName -TitlePrefix $TitlePrefix -OfficialDocs
 
 # Step 5: Render node and edge documentation MDX files
 Write-Host '== Step 5: Rendering node and edge docs ==' -ForegroundColor Cyan
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-NodeAndEdgeDocs.ps1') -InputPath (Join-Path -Path $repoRoot -ChildPath 'Src/Extensions/bhce-okta-extension.json') -IconBasePath $imagesOutputDirRelPath
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-NodeAndEdgeDocs.ps1') -InputPath $ExtensionFile -IconBasePath $imagesOutputDirRelPath
 
 # Step 6: Render schema MDX
 Write-Host '== Step 6: Rendering schema ==' -ForegroundColor Cyan
 [string] $schemaOutputPath = Join-Path -Path $opengraphRefDir -ChildPath 'schema.mdx'
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-Schema.ps1') -OutputPath $schemaOutputPath -NodeLinkBasePath 'nodes' -EdgeLinkBasePath 'edges' -IconBasePath $imagesOutputDirRelPath -OfficialDocs
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-Schema.ps1') -InputPath $ExtensionFile -OutputPath $schemaOutputPath -NodeLinkBasePath 'nodes' -EdgeLinkBasePath 'edges' -IconBasePath $imagesOutputDirRelPath -GitHubBaseUrl $GitHubBaseUrl -OfficialDocs
 
 # Step 7: Render official docs navigation JSON
 Write-Host '== Step 7: Rendering docs.json ==' -ForegroundColor Cyan
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-OfficialDocsJson.ps1')
+[string] $extensionOfficialDocsDir = Join-Path -Path $officialDocsDir -ChildPath ('opengraph/extensions/{0}' -f $extensionName)
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-OfficialDocsJson.ps1') -ExtensionRootDir $extensionOfficialDocsDir
 
 Write-Host '== Done ==' -ForegroundColor Green

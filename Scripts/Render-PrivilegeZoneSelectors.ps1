@@ -20,6 +20,13 @@ param (
     [string] $SelectorsLinkPath = '../Src/PrivilegeZoneSelectors',
 
     [Parameter(Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [string] $ExtensionName = 'OktaHound',
+
+    [Parameter(Mandatory = $false)]
+    [string] $TitlePrefix = '',
+
+    [Parameter(Mandatory = $false)]
     [switch] $OfficialDocs
 )
 
@@ -30,13 +37,13 @@ if ($OfficialDocs) {
     $markdown += @'
 ---
 title: Privilege Zone Selectors
-description: "Default Privilege Zone selectors for the OktaHound extension"
+description: "Default Privilege Zone selectors for the {0} extension"
 icon: "gem"
 ---
 
 <img noZoom src="/assets/enterprise-AND-community-edition-pill-tag.svg" alt="Applies to BloodHound Enterprise and CE"/>
 
-'@
+'@ -f $ExtensionName
 } else {
     $markdown += @'
 # Privilege Zone Selectors
@@ -45,17 +52,21 @@ icon: "gem"
 }
 
 $markdown += @'
-The following Cypher selectors define the default Privilege Zone for the OktaHound extension.
-Each selector is defined in a JSON file located in the [PrivilegeZoneSelectors]({0}) directory of the OktaHound repository.
+The following Cypher selectors define the default Privilege Zone for the {1} extension.
+Each selector is defined in a JSON file located in the [PrivilegeZoneSelectors]({0}) directory of the {1} repository.
 
-'@ -f $SelectorsLinkPath
+'@ -f $SelectorsLinkPath, $ExtensionName
 
 Get-ChildItem -File -Path $InputDirectory -Filter '*.json' | Sort-Object -Property Name | ForEach-Object {
     # Parse the JSON content of the privilege zone selector file
     [psobject] $json = Get-Content -Path $PSItem.FullName | ConvertFrom-Json
 
-    # Remove 'Okta: ' prefix from title for cleaner headings
-    [string] $title = $json.name -replace 'Okta: '
+    # Remove optional title prefix for cleaner headings
+    [string] $title = if ([string]::IsNullOrEmpty($TitlePrefix)) {
+        $json.name
+    } else {
+        $json.name -replace [regex]::Escape($TitlePrefix)
+    }
 
     # Sanitize line breaks in description and cypher
     [string] $description = $json.description -replace '\n',"`n"
