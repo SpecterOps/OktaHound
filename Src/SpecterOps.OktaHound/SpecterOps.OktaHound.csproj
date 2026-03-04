@@ -57,8 +57,8 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 	  </Content>
 
-    <!-- Include privilege zone selectors. -->
-	  <Content Include="../PrivilegeZoneSelectors/*.*" LinkBase="privilege-zone-selectors">
+    <!-- Include privilege zone rules. -->
+	  <Content Include="../PrivilegeZoneRules/*.*" LinkBase="privilege-zone-rules">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 	  </Content>

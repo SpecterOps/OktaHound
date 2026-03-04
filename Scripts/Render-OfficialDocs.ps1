@@ -67,11 +67,11 @@ Write-Host '== Step 3: Rendering custom queries ==' -ForegroundColor Cyan
 [string] $queriesGitHubPath = '{0}/tree/main/Src/Queries' -f $GitHubBaseUrl
 & (Join-Path -Path $PSScriptRoot -ChildPath 'Render-CustomQueries.ps1') -OutputFilePath $queriesOutputPath -QueriesPath $queriesGitHubPath -ExtensionName $extensionName -TitlePrefix $TitlePrefix -OfficialDocs
 
-# Step 4: Render privilege zone selectors MDX
-Write-Host '== Step 4: Rendering privilege zone selectors ==' -ForegroundColor Cyan
-[string] $privilegeZonePath = Join-Path -Path $opengraphRefDir -ChildPath 'privilege-zone-selectors.mdx'
-[string] $selectorsGitHubPath = '{0}/tree/main/Src/PrivilegeZoneSelectors' -f $GitHubBaseUrl
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-PrivilegeZoneSelectors.ps1') -OutputFilePath $privilegeZonePath -SelectorsLinkPath $selectorsGitHubPath -ExtensionName $extensionName -TitlePrefix $TitlePrefix -OfficialDocs
+# Step 4: Render privilege zone rules MDX
+Write-Host '== Step 4: Rendering privilege zone rules ==' -ForegroundColor Cyan
+[string] $privilegeZonePath = Join-Path -Path $opengraphRefDir -ChildPath 'privilege-zone-rules.mdx'
+[string] $rulesGitHubPath = '{0}/tree/main/Src/PrivilegeZoneRules' -f $GitHubBaseUrl
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-PrivilegeZoneRules.ps1') -OutputFilePath $privilegeZonePath -RulesLinkPath $rulesGitHubPath -ExtensionName $extensionName -TitlePrefix $TitlePrefix -OfficialDocs
 
 # Step 5: Render node and edge documentation MDX files
 Write-Host '== Step 5: Rendering node and edge docs ==' -ForegroundColor Cyan

@@ -12,7 +12,7 @@
   </Folder>
   <Folder Name="/Documentation/">
     <File Path="Documentation/Queries.md" />
-    <File Path="Documentation/PrivilegeZoneSelectors.md" />
+    <File Path="Documentation/PrivilegeZoneRules.md" />
     <File Path="Documentation/Schema.md" />
     <File Path="Documentation/Roadmap.md" />
     <File Path="README.md" />
@@ -26,7 +26,7 @@
     <File Path="Scripts/Render-NodeAndEdgeDocs.ps1" />
     <File Path="Scripts/Render-OfficialDocs.ps1" />
     <File Path="Scripts/Render-OfficialDocsJson.ps1" />
-    <File Path="Scripts/Render-PrivilegeZoneSelectors.ps1" />
+    <File Path="Scripts/Render-PrivilegeZoneRules.ps1" />
     <File Path="Scripts/Render-Schema.ps1" />
   </Folder>
 </Solution>

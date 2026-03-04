@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Converts privilege zone selector files (*.json) into markdown (*.md) or MDX.
+    Converts privilege zone rule files (*.json) into markdown (*.md) or MDX.
 #>
 
 #Requires -Version 5.1
@@ -9,15 +9,15 @@
 param (
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string] $InputDirectory = (Join-Path -Path $PSScriptRoot -ChildPath '../Src/PrivilegeZoneSelectors/'),
+    [string] $InputDirectory = (Join-Path -Path $PSScriptRoot -ChildPath '../Src/PrivilegeZoneRules/'),
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string] $OutputFilePath = (Join-Path -Path $PSScriptRoot -ChildPath '../Documentation/PrivilegeZoneSelectors.md'),
+    [string] $OutputFilePath = (Join-Path -Path $PSScriptRoot -ChildPath '../Documentation/PrivilegeZoneRules.md'),
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string] $SelectorsLinkPath = '../Src/PrivilegeZoneSelectors',
+    [string] $RulesLinkPath = '../Src/PrivilegeZoneRules',
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
@@ -36,8 +36,8 @@ Set-StrictMode -Version Latest
 if ($OfficialDocs) {
     $markdown += @'
 ---
-title: Privilege Zone Selectors
-description: "Default Privilege Zone selectors for the {0} extension"
+title: Privilege Zone Rules
+description: "Default Privilege Zone rules for the {0} extension"
 icon: "gem"
 ---
 
@@ -46,19 +46,19 @@ icon: "gem"
 '@ -f $ExtensionName
 } else {
     $markdown += @'
-# Privilege Zone Selectors
+# Privilege Zone Rules
 
 '@
 }
 
 $markdown += @'
-The following Cypher selectors define the default Privilege Zone for the {1} extension.
-Each selector is defined in a JSON file located in the [PrivilegeZoneSelectors]({0}) directory of the {1} repository.
+The following Cypher rules define the default Privilege Zone for the {1} extension.
+Each rule is defined in a JSON file located in the [PrivilegeZoneRules]({0}) directory of the {1} repository.
 
-'@ -f $SelectorsLinkPath, $ExtensionName
+'@ -f $RulesLinkPath, $ExtensionName
 
 Get-ChildItem -File -Path $InputDirectory -Filter '*.json' | Sort-Object -Property Name | ForEach-Object {
-    # Parse the JSON content of the privilege zone selector file
+    # Parse the JSON content of the privilege zone rule file
     [psobject] $json = Get-Content -Path $PSItem.FullName | ConvertFrom-Json
 
     # Remove optional title prefix for cleaner headings
@@ -85,9 +85,9 @@ Get-ChildItem -File -Path $InputDirectory -Filter '*.json' | Sort-Object -Proper
 {2}
 ```
 
-This selector is defined in the [{3}]({4}/{3}) file.
+This rule is defined in the [{3}]({4}/{3}) file.
 
-'@ -f $title, $description, $cypher, $fileName, $SelectorsLinkPath
+'@ -f $title, $description, $cypher, $fileName, $RulesLinkPath
 }
 
 # Normalize line endings to CRLF for Git working tree

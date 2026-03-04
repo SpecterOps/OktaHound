@@ -1,6 +1,6 @@
-# Privilege Zone Selectors
-The following Cypher selectors define the default Privilege Zone for the OktaHound extension.
-Each selector is defined in a JSON file located in the [PrivilegeZoneSelectors](../Src/PrivilegeZoneSelectors) directory of the OktaHound repository.
+# Privilege Zone Rules
+The following Cypher rules define the default Privilege Zone for the OktaHound extension.
+Each rule is defined in a JSON file located in the [PrivilegeZoneRules](../Src/PrivilegeZoneRules) directory of the OktaHound repository.
 
 ## Okta: Organization
 
@@ -11,7 +11,7 @@ MATCH (n:Okta_Organization)
 RETURN n
 ```
 
-This selector is defined in the [organization.json](../Src/PrivilegeZoneSelectors/organization.json) file.
+This rule is defined in the [organization.json](../Src/PrivilegeZoneRules/organization.json) file.
 
 ## Okta: Tier Zero Devices
 
@@ -24,7 +24,7 @@ OR r.type = "ORG_ADMIN"
 RETURN n
 ```
 
-This selector is defined in the [tier0-devices.json](../Src/PrivilegeZoneSelectors/tier0-devices.json) file.
+This rule is defined in the [tier0-devices.json](../Src/PrivilegeZoneRules/tier0-devices.json) file.
 
 ## Okta: Tier Zero Principals
 
@@ -37,5 +37,5 @@ OR r.type = "ORG_ADMIN"
 RETURN n
 ```
 
-This selector is defined in the [tier0-principals.json](../Src/PrivilegeZoneSelectors/tier0-principals.json) file.
+This rule is defined in the [tier0-principals.json](../Src/PrivilegeZoneRules/tier0-principals.json) file.
 

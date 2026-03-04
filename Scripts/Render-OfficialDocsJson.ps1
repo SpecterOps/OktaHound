@@ -38,7 +38,7 @@ if (-not (Test-Path -Path $ExtensionRootDir -PathType Container)) {
         Sort-Object -Property BaseName |
         ForEach-Object { "opengraph/extensions/$extensionName/$($_.BaseName)" })
 
-# MDX files directly in reference/ but not in nodes/ or edges/ (e.g. queries.mdx, privilege-zone-selectors.mdx)
+# MDX files directly in reference/ but not in nodes/ or edges/ (e.g. queries.mdx, privilege-zone-rules.mdx)
 [string[]] $referencePages = @()
 if (Test-Path -Path $referenceDir -PathType Container) {
     $referencePages = @(Get-ChildItem -Path $referenceDir -Filter '*.mdx' -File |
