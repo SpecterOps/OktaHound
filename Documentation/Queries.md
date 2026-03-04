@@ -264,6 +264,18 @@ LIMIT 1000
 
 This query can be imported into BloodHound from the [privileged-users-unexpected-status.json](../Src/Queries/privileged-users-unexpected-status.json) file.
 
+## Okta: Read Client Secrets of Privileged Applications
+
+Searches for client secrets associated with privileged applications that are readable to non-Super Admins.
+
+```cypher
+MATCH p = (:Okta)-[:Okta_ReadClientSecret|Okta_MemberOf*1..2]->(:Okta_ClientSecret)-[:Okta_SecretOf]->(:Okta_Application)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+RETURN p
+LIMIT 1000
+```
+
+This query can be imported into BloodHound from the [read-client-secrets.json](../Src/Queries/read-client-secrets.json) file.
+
 ## Okta: Realm Membership
 
 Lists all Okta realms and the users assigned to them.
