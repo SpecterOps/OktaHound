@@ -181,7 +181,7 @@ This query can be imported into BloodHound from the [policy-mappings.json](../Sr
 Finds active JWKs or client secrets older than 365 days on applications that have role assignments.
 
 ```cypher
-MATCH p = (s:Okta_JWK:Okta_ClientSecret)-[:Okta_KeyOf|Okta_SecretOf]->(:Okta_Application:Okta_ApiServiceIntegration)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+MATCH p = (s:Okta_JWK:Okta_ClientSecret)-[:Okta_KeyOf|Okta_SecretOf]->(:Okta_Application)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
 WHERE s.status = "ACTIVE" AND datetime(s.created) <= datetime() - duration("P365D")
 RETURN p
 LIMIT 1000
