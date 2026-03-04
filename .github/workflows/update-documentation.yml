@@ -5,9 +5,11 @@ on:
     paths:
       - Src/Extensions/bhce-okta-extension.json
       - Src/Queries/*.json
-      - Scripts/Render-CustomNodeIcons.ps1
-      - Scripts/Render-CustomQueries.ps1
-      - Scripts/Render-Schema.ps1
+      - Src/PrivilegeZoneRules/*.json
+      - OGDocsAutomation/Scripts/Render-CustomNodeIcons.ps1
+      - OGDocsAutomation/Scripts/Render-CustomQueries.ps1
+      - OGDocsAutomation/Scripts/Render-Schema.ps1
+      - OGDocsAutomation/Scripts/Render-PrivilegeZoneRules.ps1
       - .github/workflows/update-documentation.yml
 
 permissions:
@@ -22,12 +24,14 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+        with:
+          submodules: true
 
       - name: Cache NuGet icon dependencies
         uses: actions/cache@v5
         with:
           path: ${{ runner.temp }}\OktaHound-IconRender
-          key: ${{ runner.os }}-icon-render-${{ hashFiles('Scripts/Render-CustomNodeIcons.ps1') }}
+          key: ${{ runner.os }}-icon-render-${{ hashFiles('OGDocsAutomation/Scripts/Render-CustomNodeIcons.ps1') }}
           restore-keys: |
             ${{ runner.os }}-icon-render-
 
@@ -36,17 +40,22 @@ jobs:
         env:
           ICON_CACHE_PATH: ${{ runner.temp }}\OktaHound-IconRender
         run: |
-          ./Scripts/Render-CustomNodeIcons.ps1 -InputFile $env:OKTAHOUND_SCHEMA_PATH -OutputDir ./Documentation/Icons -PackageCachePath $env:ICON_CACHE_PATH
+          ./OGDocsAutomation/Scripts/Render-CustomNodeIcons.ps1 -InputFile $env:OKTAHOUND_SCHEMA_PATH -OutputDir ./Documentation/Icons -PackageCachePath $env:ICON_CACHE_PATH
 
       - name: Render schema documentation
         shell: pwsh
         run: |
-          ./Scripts/Render-Schema.ps1 -InputPath $env:OKTAHOUND_SCHEMA_PATH -OutputPath ./Documentation/Schema.md
+          ./OGDocsAutomation/Scripts/Render-Schema.ps1 -InputPath $env:OKTAHOUND_SCHEMA_PATH -OutputPath ./Documentation/Schema.md
 
       - name: Render custom queries documentation
         shell: pwsh
         run: |
-          ./Scripts/Render-CustomQueries.ps1 -InputDirectory ./Src/Queries -OutputFilePath ./Documentation/Queries.md
+          ./OGDocsAutomation/Scripts/Render-CustomQueries.ps1 -ExtensionName OktaHound -InputDirectory ./Src/Queries -OutputFilePath ./Documentation/Queries.md
+
+      - name: Render privilege zone rules documentation
+        shell: pwsh
+        run: |
+          ./OGDocsAutomation/Scripts/Render-PrivilegeZoneRules.ps1 -ExtensionName OktaHound -InputDirectory ./Src/PrivilegeZoneRules -OutputFilePath ./Documentation/PrivilegeZoneRules.md
 
       - name: Detect changes
         id: changes
