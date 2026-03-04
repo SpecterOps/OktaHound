@@ -10,7 +10,7 @@
 
     The following transformations are applied to the description content:
     - H1 headers are removed (the MDX frontmatter title is used instead).
-    - Links to ../NodeDescriptions/ are rewritten to ../nodes/.
+    - Links to ../NodeDescriptions/ are rewritten using the DocsBasePath parameter.
     - Links to other markdown files have their .md extension stripped.
     - GitHub-flavored callouts (NOTE, IMPORTANT, WARNING, TIP, CAUTION) are converted to Mintlify components.
     - Node documentation includes Inbound Edges and Outbound Edges sections (inserted between Overview and
@@ -39,7 +39,11 @@ param (
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string] $IconBasePath = 'Icons'
+    [string] $IconBasePath = 'Icons',
+
+    [Parameter(Mandatory = $false)]
+    [ValidateNotNullOrEmpty()]
+    [string] $DocsBasePath = '..'
 )
 
 Set-StrictMode -Version Latest
@@ -136,7 +140,7 @@ function Convert-MarkdownLinks {
             }
 
             [string] $rewrittenPath = $linkPath -replace '\.md(?=($|[?#]))', ''
-            $rewrittenPath = $rewrittenPath -replace ('^\.\.\/' + [regex]::Escape($NodeDescDirName) + '/'), '../nodes/'
+            $rewrittenPath = $rewrittenPath -replace ('^\.\.\/' + [regex]::Escape($NodeDescDirName) + '/'), ($DocsBasePath + '/nodes/')
             return '[{0}]({1}{2})' -f $linkText, $rewrittenPath.ToLower(), $titleSuffix
         })
 }
@@ -266,7 +270,7 @@ function New-EdgeSectionMarkdown {
 
     foreach ($edgeName in ($EdgeSchemaMap.Keys | Sort-Object)) {
         [psobject] $schema = $EdgeSchemaMap[$edgeName]
-        [string] $edgeLink = '[{0}](../edges/{1})' -f $edgeName, $edgeName.ToLower()
+        [string] $edgeLink = '[{0}]({1}/edges/{2})' -f $edgeName, $DocsBasePath, $edgeName.ToLower()
 
         if ($NodeName -in $schema.Destinations.Name) {
             [string] $sourceLinks = ($schema.Sources | ForEach-Object {

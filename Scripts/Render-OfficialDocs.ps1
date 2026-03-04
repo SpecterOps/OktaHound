@@ -40,6 +40,7 @@ $GitHubBaseUrl = $GitHubBaseUrl.TrimEnd('/')
 [string] $officialDocsDir = Join-Path -Path $repoRoot -ChildPath 'Documentation/OfficialDocs'
 [string] $imagesOutputDirRelPath = '/images/extensions/{0}/reference' -f $extensionSlug
 [string] $imagesOutputDirFullPath = Join-Path -Path $officialDocsDir -ChildPath $imagesOutputDirRelPath
+[string] $docsRefBasePath = '/opengraph/extensions/{0}/reference' -f $extensionSlug
 [string] $opengraphRefDir = Join-Path -Path $officialDocsDir -ChildPath ('opengraph/extensions/{0}/reference' -f $extensionSlug)
 
 # Step 0: Clean the output directory
@@ -74,12 +75,12 @@ Write-Host '== Step 4: Rendering privilege zone selectors ==' -ForegroundColor C
 
 # Step 5: Render node and edge documentation MDX files
 Write-Host '== Step 5: Rendering node and edge docs ==' -ForegroundColor Cyan
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-NodeAndEdgeDocs.ps1') -InputPath $ExtensionFile -IconBasePath $imagesOutputDirRelPath
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-NodeAndEdgeDocs.ps1') -InputPath $ExtensionFile -IconBasePath $imagesOutputDirRelPath -DocsBasePath $docsRefBasePath
 
 # Step 6: Render schema MDX
 Write-Host '== Step 6: Rendering schema ==' -ForegroundColor Cyan
 [string] $schemaOutputPath = Join-Path -Path $opengraphRefDir -ChildPath 'schema.mdx'
-& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-Schema.ps1') -InputPath $ExtensionFile -OutputPath $schemaOutputPath -NodeLinkBasePath 'nodes' -EdgeLinkBasePath 'edges' -IconBasePath $imagesOutputDirRelPath -GitHubBaseUrl $GitHubBaseUrl -OfficialDocs
+& (Join-Path -Path $PSScriptRoot -ChildPath 'Render-Schema.ps1') -InputPath $ExtensionFile -OutputPath $schemaOutputPath -NodeLinkBasePath "$docsRefBasePath/nodes" -EdgeLinkBasePath "$docsRefBasePath/edges" -IconBasePath $imagesOutputDirRelPath -GitHubBaseUrl $GitHubBaseUrl -OfficialDocs
 
 # Step 7: Render official docs navigation JSON
 Write-Host '== Step 7: Rendering docs.json ==' -ForegroundColor Cyan
