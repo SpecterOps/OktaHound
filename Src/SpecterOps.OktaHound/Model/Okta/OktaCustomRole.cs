@@ -11,6 +11,7 @@ internal sealed class OktaCustomRole : OktaRole
     public const string ResetFactorsEdgeKind = "Okta_ResetFactors";
     public const string AddMemberEdgeKind = "Okta_AddMember";
     public const string ManageAppEdgeKind = "Okta_ManageApp";
+    public const string ReadClientSecretEdgeKind = "Okta_ReadClientSecret";
 
     public override bool IsBuiltIn => false;
 

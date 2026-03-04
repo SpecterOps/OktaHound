@@ -51,6 +51,7 @@ as they can be abused to escalate privileges in hybrid scenarios:
 - okta.groups.manage
 - okta.groups.members.manage
 - okta.apps.manage
+- okta.apps.clientCredentials.read
 
 > [!WARNING]
 > The research on abusable Okta permissions is still ongoing.

@@ -231,6 +231,11 @@
       "is_traversable": true
     },
     {
+      "name": "Okta_ReadClientSecret",
+      "description": "Ability to read client secrets for scoped Okta applications",
+      "is_traversable": true
+    },
+    {
       "name": "Okta_ResourceSetContains",
       "description": "Membership of objects within an Okta resource set",
       "is_traversable": true

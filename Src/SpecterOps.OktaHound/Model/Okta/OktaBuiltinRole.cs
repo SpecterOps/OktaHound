@@ -24,7 +24,7 @@ internal sealed class OktaBuiltinRole : OktaRole
     /// </summary>
     [JsonIgnore]
     public override string OriginalId => _originalId;
-    
+
     /// <summary>
     /// Represents a collection of all Okta built-in role identifiers.
     /// </summary>
@@ -197,14 +197,7 @@ internal sealed class OktaBuiltinRole : OktaRole
                 "okta.groups.create", // Create groups
                 "okta.groups.manage", // Manage groups and group rules
                 "okta.groups.members.manage", // Add/remove users in groups
-                "okta.apps.read", // View apps/application instances
-                "okta.apps.manage", // Add/configure applications
-                "okta.apps.assignment.manage", // Assign app access
-                "okta.users.appAssignment.manage", // Manage user app assignments
-                "okta.groups.appAssignment.manage", // Manage group app assignments
-                "okta.apps.clientCredentials.read", // Read-only access to OAuth clients through API
                 "okta.policies.read", // View sign-on/mobile/wifi policies and rules
-                "okta.policies.manage", // Add/update/delete policies/rules; prioritization controls
                 "okta.devices.read", // View/manage device details visibility
                 "okta.devices.manage", // Manage devices
                 "okta.eventhooks.read", // View hooks (event hooks)

@@ -148,6 +148,12 @@ internal sealed class OktaGraph(OktaOrganization organization) : OpenGraphBase<O
         return role;
     }
 
+    public IEnumerable<OpenGraphEdgeNode> GetClientSecrets(string applicationId) =>
+        Elements.EdgesByKind.TryGetValue(OktaClientSecret.SecretOfEdgeKind, out var secretOfEdges) ?
+        secretOfEdges.Where(edge => edge.End.Value == applicationId)
+            .Select(edge => edge.Start) :
+        [];
+
     // TODO: GetCustomRole performance could be improved by using a Dictionary.
     public OktaCustomRole? GetCustomRole(string roleName) =>
         Elements.CustomRolesById.FirstOrDefault(item => item.Value.Name == roleName).Value;

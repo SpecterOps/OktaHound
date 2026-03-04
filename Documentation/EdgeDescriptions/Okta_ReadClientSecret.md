@@ -1,0 +1,33 @@
+# Okta_ReadClientSecret
+
+## Edge Schema
+
+- Source: [Okta_User](../NodeDescriptions/Okta_User.md), [Okta_Group](../NodeDescriptions/Okta_Group.md), [Okta_Application](../NodeDescriptions/Okta_Application.md)
+- Destination: [Okta_ClientSecret](../NodeDescriptions/Okta_ClientSecret.md)
+
+## General Information
+
+The traversable `Okta_ReadClientSecret` edges represent permissions that allow a principal (user, group, or application)
+to read OAuth client secrets for scoped Okta applications.
+These edges are created for the **Application Administrator**, **API Access Management Administrator**, and **Read-only Administrator** built-in roles
+and for custom roles with the `okta.apps.clientCredentials.read` permission.
+
+```mermaid
+graph TD
+    org("Okta_Organization contoso.okta.com")
+    u1("Okta_User john\@contoso.com")
+    g1("Okta_Group Auditors")
+    app1("Okta_Application HR Sync")
+    secret1("Okta_ClientSecret abcdefgh")
+    r1("Okta_Role Read-only Administrator")
+    u1 -- Okta_MemberOf --> g1
+    g1 -- Okta_ReadClientSecret --> secret1
+    secret1 -- Okta_SecretOf --> app1
+    app1 -- Okta_SuperAdmin --> org
+    g1 -. Okta_HasRole .-> r1
+```
+
+## Potential Attack Scenarios
+
+An attacker with the ability to read client secrets for an application assigned the Super Administrator role
+could potentially use the client secret to authenticate as that application and perform privileged actions in Okta.

@@ -91,15 +91,23 @@ partial class OktaClient
 
                 foreach (var targetApp in targetApps)
                 {
-                    if (targetApp is OktaApplication appNode && appNode.HasRoleAssignments)
+                    if (targetApp is OktaApplication)
                     {
-                        // App admins can't manage apps with admin privileges.
-                        continue;
+                        foreach (var clientSecretNode in _graph.GetClientSecrets(targetApp.Id))
+                        {
+                            // The permission to read client secrets applies even to privileged apps, but not to API service integrations.
+                            // Create the (:Okta)-[:Okta_ReadClientSecret]->(:Okta_ClientSecret) edge
+                            _graph.AddEdge(roleAssignment.Assignee, clientSecretNode, OktaCustomRole.ReadClientSecretEdgeKind);
+                        }
                     }
 
-                    // Create the (:Okta)-[:Okta_AppAdmin]->(:Okta_Application) edge OR
-                    // (:Okta)-[:Okta_AppAdmin]->(:Okta_ApiServiceIntegration) edge
-                    _graph.AddEdge(roleAssignment.Assignee, targetApp, OktaBuiltinRole.ApplicationAdministratorEdgeKind);
+                    // App admins can't manage apps with admin privileges.
+                    if (!(targetApp is OktaApplication appNode && appNode.HasRoleAssignments))
+                    {
+                        // Create the (:Okta)-[:Okta_AppAdmin]->(:Okta_Application) edge OR
+                        // (:Okta)-[:Okta_AppAdmin]->(:Okta_ApiServiceIntegration) edge
+                        _graph.AddEdge(roleAssignment.Assignee, targetApp, OktaBuiltinRole.ApplicationAdministratorEdgeKind);
+                    }
                 }
             }
             else if (roleAssignment.RoleType == RoleType.USERADMIN)
@@ -109,14 +117,9 @@ partial class OktaClient
                     roleAssignment.Targets.Cast<OktaSecurityPrincipal>() :
                     _graph.UsersAndGroups;
 
-                foreach (var targetPrincipal in targetUsersAndGroups)
+                // Group admins can't manage users or groups with admin privileges.
+                foreach (var targetPrincipal in targetUsersAndGroups.Where(principal => !principal.HasRoleAssignments))
                 {
-                    if (targetPrincipal.HasRoleAssignments)
-                    {
-                        // Group admins can't manage users or groups with admin privileges.
-                        continue;
-                    }
-
                     // Create the (:Okta)-[:Okta_GroupAdmin]->(:Okta_User) and (:Okta)-[:Okta_GroupAdmin]->(:Okta_Group) edges
                     _graph.AddEdge(roleAssignment.Assignee, targetPrincipal, OktaBuiltinRole.GroupAdministratorEdgeKind);
                 }
@@ -128,14 +131,9 @@ partial class OktaClient
                     roleAssignment.Targets.Cast<OktaGroup>() :
                     _graph.Groups;
 
-                foreach (var targetGroup in targetGroups)
+                // Group membership admins can't manage groups with admin privileges.
+                foreach (var targetGroup in targetGroups.Where(group => !group.HasRoleAssignments))
                 {
-                    if (targetGroup.HasRoleAssignments)
-                    {
-                        // Group membership admins can't manage groups with admin privileges.
-                        continue;
-                    }
-
                     // Create the (:Okta)-[:Okta_GroupMembershipAdmin]->(:Okta_Group) edge
                     _graph.AddEdge(roleAssignment.Assignee, targetGroup, OktaBuiltinRole.GroupMembershipAdministratorEdgeKind);
                 }
@@ -147,14 +145,9 @@ partial class OktaClient
                     roleAssignment.Targets.Cast<OktaUser>() :
                     _graph.Users;
 
-                foreach (var targetUser in targetUsers)
+                // Help desk admins can't manage users with admin privileges.
+                foreach (var targetUser in targetUsers.Where(user => !user.HasRoleAssignments))
                 {
-                    if (targetUser.HasRoleAssignments)
-                    {
-                        // Help desk admins can't manage users with admin privileges.
-                        continue;
-                    }
-
                     // Create the (:Okta)-[:Okta_HelpDeskAdmin]->(:Okta_User) edge
                     _graph.AddEdge(roleAssignment.Assignee, targetUser, OktaBuiltinRole.HelpDeskAdministratorEdgeKind);
                 }
@@ -201,7 +194,16 @@ partial class OktaClient
             }
             else if (roleAssignment.RoleType == RoleType.APIACCESSMANAGEMENTADMIN)
             {
-                // TODO: Explore the API Access Management Administrator role
+                // API Access Management Admins can read client secrets, which could be interesting with privileged apps.
+                foreach (var app in _graph.Applications)
+                {
+                    foreach (var clientSecretNode in _graph.GetClientSecrets(app.Id))
+                    {
+                        // The permission to read client secrets applies even to privileged apps, but not to API service integrations.
+                        // Create the (:Okta)-[:Okta_ReadClientSecret]->(:Okta_ClientSecret) edge
+                        _graph.AddEdge(roleAssignment.Assignee, clientSecretNode, OktaCustomRole.ReadClientSecretEdgeKind);
+                    }
+                }
             }
             else if (roleAssignment.RoleType == RoleType.WORKFLOWSADMIN)
             {
@@ -209,7 +211,17 @@ partial class OktaClient
             }
             else if (roleAssignment.RoleType == RoleType.READONLYADMIN)
             {
-                // Read-Only Admins do not have any permissions to modify objects
+                // Read-Only Admins do not have any permissions to modify objects.
+                // But they can read client secrets, which could be interesting with privileged apps.
+                foreach (var app in _graph.Applications)
+                {
+                    foreach (var clientSecretNode in _graph.GetClientSecrets(app.Id))
+                    {
+                        // The permission to read client secrets applies even to privileged apps, but not to API service integrations.
+                        // Create the (:Okta)-[:Okta_ReadClientSecret]->(:Okta_ClientSecret) edge
+                        _graph.AddEdge(roleAssignment.Assignee, clientSecretNode, OktaCustomRole.ReadClientSecretEdgeKind);
+                    }
+                }
             }
             else if (roleAssignment.RoleType == RoleType.CUSTOM)
             {
@@ -229,14 +241,9 @@ partial class OktaClient
                     permissions.Contains("okta.users.credentials.resetPassword") ||
                     permissions.Contains("okta.users.credentials.expirePassword"))
                 {
-                    foreach (var targetUser in roleAssignment.Targets.OfType<OktaUser>())
+                    // Users with assigned roles can't be managed by custom roles.
+                    foreach (var targetUser in roleAssignment.Targets.OfType<OktaUser>().Where(user => !user.HasRoleAssignments))
                     {
-                        if (targetUser.HasRoleAssignments)
-                        {
-                            // Users with assigned roles can't be managed by custom roles.
-                            continue;
-                        }
-
                         if (permissions.Contains("okta.users.manage") ||
                             permissions.Contains("okta.users.credentials.manage") ||
                             permissions.Contains("okta.users.credentials.manageTemporaryAccessCode") ||
@@ -258,34 +265,39 @@ partial class OktaClient
                     }
                 }
 
+                // Handle group permissions
                 if (permissions.Contains("okta.groups.manage") ||
                     permissions.Contains("okta.groups.members.manage"))
                 {
-                    foreach (var targetGroup in roleAssignment.Targets.OfType<OktaGroup>())
+                    // Groups with assigned roles can't be managed by custom roles.
+                    foreach (var targetGroup in roleAssignment.Targets.OfType<OktaGroup>().Where(group => !group.HasRoleAssignments))
                     {
-                        if (targetGroup.HasRoleAssignments)
-                        {
-                            // Groups with assigned roles can't be managed by custom roles.
-                            continue;
-                        }
-
                         // Create the (:Okta)-[:Okta_AddMember]->(:Okta_Group) edge
                         _graph.AddEdge(roleAssignment.Assignee, targetGroup, OktaCustomRole.AddMemberEdgeKind);
                     }
                 }
 
+                // Handle app permissions.
                 if (permissions.Contains("okta.apps.manage"))
+                {
+                    // Apps with assigned roles can't be managed by custom roles.
+                    foreach (var targetApp in roleAssignment.Targets.OfType<OktaApplication>().Where(app => !app.HasRoleAssignments))
+                    {
+                        // Create the (:Okta)-[:Okta_ManageApp]->(:Okta_Application) edge
+                        _graph.AddEdge(roleAssignment.Assignee, targetApp, OktaCustomRole.ManageAppEdgeKind);
+                    }
+                }
+
+                if (permissions.Contains("okta.apps.clientCredentials.read"))
                 {
                     foreach (var targetApp in roleAssignment.Targets.OfType<OktaApplication>())
                     {
-                        if (targetApp.HasRoleAssignments)
+                        foreach (var clientSecretNode in _graph.GetClientSecrets(targetApp.Id))
                         {
-                            // Apps with assigned roles can't be managed by custom roles.
-                            continue;
+                            // The permission to read client secrets applies even to privileged apps, but not to API service integrations.
+                            // Create the (:Okta)-[:Okta_ReadClientSecret]->(:Okta_ClientSecret) edge
+                            _graph.AddEdge(roleAssignment.Assignee, clientSecretNode, OktaCustomRole.ReadClientSecretEdgeKind);
                         }
-
-                        // Create the (:Okta)-[:Okta_ManageApp]->(:Okta_Application) edge
-                        _graph.AddEdge(roleAssignment.Assignee, targetApp, OktaCustomRole.ManageAppEdgeKind);
                     }
                 }
 

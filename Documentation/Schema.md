@@ -73,6 +73,7 @@
 | [Okta_OutboundOrgSSO](EdgeDescriptions/Okta_OutboundOrgSSO.md) | ✅ | Single sign-on from an Okta application to an external organization |
 | [Okta_OutboundSSO](EdgeDescriptions/Okta_OutboundSSO.md) | ✅ | Single sign-on from Okta to an external identity provider |
 | [Okta_PolicyMapping](EdgeDescriptions/Okta_PolicyMapping.md) | ❌ | Association of a policy with an Okta application |
+| [Okta_ReadClientSecret](EdgeDescriptions/Okta_ReadClientSecret.md) | ✅ | Ability to read client secrets for scoped Okta applications |
 | [Okta_ReadPasswordUpdates](EdgeDescriptions/Okta_ReadPasswordUpdates.md) | ✅ | Application can read password updates over the SCIM protocol |
 | [Okta_RealmContains](EdgeDescriptions/Okta_RealmContains.md) | ✅ | Contains relationship between an Okta realm and its users |
 | [Okta_ResetFactors](EdgeDescriptions/Okta_ResetFactors.md) | ✅ | Ability to reset MFA factors for scoped Okta users |
