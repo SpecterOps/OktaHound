@@ -2,7 +2,7 @@
 The following Cypher rules define the default Privilege Zone for the OktaHound extension.
 Each rule is defined in a JSON file located in the [PrivilegeZoneRules](../Src/PrivilegeZoneRules) directory of the OktaHound repository.
 
-## Okta: Organization
+## Organization
 
 Organization nodes in Okta.
 
@@ -13,7 +13,7 @@ RETURN n
 
 This rule is defined in the [organization.json](../Src/PrivilegeZoneRules/organization.json) file.
 
-## Okta: Tier Zero Devices
+## Tier Zero Devices
 
 Devices associated with principals who have SUPER_ADMIN or ORG_ADMIN role assignments.
 
@@ -26,7 +26,7 @@ RETURN n
 
 This rule is defined in the [tier0-devices.json](../Src/PrivilegeZoneRules/tier0-devices.json) file.
 
-## Okta: Tier Zero Principals
+## Tier Zero Principals
 
 Principals with SUPER_ADMIN or ORG_ADMIN role assignments.
 
