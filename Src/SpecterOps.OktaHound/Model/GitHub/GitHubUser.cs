@@ -6,7 +6,7 @@ internal static class GitHubUser
 {
     private const string NodeKind = "GH_User";
 
-    public static OpenGraphEdgeNode? CreateEdgeNode(string userName, string? organizationName)
+    public static OpenGraphEdgeNode? CreateEdgeNode(string? userName, string? organizationName)
     {
         if (userName is null || organizationName is null)
         {

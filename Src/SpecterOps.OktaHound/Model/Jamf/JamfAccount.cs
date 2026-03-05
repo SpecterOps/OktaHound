@@ -6,7 +6,7 @@ internal static class JamfAccount
 {
     private const string NodeKind = "jamf_Account";
 
-    public static OpenGraphEdgeNode? CreateEdgeNode(string accountName, string? domainName)
+    public static OpenGraphEdgeNode? CreateEdgeNode(string? accountName, string? domainName)
     {
         if (accountName is null || domainName is null)
         {

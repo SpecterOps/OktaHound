@@ -4,8 +4,8 @@
     <OutputType>Exe</OutputType>
 
 	  <!-- File properties -->
-	  <Version>2.0</Version>
-	  <Product>OktaHound</Product>
+	  <Version>2.2</Version>
+	  <Product>OktaHound Beta</Product>
 	  <AssemblyTitle>Okta Data Collector for BloodHound OpenGraph</AssemblyTitle>
 	  <Copyright>(C) 2026 Specter Ops, Inc.</Copyright>
 	  <ApplicationIcon>dog.ico</ApplicationIcon>

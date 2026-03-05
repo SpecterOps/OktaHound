@@ -3,7 +3,7 @@
 ## Edge Schema
 
 - Source: [Okta_User](../NodeDescriptions/Okta_User.md)
-- Destination: [AZUser](https://bloodhound.specterops.io/resources/nodes/az-user), [GH_User](https://github.com/SpecterOps/GitHound), [jamf_Account](https://github.com/SpecterOps/JamfHound), [SNOW_User](https://github.com/SpecterOps/SnowHound)
+- Destination: [AZUser](https://bloodhound.specterops.io/resources/nodes/az-user), [GH_User](https://github.com/SpecterOps/GitHound), [jamf_Account](https://github.com/SpecterOps/JamfHound), [SNOW_User](https://github.com/SpecterOps/SnowHound), [Okta_User](../NodeDescriptions/Okta_User.md)
 
 ## General Information
 

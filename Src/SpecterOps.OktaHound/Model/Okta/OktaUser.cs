@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 using Okta.Sdk.Model;
 using SpecterOps.OktaHound.Model.OpenGraph;
 
@@ -11,6 +12,7 @@ internal sealed class OktaUser : OktaSecurityPrincipal
     public const string UserSyncEdgeKind = "Okta_UserSync";
     public const string UserPushEdgeKind = "Okta_UserPush";
     public const string UserPullEdgeKind = "Okta_UserPull";
+    public const string PasswordSyncEdgeKind = "Okta_PasswordSync";
     public const string SingleSignOnEdgeKind = "Okta_OutboundSSO";
     public const string SecureWebAuthenticationEdgeKind = "Okta_SWA";
     private const string EnabledPropertyName = "enabled";
@@ -89,5 +91,6 @@ internal sealed class OktaUser : OktaSecurityPrincipal
         }
     }
 
-    public static new OpenGraphEdgeNode CreateEdgeNode(string id) => new(id, NodeKind);
+    [return: NotNullIfNotNull(nameof(id))]
+    public static new OpenGraphEdgeNode? CreateEdgeNode(string? id) => id is null ? null : new OpenGraphEdgeNode(id, NodeKind);
 }

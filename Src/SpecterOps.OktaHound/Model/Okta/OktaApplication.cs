@@ -111,6 +111,12 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
     /// </summary>
     private const string GoogleWorkspaceApplicationType = "google";
 
+    private const string OktaOrg2OrgApplicationType = "okta_org2org";
+
+    private const string OktaOrg2OrgTargetUrlPropertyName = "baseUrl";
+
+    private const string OktaOrg2OrgIdentityProviderIdPropertyName = "idpId";
+
     /// <summary>
     /// LDAP Interface Directory Integration
     /// </summary>
@@ -146,6 +152,43 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
     public string? SignOnMode => GetProperty<string>(SignOnModePropertyName);
 
     [JsonIgnore]
+    public string? OktaOrg2OrgDomain
+    {
+        get
+        {
+            if (ApplicationType != OktaOrg2OrgApplicationType)
+            {
+                return null;
+            }
+
+            string? url = GetProperty<string>(OktaOrg2OrgTargetUrlPropertyName);
+
+            if (Uri.TryCreate(url, UriKind.Absolute, out Uri? uri))
+            {
+                return uri.Host;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+
+    [JsonIgnore]
+    public string? OktaOrg2OrgIdentityProviderId
+    {
+        get
+        {
+            if (ApplicationType != OktaOrg2OrgApplicationType)
+            {
+                return null;
+            }
+
+            return GetProperty<string>(OktaOrg2OrgIdentityProviderIdPropertyName);
+        }
+    }
+
+    [JsonIgnore]
     private IEnumerable<string> Features =>
         GetProperty<string[]>(FeaturesPropertyName) ?? [];
 
@@ -157,6 +200,9 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
 
     [JsonIgnore]
     public bool IsService => ClientType == OpenIdConnectApplicationType.Service.Value;
+
+    [JsonIgnore]
+    public bool IsOktaOrg2Org => ApplicationType == OktaOrg2OrgApplicationType;
 
     [JsonIgnore]
     public bool IsActiveDirectory => ApplicationType == ActiveDirectoryApplicationType;
@@ -534,9 +580,9 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
         // There might be other (undocumented) application types we do not specifically handle yet.
     }
 
-    public OpenGraphEdgeNode? CreateHybridUserNode(string? targetUserId)
+    public OpenGraphEdgeNode? CreateHybridUserNode(string? targetUserName, string? externalId = null)
     {
-        if (string.IsNullOrWhiteSpace(targetUserId))
+        if (string.IsNullOrWhiteSpace(targetUserName) && string.IsNullOrWhiteSpace(externalId))
         {
             // Mapping is not configured or could not be resolved.
             return null;
@@ -545,26 +591,29 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
         // Check if the application is supported by a known BloodHound collector
         return ApplicationType switch
         {
-            JamfProSamlApplicationType or JamfProSwaApplicationType => JamfAccount.CreateEdgeNode(targetUserId, JamfDomain),
+            // For OktaOrg2Org, we know the exact user ID
+            OktaOrg2OrgApplicationType => OktaUser.CreateEdgeNode(externalId),
 
-            GitHubCloudApplicationType => GitHubUser.CreateEdgeNode(targetUserId, GitHubOrganizationName),
+            JamfProSamlApplicationType or JamfProSwaApplicationType => JamfAccount.CreateEdgeNode(targetUserName, JamfDomain),
 
-            OnePasswordBusinessApplicationType => OnePasswordUser.CreateEdgeNode(targetUserId, OnePasswordDomain),
+            GitHubCloudApplicationType => GitHubUser.CreateEdgeNode(targetUserName, GitHubOrganizationName),
+
+            OnePasswordBusinessApplicationType => OnePasswordUser.CreateEdgeNode(targetUserName, OnePasswordDomain),
 
             // SAML-only Snowflake users (without SCIM) can be matched by the username.
-            SnowflakeApplicationType => SnowflakeUser.CreateEdgeNode(targetUserId, SnowflakeSubdomain),
+            SnowflakeApplicationType => SnowflakeUser.CreateEdgeNode(targetUserName, SnowflakeSubdomain),
 
             // Entra ID users are matched by their userPrincipalName.
-            Office365ApplicationType => EntraIdUser.CreateEdgeNode(targetUserId, EntraTenantId),
+            Office365ApplicationType => EntraIdUser.CreateEdgeNode(targetUserName, EntraTenantId),
 
             // TODO: Add support for additional applications
             _ => null // This app is not yet supported
         };
     }
 
-    public OpenGraphEdge? CreateHybridUserSignOnEdge(string sourceUserId, string? targetUserId)
+    public OpenGraphEdge? CreateHybridUserSignOnEdge(string sourceUserId, string? targetUserId, string? externalId = null)
     {
-        OpenGraphEdgeNode? endNode = CreateHybridUserNode(targetUserId);
+        OpenGraphEdgeNode? endNode = CreateHybridUserNode(targetUserId, externalId);
         string? edgeKind = HybridUserSignOnEdgeType;
 
         OpenGraphEdge? result = null;
@@ -572,6 +621,7 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
         if (endNode is not null && edgeKind is not null)
         {
             // Example: (:Okta_User)-[:Okta_OutboundSSO]->(:Jamf_Account)
+            // Example: (:Okta_User)-[:Okta_OutboundSSO]->(:Okta_User)
             // Example: (:Okta_User)-[:Okta_SWA]->(:Jamf_Account)
             OpenGraphEdgeNode startNode = OktaUser.CreateEdgeNode(sourceUserId);
             result = new(startNode, endNode, edgeKind);
@@ -590,12 +640,12 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
             // AD groups are matched by their name and domain FQDN, e.g., contoso.com
             ActiveDirectoryApplicationType => ActiveDirectoryGroup.CreateEdgeNode(groupProfile.Name, ActiveDirectoryDomain),
 
+            // Even with Okta Org2Org, we can only match groups by their name and the source Okta domain
+            OktaOrg2OrgApplicationType => OktaGroup.CreateEdgeNode(groupProfile.Name, OktaOrg2OrgDomain),
+
             // Entra ID groups are matched by their display name and tenant ID, e.g., "Test" + 8cb4e812-3974-4f6d-bc74-abcfcd70f252
             Office365ApplicationType => EntraIdGroup.CreateEdgeNode(groupProfile.Name, EntraTenantId),
 
-            // TODO: Add mapping for SNOW_Group
-            SnowflakeApplicationType => null,
-            // TODO: Add support for Org2Org group push mappings
             // TODO: Add support for additional applications
             _ => null // This app is not yet supported
         };
@@ -605,6 +655,8 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
     {
         return ApplicationType switch
         {
+            OktaOrg2OrgApplicationType => OktaIdentityProvider.CreateEdgeNode(OktaOrg2OrgIdentityProviderId),
+
             JamfProSamlApplicationType or JamfProSwaApplicationType => JamfTenant.CreateEdgeNode(JamfDomain),
 
             GitHubCloudApplicationType => GitHubOrganization.CreateEdgeNode(GitHubOrganizationName),

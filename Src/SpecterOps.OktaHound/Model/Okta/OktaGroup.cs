@@ -135,6 +135,25 @@ internal sealed class OktaGroup : OktaSecurityPrincipal
     public static new OpenGraphEdgeNode CreateEdgeNode(string id) => new(id, NodeKind);
 
     /// <summary>
+    /// Creates a node representing an Okta Org2Org group.
+    /// </summary>
+    public static OpenGraphEdgeNode? CreateEdgeNode(string? name, string? domainName)
+    {
+        if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(domainName))
+        {
+            return null;
+        }
+
+        OrderedDictionary<string, string> properties = new()
+        {
+            { "name", name }, // Example: "Sales Team"
+            { "domainName", domainName } // Example: contoso.okta.com
+        };
+
+        return new OpenGraphEdgeNode(properties, NodeKind);
+    }
+
+    /// <summary>
     /// Decodes a base64-encoded GUID string to its standard string representation.
     /// </summary>
     private static string DecodeObjectGuid(string base64Guid)

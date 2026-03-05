@@ -26,14 +26,34 @@ Support for the following Okta entity types is currently implemented in `OktaHou
       - [ ] AWS Console Password Sign-in
       - [ ] AWS Account Federation
     - [x] Entra ID / Azure / Microsoft 365
-      - [ ] Hybrid edges
+      - [x] User synchronization
+        - [x] Push
+        - [ ] Pull
+      - [x] Group synchronization
+        - [x] Push
+        - [x] Pull
+      - [x] Password synchronization
+      - [x] Single Sign-On relationships
+        - [x] OIDC
+        - [x] SAML
     - [x] Google Workspace
+      - [ ] Hybrid edges
     - [x] Jamf
       - [x] Jamf Pro SAML
       - [ ] Jamf Pro SWA
     - [x] 1Password Business SWA
     - [x] Snowflake
-    - [ ] Okta Org2Org (Missing license)
+    - [x] Okta Org2Org
+      - [x] User synchronization
+        - [x] Push
+        - [ ] Pull
+      - [x] Group synchronization
+        - [x] Push
+        - [x] Pull
+      - [x] Password synchronization
+      - [x] Single Sign-On relationships
+        - [x] OIDC
+        - [x] SAML
   - [x] API Tokens
   - [x] Built-In Roles
   - [x] Custom Roles
@@ -42,8 +62,15 @@ Support for the following Okta entity types is currently implemented in `OktaHou
   - [x] API Service Integrations
   - [x] Directory Integrations
     - [x] Active Directory
-      - [x] Hybrid edges
-        - [ ]
+      - [x] User synchronization
+        - [x] Push
+        - [x] Pull
+      - [x] Group synchronization
+        - [x] Push
+        - [x] Pull
+      - [x] Agentless SSO account
+      - [x] Agent location
+      - [ ] Password synchronization
     - [ ] LDAP
   - [x] Identity Providers
   - [x] Policies

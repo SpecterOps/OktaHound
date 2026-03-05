@@ -6,7 +6,7 @@ internal static class SnowflakeUser
 {
     private const string NodeKind = "SNOW_User";
 
-    public static OpenGraphEdgeNode? CreateEdgeNode(string userName, string? accountName)
+    public static OpenGraphEdgeNode? CreateEdgeNode(string? userName, string? accountName)
     {
         if (userName is null || accountName is null)
         {

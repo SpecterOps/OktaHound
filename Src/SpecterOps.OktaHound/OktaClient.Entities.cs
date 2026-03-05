@@ -163,8 +163,7 @@ partial class OktaClient
                     {
                         // Create a hybrid edge for non-AD apps (AD groups are already handled above)
                         // Example: (:AZGroup)-[:Okta_MembershipSync]->(:Okta_Group)
-                        // TODO: (:SNOW_Group)-[:Okta_MembershipSync]->(:Okta_Group)
-                        // TODO: (:Okta_Group)-[:Okta_MembershipSync]->(:Okta_Group)
+                        // Example: (:Okta_Group)-[:Okta_MembershipSync]->(:Okta_Group)
                         OpenGraphEdgeNode? hybridGroup = appNode.CreateHybridGroupEdgeNode(sourceGroupProfile);
                         if (hybridGroup is not null)
                         {

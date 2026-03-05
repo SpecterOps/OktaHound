@@ -328,8 +328,8 @@ graph TB
   adu1 -- Okta_UserSync --> u1
   adu2 -- Okta_UserSync --> u2
   adg1 -- Okta_MembershipSync --> g1
-  gha -- Okta_OutboundSSO --> ghorg
-  jmfa -- Okta_OutboundSSO --> jamft
+  gha -- Okta_OutboundOrgSSO --> ghorg
+  jmfa -- Okta_OutboundOrgSSO --> jamft
   u1 -- Okta_OutboundSSO --> ghu1
   u1 -- Okta_OutboundSSO --> jmfu1
 ```

@@ -356,6 +356,11 @@
       "is_traversable": false
     },
     {
+      "name": "Okta_PasswordSync",
+      "description": "SCIM or Okta Org2Org password synchronization between users across organizations",
+      "is_traversable": true
+    },
+    {
       "name": "Okta_MembershipSync",
       "description": "Bidirectional synchronization between Okta groups and external groups",
       "is_traversable": true

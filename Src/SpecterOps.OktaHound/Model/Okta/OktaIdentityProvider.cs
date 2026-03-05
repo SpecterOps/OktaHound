@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Okta.Sdk.Model;
 using SpecterOps.OktaHound.Model.Entra;
 using SpecterOps.OktaHound.Model.OpenGraph;
@@ -107,5 +108,6 @@ internal sealed class OktaIdentityProvider : OktaNode
         }
     }
 
-    public static new OpenGraphEdgeNode CreateEdgeNode(string id) => new(id, NodeKind);
+    [return: NotNullIfNotNull(nameof(id))]
+    public static new OpenGraphEdgeNode? CreateEdgeNode(string? id) => id is not null ? new(id, NodeKind) : null;
 }

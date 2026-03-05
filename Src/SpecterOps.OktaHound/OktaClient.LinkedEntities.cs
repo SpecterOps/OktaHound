@@ -178,8 +178,9 @@ partial class OktaClient
                             // TODO: Handle sync directions for SCIM users.
                             inbound = false;
 
-                            // This user is probably synced using SCIM to/from the target app.
-                            OpenGraphEdgeNode? scimUser = appNode.CreateHybridUserNode(targetUserName);
+                            // This user is probably synced using SCIM/Org2Org to/from the target app.
+                            OpenGraphEdgeNode? scimUser = appNode.CreateHybridUserNode(targetUserName, appUserAssignment.ExternalId);
+
                             if (scimUser is not null)
                             {
                                 if (inbound)
@@ -191,6 +192,12 @@ partial class OktaClient
                                 {
                                     // Create the (:Okta_User)-[:Okta_UserSync]->() hybrid edge
                                     _hybridEdgeGraph.AddEdge(oktaUser, scimUser, OktaUser.UserSyncEdgeKind);
+
+                                    if (appNode.SupportsPasswordUpdates)
+                                    {
+                                        // Create the (:Okta_User)-[:Okta_PasswordSync]->() hybrid edge
+                                        _hybridEdgeGraph.AddEdge(oktaUser, scimUser, OktaUser.PasswordSyncEdgeKind);
+                                    }
                                 }
                             }
                         }
@@ -211,7 +218,7 @@ partial class OktaClient
                     // SSO edges for SAML, OIDC, and SWA app users.
                     // For users that are not synchronized using SCIM and do not actually exist in the target tenant,
                     // these edges might become disconnected (missing target nodes). This is expected.
-                    OpenGraphEdge? hybridAuthEdge = appNode.CreateHybridUserSignOnEdge(appUserAssignment.Id, targetUserName);
+                    OpenGraphEdge? hybridAuthEdge = appNode.CreateHybridUserSignOnEdge(appUserAssignment.Id, targetUserName, appUserAssignment.ExternalId);
 
                     if (hybridAuthEdge is not null)
                     {
@@ -219,6 +226,7 @@ partial class OktaClient
                         // Example: (:Okta_User)-[:Okta_OutboundSSO]->(:jamf_jamf_Account)
                         // Example: (:Okta_User)-[:Okta_SWA]->(:jamf_jamf_Account)
                         // Example: (:Okta_User)-[:Okta_OutboundSSO]->(:GH_User)
+                        // Example: (:Okta_User)-[:Okta_OutboundSSO]->(:Okta_User)
                         _logger.LogTrace("User {UserId} is mapped as {TargetUserName} in the {AppName} application",
                             appUserAssignment.Id,
                             targetUserName,
@@ -343,8 +351,8 @@ partial class OktaClient
             CancellationToken = cancellationToken
         };
 
-        // Only target AD and SCIM applications
-        await Parallel.ForEachAsync(_graph.Applications.Where(app => app.SupportsSCIM || app.IsActiveDirectory), concurrency, async (appNode, cancellationToken) =>
+        // Only target AD, SCIM, and Okta Org2Org applications
+        await Parallel.ForEachAsync(_graph.Applications.Where(app => app.SupportsSCIM || app.IsActiveDirectory || app.IsOktaOrg2Org), concurrency, async (appNode, cancellationToken) =>
         {
             try
             {
@@ -391,6 +399,7 @@ partial class OktaClient
                         // Even AD pushed groups are mapped to OktaUserGroupProfile instead of OktaActiveDirectoryGroupProfile
                         // Create a hybrid edge
                         // Example: (:Okta_Group)-[:Okta_MembershipSync]->(:Group)
+                        // Example: (:Okta_Group)-[:Okta_MembershipSync]->(:Okta_Group)
                         // Example: (:Okta_Group)-[:Okta_MembershipSync]->(:Okta_Group)
                         var targetGroupNode = appNode.CreateHybridGroupEdgeNode(targetGroupProfile);
                         if (targetGroupNode is not null)

@@ -6,7 +6,7 @@ internal static class OnePasswordUser
 {
     private const string NodeKind = "OP_User";
 
-    public static OpenGraphEdgeNode? CreateEdgeNode(string email, string? accountName)
+    public static OpenGraphEdgeNode? CreateEdgeNode(string? email, string? accountName)
     {
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(accountName))
         {

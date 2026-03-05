@@ -69,13 +69,14 @@ Hybrid edges connect Okta entities to entities from other supported BloodHound c
 | [Okta_SWA] | [Okta_User] | [SNOW_User] | ❓ |
 | [Okta_OutboundOrgSSO] | [Okta_Application] | [SNOW_Account] | ✅ |
 | [Okta_OrgSWA] | [Okta_Application] | [SNOW_Account] | ❌ |
-| [Okta_MembershipSync] | [Okta_Group] | [SNOW_Group] | ✅ |
-|                      | [SNOW_Group] | [Okta_Group] | ✅ |
 
 ## Okta Org2Org
 
-> [!WARNING]
-> Okta Org2Org integration is not currently supported by `OktaHound` due to missing license requirements.
+| Edge Type | Source Node Kinds | Target Node Kinds | Traversable |
+|-----------|-------------------|-------------------|-------------|
+| [Okta_OutboundSSO] | [Okta_User] | [Okta_User] | ✅ |
+| [Okta_UserSync] | [Okta_User] | [Okta_User] | ❌ |
+| [Okta_PasswordSync] | [Okta_User] | [Okta_User] | ✅ |
 
 [Okta_User]: <../Documentation/NodeDescriptions/Okta_User.md>
 [Okta_Group]: <../Documentation/NodeDescriptions/Okta_Group.md>
@@ -89,7 +90,6 @@ Hybrid edges connect Okta entities to entities from other supported BloodHound c
 [AZUser]: https://bloodhound.specterops.io/resources/nodes/az-user
 [AZGroup]: https://bloodhound.specterops.io/resources/nodes/az-group
 [SNOW_User]: https://github.com/SpecterOps/SnowHound
-[SNOW_Group]: https://github.com/SpecterOps/SnowHound
 [SNOW_Account]: https://github.com/SpecterOps/SnowHound
 [jamf_SSOIntegration]: https://github.com/SpecterOps/JamfHound
 [jamf_Account]: https://github.com/SpecterOps/JamfHound
@@ -107,3 +107,4 @@ Hybrid edges connect Okta entities to entities from other supported BloodHound c
 [Okta_OrgSWA]: <../Documentation/EdgeDescriptions/Okta_OrgSWA.md>
 [Okta_InboundOrgSSO]: <../Documentation/EdgeDescriptions/Okta_InboundOrgSSO.md>
 [Okta_InboundSSO]: <../Documentation/EdgeDescriptions/Okta_InboundOrgSSO.md>
+[Okta_PasswordSync]: <../Documentation/EdgeDescriptions/Okta_PasswordSync.md>

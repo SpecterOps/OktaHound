@@ -3,7 +3,7 @@
 ## Edge Schema
 
 - Source: [Okta_Application](../NodeDescriptions/Okta_Application.md)
-- Destination: [AZTenant](https://bloodhound.specterops.io/resources/nodes/az-tenant), [GH_Organization](https://github.com/SpecterOps/GitHound), [jamf_SSOIntegration](https://github.com/SpecterOps/JamfHound), [SNOW_Account](https://github.com/SpecterOps/SnowHound)
+- Destination: [AZTenant](https://bloodhound.specterops.io/resources/nodes/az-tenant), [GH_Organization](https://github.com/SpecterOps/GitHound), [jamf_SSOIntegration](https://github.com/SpecterOps/JamfHound), [SNOW_Account](https://github.com/SpecterOps/SnowHound), [Okta_IdentityProvider](../NodeDescriptions/Okta_IdentityProvider.md)
 
 ## General Information
 
