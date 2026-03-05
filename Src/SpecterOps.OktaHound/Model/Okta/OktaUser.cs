@@ -43,8 +43,8 @@ internal sealed class OktaUser : OktaSecurityPrincipal
     public OktaUser(User user, string domainName) : base(user.Id, domainName, NodeKind)
     {
         // Write common properties
-        Name = user.Profile.Login;
-        DisplayName = user.Profile.DisplayName;
+        Name = user.Profile?.Login;
+        DisplayName = user.Profile?.DisplayName;
 
         // Determine if user is enabled (see the Okta_User node documentation for details)
         if (user.Status == UserStatus.SUSPENDED || user.Status == UserStatus.DEPROVISIONED || user.Status == UserStatus.STAGED)
@@ -59,27 +59,27 @@ internal sealed class OktaUser : OktaSecurityPrincipal
 
         // Write additional properties
         // TODO: Unify these keys across AD and Entra ID
-        SetProperty("firstName", user.Profile.FirstName);
-        SetProperty("lastName", user.Profile.LastName);
-        SetProperty(LoginPropertyName, user.Profile.Login);
-        SetProperty(EmailPropertyName, user.Profile.Email);
-        SetProperty("status", user.Status.Value);
+        SetProperty("firstName", user.Profile?.FirstName);
+        SetProperty("lastName", user.Profile?.LastName);
+        SetProperty(LoginPropertyName, user.Profile?.Login);
+        SetProperty(EmailPropertyName, user.Profile?.Email);
+        SetProperty("status", user.Status?.Value);
         SetProperty("created", user.Created);
         SetProperty("lastLogin", user.LastLogin);
         SetProperty("lastUpdated", user.LastUpdated);
         SetProperty("passwordChanged", user.PasswordChanged);
         SetProperty("activated", user.Activated);
-        SetProperty("userType", user.Profile.UserType);
-        SetProperty("title", user.Profile.Title);
-        SetProperty("department", user.Profile.Department);
-        SetProperty("city", user.Profile.City);
-        SetProperty("state", user.Profile.State);
-        SetProperty("countryCode", user.Profile.CountryCode);
-        SetProperty("employeeNumber", user.Profile.EmployeeNumber);
-        SetProperty("organization", user.Profile.Organization);
-        SetProperty("division", user.Profile.Division);
+        SetProperty("userType", user.Profile?.UserType);
+        SetProperty("title", user.Profile?.Title);
+        SetProperty("department", user.Profile?.Department);
+        SetProperty("city", user.Profile?.City);
+        SetProperty("state", user.Profile?.State);
+        SetProperty("countryCode", user.Profile?.CountryCode);
+        SetProperty("employeeNumber", user.Profile?.EmployeeNumber);
+        SetProperty("organization", user.Profile?.Organization);
+        SetProperty("division", user.Profile?.Division);
         SetProperty(RealmIdPropertyName, user.RealmId);
-        SetProperty(ManagerIdPropertyName, user.Profile.ManagerId);
+        SetProperty(ManagerIdPropertyName, user.Profile?.ManagerId);
 
         if (user.Credentials is not null)
         {

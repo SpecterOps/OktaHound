@@ -93,7 +93,7 @@ internal sealed class OktaGroup : OktaSecurityPrincipal
         SetProperty("lastMembershipUpdated", group.LastMembershipUpdated);
 
         // Types: APP_GROUP, BUILT_IN, OKTA_GROUP
-        SetProperty(GroupTypePropertyName, group.Type.Value);
+        SetProperty(GroupTypePropertyName, group.Type?.Value);
 
         // Sample objectClass value: okta:windows_security_principal
         SetProperty("objectClass", group.ObjectClass?.FirstOrDefault());
@@ -102,14 +102,14 @@ internal sealed class OktaGroup : OktaSecurityPrincipal
         SourceApplicationId = group.Source?.Id;
 
         // Set profile-specific properties
-        if (group.Profile.ActualInstance is OktaUserGroupProfile groupProfile)
+        if (group.Profile?.ActualInstance is OktaUserGroupProfile groupProfile)
         {
             Name = groupProfile.Name;
             DisplayName = groupProfile.Name;
 
             SetProperty(DescriptionPropertyName, groupProfile.Description);
         }
-        else if (group.Profile.ActualInstance is OktaActiveDirectoryGroupProfile adGroupProfile)
+        else if (group.Profile?.ActualInstance is OktaActiveDirectoryGroupProfile adGroupProfile)
         {
             Name = adGroupProfile.Name;
             DisplayName = adGroupProfile.Name;

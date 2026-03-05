@@ -371,56 +371,67 @@ partial class OktaClient
                     var groupNode = OktaGroup.CreateEdgeNode(pushMapping.SourceGroupId);
                     _graph.AddEdge(groupNode, appNode, OktaGroup.GroupPushEdgeKind);
 
-                    // TODO: Wrap this call into another try/catch block
                     // Fetch pushed group details using a standalone app group API request,
                     // as the pushed group targets are not returned in the group push mapping object nor in group listing.
-                    Group targetGroup = await groupApi.GetGroupAsync(pushMapping.TargetGroupId, cancellationToken: cancellationToken).ConfigureAwait(false);
-
-                    /*
-                    The result only contains group name, but no ID.
-                    "id": "00gxg1fe4vh7hOAcu697",
-                    "created": "2025-11-14T08:01:28.000Z",
-                    "lastUpdated": "2025-11-14T08:01:28.000Z",
-                    "lastMembershipUpdated": "2025-11-14T08:01:28.000Z",
-                    "objectClass": [
-                        "okta:user_group"
-                        ],
-                    "type": "APP_GROUP",
-                    "profile": {
-                        "name": "Test Okta Snowflake Users",
-                        "description": "Test group push from Okta to Snowflake"
-                    },
-                    "source": {
-                        "id": "0oaxfbsrccSXeiKWB697"
-                    },
-                    */
-                    if (targetGroup.Profile.ActualInstance is OktaUserGroupProfile targetGroupProfile)
+                    try
                     {
-                        // Even AD pushed groups are mapped to OktaUserGroupProfile instead of OktaActiveDirectoryGroupProfile
-                        // Create a hybrid edge
-                        // Example: (:Okta_Group)-[:Okta_MembershipSync]->(:Group)
-                        // Example: (:Okta_Group)-[:Okta_MembershipSync]->(:Okta_Group)
-                        // Example: (:Okta_Group)-[:Okta_MembershipSync]->(:Okta_Group)
-                        var targetGroupNode = appNode.CreateHybridGroupEdgeNode(targetGroupProfile);
-                        if (targetGroupNode is not null)
+                        Group targetGroup = await groupApi.GetGroupAsync(pushMapping.TargetGroupId, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        /*
+                        The result only contains group name, but no ID.
+                        "id": "00gxg1fe4vh7hOAcu697",
+                        "created": "2025-11-14T08:01:28.000Z",
+                        "lastUpdated": "2025-11-14T08:01:28.000Z",
+                        "lastMembershipUpdated": "2025-11-14T08:01:28.000Z",
+                        "objectClass": [
+                            "okta:user_group"
+                            ],
+                        "type": "APP_GROUP",
+                        "profile": {
+                            "name": "Test Okta Snowflake Users",
+                            "description": "Test group push from Okta to Snowflake"
+                        },
+                        "source": {
+                            "id": "0oaxfbsrccSXeiKWB697"
+                        },
+                        */
+                        if (targetGroup.Profile?.ActualInstance is OktaUserGroupProfile targetGroupProfile)
                         {
-                            _hybridEdgeGraph.AddEdge(groupNode, targetGroupNode, OktaGroup.MembershipSyncEdgeKind);
-
-                            if (appNode.IsActiveDirectory)
+                            // Even AD pushed groups are mapped to OktaUserGroupProfile instead of OktaActiveDirectoryGroupProfile
+                            // Create a hybrid edge
+                            // Example: (:Okta_Group)-[:Okta_MembershipSync]->(:Group)
+                            // Example: (:Okta_Group)-[:Okta_MembershipSync]->(:Okta_Group)
+                            // Example: (:Okta_Group)-[:Okta_MembershipSync]->(:Okta_Group)
+                            var targetGroupNode = appNode.CreateHybridGroupEdgeNode(targetGroupProfile);
+                            if (targetGroupNode is not null)
                             {
-                                // TODO: For AD, add the group node to the AD graph
-                                // _adGraph.AddNode(new ActiveDirectoryGroup(targetGroup, appNode.ActiveDirectoryDomain ?? appNode.Name));
+                                _hybridEdgeGraph.AddEdge(groupNode, targetGroupNode, OktaGroup.MembershipSyncEdgeKind);
+
+                                if (appNode.IsActiveDirectory)
+                                {
+                                    // TODO: For AD, add the group node to the AD graph
+                                    // _adGraph.AddNode(new ActiveDirectoryGroup(targetGroup, appNode.ActiveDirectoryDomain ?? appNode.Name));
+                                }
                             }
                         }
                     }
-                }
+                    catch (ApiException e)
+                    {
+                        var status = (HttpStatusCode)e.ErrorCode;
+                        _logger.LogWarning("Error {ErrorCode} ({Status}) received while trying to fetch the target group {GroupId} of the group push mapping for application {AppName} ({AppId}). This might be expected if the target group was deleted.", e.ErrorCode, status, pushMapping.TargetGroupId, appNode.Name, appNode.Id);
+                    }
+               }
 
                 _logger.LogTrace("Finished fetching group push mappings for application {AppName} ({AppId}).", appNode.Name, appNode.Id);
             }
             catch (ApiException e)
             {
                 var status = (HttpStatusCode)e.ErrorCode;
-                _logger.LogError("Error {ErrorCode} ({Status}) received while trying to fetch Okta app {AppName} ({AppId}) group push mappings.", e.ErrorCode, status, appNode.Name, appNode.Id);
+
+                // Ignore error 404, which is returned for applications without any group push mappings.
+                if (status != HttpStatusCode.NotFound)
+                {
+                    _logger.LogError("Error {ErrorCode} ({Status}) received while trying to fetch Okta app {AppName} ({AppId}) group push mappings.", e.ErrorCode, status, appNode.Name, appNode.Id);
+                }
             }
         }).ConfigureAwait(false);
 
@@ -642,7 +653,7 @@ partial class OktaClient
                 Permissions permissions = await roleApi.ListRolePermissionsAsync(customRoleNode.Id, cancellationToken).ConfigureAwait(false);
 
                 // Ignore permission conditions and add their list to the role properties.
-                customRoleNode.Permissions = [.. permissions._Permissions.Select(item => item.Label)];
+                customRoleNode.Permissions = permissions._Permissions?.Select(item => item.Label)?.ToList() ?? [];
             }
             catch (ApiException e)
             {

@@ -16,8 +16,8 @@ okta:
       "kid": "TODO"
       "n": "TODO"
     connectionTimeout: 30000 # milliseconds
-    requestTimeout: 0 # milliseconds
-    maxRetries: 3
+    requestTimeout: 30000 # milliseconds
+    maxRetries: 5
     proxy:
       port: null
       host: null

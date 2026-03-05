@@ -131,6 +131,11 @@ internal sealed class ActiveDirectoryUser : OpenGraphNode
 
     private static string? GetProfileProperty(AppUser user, string propertyName)
     {
+        if (user.Profile is null)
+        {
+            return null;
+        }
+
         var success = user.Profile.TryGetValue(propertyName, out var valueObj);
         return valueObj as string;
     }

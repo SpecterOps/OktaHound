@@ -61,7 +61,7 @@ internal sealed class OktaIdentityProvider : OktaNode
         string[] governedGroupIds = [.. assignedGroupIds, .. dynamicGroupIds];
         SetProperty(GovernedGroupsPropertyName, governedGroupIds);
 
-        object protocol = idp.Protocol.ActualInstance;
+        object? protocol = idp.Protocol?.ActualInstance;
 
         if (protocol is ProtocolSaml samlProtocol)
         {

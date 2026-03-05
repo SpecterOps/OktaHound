@@ -18,7 +18,7 @@ internal sealed class OktaApiToken : OktaNode
         SetProperty("created", apiToken.Created);
         SetProperty("lastUpdated", apiToken.LastUpdated);
         SetProperty("expiresAt", apiToken.ExpiresAt);
-        SetProperty("networkConnection", apiToken.Network.Connection);
+        SetProperty("networkConnection", apiToken.Network?.Connection);
 
         if (!string.IsNullOrEmpty(apiToken.TokenWindow))
         {

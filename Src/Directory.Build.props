@@ -24,6 +24,9 @@
 
     <!-- NuGet config -->
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+
+    <!-- Enforce the use of generated JSON serializers instead of reflection-based ones -->
+    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
   </PropertyGroup>
 
   <!-- Properties overriding the Okta SDK csproj settings -->

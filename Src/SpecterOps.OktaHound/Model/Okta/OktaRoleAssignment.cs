@@ -54,9 +54,9 @@ internal class OktaRoleAssignment : OktaNode
         Assignee = assignee;
         Role = role;
 
-        SetProperty(RoleTypePropertyName, roleAssignment.Type.Value);
-        SetProperty("status", roleAssignment.Status.Value);
-        SetProperty("assignmentType", roleAssignment.AssignmentType.Value);
+        SetProperty(RoleTypePropertyName, roleAssignment.Type?.Value);
+        SetProperty("status", roleAssignment.Status?.Value);
+        SetProperty("assignmentType", roleAssignment.AssignmentType?.Value);
         SetProperty("created", roleAssignment.Created);
         SetProperty("lastUpdated", roleAssignment.LastUpdated);
     }
@@ -68,9 +68,9 @@ internal class OktaRoleAssignment : OktaNode
         Assignee = assignee;
         Role = role;
 
-        SetProperty(RoleTypePropertyName, roleAssignment.Type.Value);
-        SetProperty("status", roleAssignment.Status.Value);
-        SetProperty("assignmentType", roleAssignment.AssignmentType.Value);
+        SetProperty(RoleTypePropertyName, roleAssignment.Type?.Value);
+        SetProperty("status", roleAssignment.Status?.Value);
+        SetProperty("assignmentType", roleAssignment.AssignmentType?.Value);
         SetProperty("created", roleAssignment.Created);
         SetProperty("lastUpdated", roleAssignment.LastUpdated);
     }

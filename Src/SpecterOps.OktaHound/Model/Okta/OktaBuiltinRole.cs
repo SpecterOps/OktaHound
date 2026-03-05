@@ -72,7 +72,7 @@ internal sealed class OktaBuiltinRole : OktaRole
 
     public static OpenGraphEdgeNode CreateEdgeNode(StandardRole roleAssignment, string domainName)
     {
-        var roleId = MakeRoleIdUnique(roleAssignment.Type.Value, domainName);
+        var roleId = MakeRoleIdUnique(roleAssignment.Type?.Value ?? "UNKNOWN_ROLE_TYPE", domainName);
         return CreateEdgeNode(roleId);
     }
 

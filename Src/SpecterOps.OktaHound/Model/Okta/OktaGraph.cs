@@ -143,7 +143,12 @@ internal sealed class OktaGraph(OktaOrganization organization) : OpenGraphBase<O
 
     public OktaBuiltinRole? GetBuiltInRole(RoleType roleType)
     {
-        string roleId = OktaBuiltinRole.MakeRoleIdUnique(roleType.Value, Organization.DomainName);
+        if (roleType is null)
+        {
+            return null;
+        }
+
+        string roleId = OktaBuiltinRole.MakeRoleIdUnique(roleType?.Value ?? "UNKNOWN_ROLE_TYPE", Organization.DomainName);
         Elements.RolesById.TryGetValue(roleId, out var role);
         return role;
     }

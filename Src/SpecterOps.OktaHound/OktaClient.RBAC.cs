@@ -218,7 +218,7 @@ partial class OktaClient
         }
 
         // Change "USER" to "User", "GROUP" to "Group", and CLIENT to Client.
-        string assigneeType = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(roleAssignment.AssignmentType.Value.ToLowerInvariant());
+        string assigneeType = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(roleAssignment.AssignmentType?.Value?.ToLowerInvariant() ?? "<unknown type>");
 
         _logger.LogTrace(
             "{AssigneeType} {AssigneeName} ({AssigneeId}) to role {Role} assignment is {Status}.",
@@ -226,7 +226,7 @@ partial class OktaClient
             assignee.Name,
             assignee.Id,
             roleAssignment.Label,
-            roleAssignment.Status.Value.ToLowerInvariant());
+            roleAssignment.Status?.Value?.ToLowerInvariant() ?? "<unknown status>");
 
         if (roleAssignment.Status != LifecycleStatus.ACTIVE)
         {
@@ -430,7 +430,7 @@ partial class OktaClient
         }
 
         // Change "USER" to "User", "GROUP" to "Group", and CLIENT to Client.
-        string assigneeType = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(roleAssignment.AssignmentType.Value.ToLowerInvariant());
+        string assigneeType = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(roleAssignment.AssignmentType?.Value?.ToLowerInvariant() ?? "<unknown type>");
 
         _logger.LogTrace(
             "{AssigneeType} {AssigneeName} ({AssigneeId}) to role {Role} assignment is {Status}.",
@@ -438,7 +438,7 @@ partial class OktaClient
             assignee.Name,
             assignee.Id,
             roleAssignment.Label,
-            roleAssignment.Status.Value.ToLowerInvariant());
+            roleAssignment.Status?.Value?.ToLowerInvariant() ?? "<unknown status>");
 
         if (roleAssignment.Status != LifecycleStatus.ACTIVE)
         {
@@ -668,7 +668,16 @@ partial class OktaClient
                         string roleAssignmentId = member.Id;
 
                         // Extract entity ID from the URL, e.g., https://integrator-5415459.okta.com/api/v1/users/00u1abcd2EFGH3IJK4LM
-                        string assigneeId = member.Links.Self.Href.Split('/').Last();
+                        string? assigneeId = member.Links?.Self?.Href?.Split('/')?.Last();
+
+                        if (assigneeId is null)
+                        {
+                            _logger.LogError("Could not extract assignee ID from the role assignment member link for role assignment {RoleAssignmentId} scoped to resource set {ResourceSetName} ({ResourceSetId}). Skipping.",
+                                roleAssignmentId,
+                                resourceSetNode.Name,
+                                resourceSetNode.OriginalId);
+                            continue;
+                        }
 
                         // Create the (:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta_ResourceSet) edge
                         _logger.LogTrace(

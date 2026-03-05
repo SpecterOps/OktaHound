@@ -65,7 +65,7 @@ partial class OktaClient
 
             await foreach (var user in userApi.ListUsers(cancellationToken: cancellationToken).ConfigureAwait(false))
             {
-                _logger.LogDebug("Processing user {Login} ({UserId})...", user.Profile.Login, user.Id);
+                _logger.LogDebug("Processing user {Login} ({UserId})...", user.Profile?.Login, user.Id);
                 userCount++;
 
                 // Create the OktaUser node
@@ -159,7 +159,7 @@ partial class OktaClient
                     // Create the (:Okta_Application)-[:Okta_GroupPull]->(:Okta_Group) edge
                     _graph.AddEdge(appNode, groupEdgeNode, OktaGroup.GroupPullEdgeKind);
 
-                    if (group.Profile.ActualInstance is OktaUserGroupProfile sourceGroupProfile)
+                    if (group.Profile?.ActualInstance is OktaUserGroupProfile sourceGroupProfile)
                     {
                         // Create a hybrid edge for non-AD apps (AD groups are already handled above)
                         // Example: (:AZGroup)-[:Okta_MembershipSync]->(:Okta_Group)
@@ -200,7 +200,7 @@ partial class OktaClient
 
             await foreach (var device in deviceApi.ListDevices(expand: DeviceExpandParameter.UserSummary, cancellationToken: cancellationToken).ConfigureAwait(false))
             {
-                _logger.LogDebug("Processing device {DeviceName} ({DeviceId})...", device.Profile.DisplayName, device.Id);
+                _logger.LogDebug("Processing device {DeviceName} ({DeviceId})...", device.Profile?.DisplayName, device.Id);
                 deviceCount++;
 
                 // Create the OktaDevice node
@@ -211,11 +211,16 @@ partial class OktaClient
                 _graph.AddEdge(_graph.Organization, deviceNode, OktaOrganization.ContainsEdgeKind);
 
                 // Link the device to its owner
-                foreach (var user in device.Embedded.Users ?? [])
+                foreach (var user in device.Embedded?.Users ?? [])
                 {
-                    _logger.LogTrace("The {DeviceName} device is owned by user {UserId}.", device.Profile.DisplayName, user.User.Id);
+                    if (user.User?.Id is null)
+                    {
+                        _logger.LogWarning("Device {DeviceName} ({DeviceId}) has an embedded user with null ID. Skipping edge creation.", device.Profile?.DisplayName, device.Id);
+                        continue;
+                    }
 
                     // Create the (:Okta_Device)-[:Okta_DeviceOf]->(:Okta_User) edge
+                    _logger.LogTrace("The {DeviceName} device is owned by user {UserId}.", device.Profile?.DisplayName, user.User.Id);
                     var userNode = OktaUser.CreateEdgeNode(user.User.Id);
                     _graph.AddEdge(deviceNode, userNode, OktaDevice.DeviceOfEdgeKind);
                 }
@@ -284,7 +289,7 @@ partial class OktaClient
 
             await foreach (var realm in realmApi.ListRealms(cancellationToken: cancellationToken).ConfigureAwait(false))
             {
-                _logger.LogDebug("Processing realm {RealmName} ({RealmId})...", realm.Profile.Name, realm.Id);
+                _logger.LogDebug("Processing realm {RealmName} ({RealmId})...", realm.Profile?.Name, realm.Id);
                 realmCount++;
 
                 // Create the OktaRealm node
@@ -492,9 +497,16 @@ partial class OktaClient
                 OktaApiToken tokenNode = new(token, _graph.Organization.DomainName);
                 _graph.AddNode(tokenNode);
 
-                // Create edge (:Okta_ApiToken)-[:Okta_ApiTokenFor]->(:Okta_User)
-                OpenGraphEdgeNode userNode = OktaUser.CreateEdgeNode(token.UserId);
-                _graph.AddEdge(tokenNode, userNode, OktaApiToken.ApiTokenForEdgeKind);
+                if (token.UserId is not null)
+                {
+                    // Create edge (:Okta_ApiToken)-[:Okta_ApiTokenFor]->(:Okta_User)
+                    OpenGraphEdgeNode userNode = OktaUser.CreateEdgeNode(token.UserId);
+                    _graph.AddEdge(tokenNode, userNode, OktaApiToken.ApiTokenForEdgeKind);
+                }
+                else
+                {
+                    _logger.LogWarning("API token {TokenName} ({TokenId}) does not have an associated user.", token.Name, token.Id);
+                }
             }
 
             _logger.LogInformation("Successfully processed {TokenCount} API tokens.", tokenCount);
@@ -812,11 +824,11 @@ partial class OktaClient
 
     private string GetGroupName(Group group)
     {
-        if (group.Profile.ActualInstance is OktaUserGroupProfile groupProfile)
+        if (group.Profile?.ActualInstance is OktaUserGroupProfile groupProfile)
         {
             return groupProfile.Name;
         }
-        else if (group.Profile.ActualInstance is OktaActiveDirectoryGroupProfile adGroupProfile)
+        else if (group.Profile?.ActualInstance is OktaActiveDirectoryGroupProfile adGroupProfile)
         {
             return adGroupProfile.Name;
         }
