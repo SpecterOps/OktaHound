@@ -72,6 +72,7 @@
 | [Okta_OrgSWA](EdgeDescriptions/Okta_OrgSWA.md) | ❌ | Secure Web Authentication from an Okta application to an external organization |
 | [Okta_OutboundOrgSSO](EdgeDescriptions/Okta_OutboundOrgSSO.md) | ✅ | Single sign-on from an Okta application to an external organization |
 | [Okta_OutboundSSO](EdgeDescriptions/Okta_OutboundSSO.md) | ✅ | Single sign-on from Okta to an external identity provider |
+| [Okta_PasswordSync](EdgeDescriptions/Okta_PasswordSync.md) | ✅ | SCIM or Okta Org2Org password synchronization between users across organizations |
 | [Okta_PolicyMapping](EdgeDescriptions/Okta_PolicyMapping.md) | ❌ | Association of a policy with an Okta application |
 | [Okta_ReadClientSecret](EdgeDescriptions/Okta_ReadClientSecret.md) | ✅ | Ability to read client secrets for scoped Okta applications |
 | [Okta_ReadPasswordUpdates](EdgeDescriptions/Okta_ReadPasswordUpdates.md) | ✅ | Application can read password updates over the SCIM protocol |
