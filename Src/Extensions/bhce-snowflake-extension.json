@@ -1,7 +1,8 @@
 {
   "schema": {
-    "name": "Snowflake RBAC (SnowHound)",
-    "version": "1.0.0",
+    "name": "SnowHound",
+    "display_name": "Snowflake RBAC (SnowHound)",
+    "version": "1.1.0",
     "namespace": "SNOW"
   },
   "node_kinds": [
@@ -9,7 +10,7 @@
       "name": "SNOW_Account",
       "display_name": "Account",
       "description": "A Snowflake account representing an organization's cloud data platform tenant",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "building",
       "color": "#5FED83"
     },
@@ -17,7 +18,7 @@
       "name": "SNOW_Application",
       "display_name": "Application",
       "description": "A Snowflake Native App installed in the account",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "window-maximize",
       "color": "#A1C6EA"
     },
@@ -25,7 +26,7 @@
       "name": "SNOW_ApplicationRole",
       "display_name": "Application Role",
       "description": "A role defined within a Snowflake Native App that controls access to application functionality",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "user-shield",
       "color": "#C6C3FF"
     },
@@ -33,7 +34,7 @@
       "name": "SNOW_Database",
       "display_name": "Database",
       "description": "A Snowflake database that serves as a logical container for schemas and data objects",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "database",
       "color": "#FF80D2"
     },
@@ -41,7 +42,7 @@
       "name": "SNOW_Function",
       "display_name": "Function",
       "description": "A user-defined or external function registered in a Snowflake schema",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "code",
       "color": "#A9E5E5"
     },
@@ -49,7 +50,7 @@
       "name": "SNOW_Integration",
       "display_name": "Integration",
       "description": "A Snowflake integration object that connects to external services (API, security, storage, etc.)",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "user-tie",
       "color": "#BFFFD1"
     },
@@ -57,7 +58,7 @@
       "name": "SNOW_Procedure",
       "display_name": "Procedure",
       "description": "A stored procedure registered in a Snowflake schema",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "gears",
       "color": "#D8C8F8"
     },
@@ -65,7 +66,7 @@
       "name": "SNOW_Role",
       "display_name": "Role",
       "description": "A Snowflake role that groups privileges and can be assigned to users or other roles",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "user-group",
       "color": "#C06EFF"
     },
@@ -73,7 +74,7 @@
       "name": "SNOW_Schema",
       "display_name": "Schema",
       "description": "A Snowflake schema that organizes database objects within a database",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "network-wired",
       "color": "#DEFEFA"
     },
@@ -81,7 +82,7 @@
       "name": "SNOW_Stage",
       "display_name": "Stage",
       "description": "A Snowflake stage that references a location for data files used in loading and unloading",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "layer-group",
       "color": "#80E0C6"
     },
@@ -89,7 +90,7 @@
       "name": "SNOW_Table",
       "display_name": "Table",
       "description": "A Snowflake table that stores structured data",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "table",
       "color": "#FFD2A6"
     },
@@ -97,7 +98,7 @@
       "name": "SNOW_User",
       "display_name": "User",
       "description": "A Snowflake user account that can authenticate and interact with the platform",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "user",
       "color": "#FF8E40"
     },
@@ -105,7 +106,7 @@
       "name": "SNOW_View",
       "display_name": "View",
       "description": "A Snowflake view that provides a virtual table based on a SQL query",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "eye",
       "color": "#A6E0FF"
     },
@@ -113,17 +114,9 @@
       "name": "SNOW_Warehouse",
       "display_name": "Warehouse",
       "description": "A Snowflake virtual warehouse that provides compute resources for queries and operations",
-      "is_display_kind": "true",
+      "is_display_kind": true,
       "icon": "warehouse",
       "color": "#9EECFF"
-    },
-    {
-      "name": "SNOW_Base",
-      "display_name": "Base",
-      "description": "Base kind applied to all SnowHound nodes as a secondary kind for source_kind metadata",
-      "is_display_kind": "false",
-      "icon": "snowflake",
-      "color": "#29B5E8"
     }
   ],
   "relationship_kinds": [
@@ -436,7 +429,7 @@
   "environments": [
     {
       "environment_kind": "SNOW_Account",
-      "source_kind": "SNOW_Base",
+      "source_kind": "SNOW",
       "principal_kinds": [
         "SNOW_User",
         "SNOW_Role"
@@ -448,6 +441,7 @@
       "name": "SNOW_Usage_Finding",
       "display_name": "Usage (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_Usage",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -460,6 +454,7 @@
       "name": "SNOW_RunAsRole_Finding",
       "display_name": "Run As Role (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_RunAsRole",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -472,6 +467,7 @@
       "name": "SNOW_ApplyAggregationPolicy_Finding",
       "display_name": "Apply Aggregation Policy (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_ApplyAggregationPolicy",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -484,6 +480,7 @@
       "name": "SNOW_ApplyAuthenticationPolicy_Finding",
       "display_name": "Apply Authentication Policy (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_ApplyAuthenticationPolicy",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -496,6 +493,7 @@
       "name": "SNOW_ApplyBudget_Finding",
       "display_name": "Apply Budget (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_ApplyBudget",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -508,6 +506,7 @@
       "name": "SNOW_ApplyMaskingPolicy_Finding",
       "display_name": "Apply Masking Policy (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_ApplyMaskingPolicy",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -520,6 +519,7 @@
       "name": "SNOW_ApplyPackagesPolicy_Finding",
       "display_name": "Apply Packages Policy (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_ApplyPackagesPolicy",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -532,6 +532,7 @@
       "name": "SNOW_ApplyPasswordPolicy_Finding",
       "display_name": "Apply Password Policy (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_ApplyPasswordPolicy",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -544,6 +545,7 @@
       "name": "SNOW_ApplyProtectionPolicy_Finding",
       "display_name": "Apply Protection Policy (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_ApplyProtectionPolicy",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -556,6 +558,7 @@
       "name": "SNOW_ApplyRowAccessPolicy_Finding",
       "display_name": "Apply Row Access Policy (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_ApplyRowAccessPolicy",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -568,6 +571,7 @@
       "name": "SNOW_ApplySessionPolicy_Finding",
       "display_name": "Apply Session Policy (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_ApplySessionPolicy",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -580,6 +584,7 @@
       "name": "SNOW_AttachPolicy_Finding",
       "display_name": "Attach Policy (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_AttachPolicy",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -592,6 +597,7 @@
       "name": "SNOW_Audit_Finding",
       "display_name": "Audit (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_Audit",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -604,6 +610,7 @@
       "name": "SNOW_BindServiceEndpoint_Finding",
       "display_name": "Bind Service Endpoint (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_BindServiceEndpoint",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -616,6 +623,7 @@
       "name": "SNOW_CancelQuery_Finding",
       "display_name": "Cancel Query (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_CancelQuery",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -628,6 +636,7 @@
       "name": "SNOW_CreateAccount_Finding",
       "display_name": "Create Account (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_CreateAccount",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -640,6 +649,7 @@
       "name": "SNOW_CreateApiIntegration_Finding",
       "display_name": "Create API Integration (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_CreateApiIntegration",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -652,6 +662,7 @@
       "name": "SNOW_CreateApplication_Finding",
       "display_name": "Create Application (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_CreateApplication",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -664,6 +675,7 @@
       "name": "SNOW_CreateApplicationPackage_Finding",
       "display_name": "Create Application Package (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_CreateApplicationPackage",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -676,6 +688,7 @@
       "name": "SNOW_CreateComputePool_Finding",
       "display_name": "Create Compute Pool (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_CreateComputePool",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -688,6 +701,7 @@
       "name": "SNOW_CreateCredential_Finding",
       "display_name": "Create Credential (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_CreateCredential",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -700,6 +714,7 @@
       "name": "SNOW_CreateDataExchangeListing_Finding",
       "display_name": "Create Data Exchange Listing (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_CreateDataExchangeListing",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -712,6 +727,7 @@
       "name": "SNOW_CreateDatabase_Finding",
       "display_name": "Create Database (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_CreateDatabase",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -724,6 +740,7 @@
       "name": "SNOW_CreateDatabaseRole_Finding",
       "display_name": "Create Database Role (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_CreateDatabaseRole",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -736,6 +753,7 @@
       "name": "SNOW_CreateExternalVolume_Finding",
       "display_name": "Create External Volume (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_CreateExternalVolume",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -748,6 +766,7 @@
       "name": "SNOW_CreateIntegration_Finding",
       "display_name": "Create Integration (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_CreateIntegration",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -760,6 +779,7 @@
       "name": "SNOW_CreateNetworkPolicy_Finding",
       "display_name": "Create Network Policy (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_CreateNetworkPolicy",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -772,6 +792,7 @@
       "name": "SNOW_CreateReplicationGroup_Finding",
       "display_name": "Create Replication Group (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_CreateReplicationGroup",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -784,6 +805,7 @@
       "name": "SNOW_CreateRole_Finding",
       "display_name": "Create Role (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_CreateRole",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -796,6 +818,7 @@
       "name": "SNOW_CreateSchema_Finding",
       "display_name": "Create Schema (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_CreateSchema",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -808,6 +831,7 @@
       "name": "SNOW_CreateShare_Finding",
       "display_name": "Create Share (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_CreateShare",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -820,6 +844,7 @@
       "name": "SNOW_CreateUser_Finding",
       "display_name": "Create User (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_CreateUser",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -832,6 +857,7 @@
       "name": "SNOW_CreateWarehouse_Finding",
       "display_name": "Create Warehouse (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_CreateWarehouse",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -844,6 +870,7 @@
       "name": "SNOW_Delete_Finding",
       "display_name": "Delete (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_Delete",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -856,6 +883,7 @@
       "name": "SNOW_ExecuteDataMetricFunction_Finding",
       "display_name": "Execute Data Metric Function (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_ExecuteDataMetricFunction",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -868,6 +896,7 @@
       "name": "SNOW_ExecuteManagedAlert_Finding",
       "display_name": "Execute Managed Alert (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_ExecuteManagedAlert",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -880,6 +909,7 @@
       "name": "SNOW_ExecuteTask_Finding",
       "display_name": "Execute Task (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_ExecuteTask",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -892,6 +922,7 @@
       "name": "SNOW_ImportShare_Finding",
       "display_name": "Import Share (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_ImportShare",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -904,6 +935,7 @@
       "name": "SNOW_Insert_Finding",
       "display_name": "Insert (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_Insert",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -916,6 +948,7 @@
       "name": "SNOW_ManageGrants_Finding",
       "display_name": "Manage Grants (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_ManageGrants",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -928,6 +961,7 @@
       "name": "SNOW_ManageWarehouses_Finding",
       "display_name": "Manage Warehouses (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_ManageWarehouses",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -940,6 +974,7 @@
       "name": "SNOW_ManagementSharing_Finding",
       "display_name": "Management Sharing (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_ManagementSharing",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -952,6 +987,7 @@
       "name": "SNOW_Modify_Finding",
       "display_name": "Modify (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_Modify",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -964,6 +1000,7 @@
       "name": "SNOW_Monitor_Finding",
       "display_name": "Monitor (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_Monitor",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -976,6 +1013,7 @@
       "name": "SNOW_MonitorExecution_Finding",
       "display_name": "Monitor Execution (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_MonitorExecution",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -988,6 +1026,7 @@
       "name": "SNOW_Operate_Finding",
       "display_name": "Operate (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_Operate",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -1000,6 +1039,7 @@
       "name": "SNOW_OverrideShareRestrictions_Finding",
       "display_name": "Override Share Restrictions (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_OverrideShareRestrictions",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -1012,6 +1052,7 @@
       "name": "SNOW_Ownership_Finding",
       "display_name": "Ownership (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_Ownership",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -1024,6 +1065,7 @@
       "name": "SNOW_PurchaseDataExchangeListing_Finding",
       "display_name": "Purchase Data Exchange Listing (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_PurchaseDataExchangeListing",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -1036,6 +1078,7 @@
       "name": "SNOW_Read_Finding",
       "display_name": "Read (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_Read",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -1048,6 +1091,7 @@
       "name": "SNOW_Rebuild_Finding",
       "display_name": "Rebuild (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_Rebuild",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -1060,6 +1104,7 @@
       "name": "SNOW_ReferenceUsage_Finding",
       "display_name": "Reference Usage (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_ReferenceUsage",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -1072,6 +1117,7 @@
       "name": "SNOW_References_Finding",
       "display_name": "References (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_References",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -1084,6 +1130,7 @@
       "name": "SNOW_Select_Finding",
       "display_name": "Select (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_Select",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -1096,6 +1143,7 @@
       "name": "SNOW_ServiceRead_Finding",
       "display_name": "Service Read (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_ServiceRead",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -1108,6 +1156,7 @@
       "name": "SNOW_ServiceWrite_Finding",
       "display_name": "Service Write (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_ServiceWrite",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -1120,6 +1169,7 @@
       "name": "SNOW_Truncate_Finding",
       "display_name": "Truncate (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_Truncate",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -1132,6 +1182,7 @@
       "name": "SNOW_Update_Finding",
       "display_name": "Update (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_Update",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -1144,6 +1195,7 @@
       "name": "SNOW_UseAnyRole_Finding",
       "display_name": "Use Any Role (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_UseAnyRole",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
@@ -1156,6 +1208,7 @@
       "name": "SNOW_Write_Finding",
       "display_name": "Write (SNOW)",
       "environment_kind": "SNOW_Account",
+      "source_kind": "SNOW",
       "relationship_kind": "SNOW_Write",
       "remediation": {
         "short_description": "TODO: Describe the security issue",
