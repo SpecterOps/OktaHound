@@ -2,7 +2,7 @@
   "profiles": {
     "SpecterOps.OktaHound": {
       "commandName": "Project",
-      "commandLineArgs": "collect --skip-mfa"
+      "commandLineArgs": "collect --skip-mfa --zip --export-ad-nodes"
     }
   }
 }

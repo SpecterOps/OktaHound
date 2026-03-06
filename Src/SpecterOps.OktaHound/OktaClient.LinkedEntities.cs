@@ -892,10 +892,10 @@ partial class OktaClient
                 ApplicationSSOPublicKeysApi publicKeyApi = new(_oktaConfig);
                 OAuth2ClientJsonWebKeySet appKeys = await publicKeyApi.ListJwkAsync(appNode.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                foreach (var jwk in appKeys.Keys ?? [])
+                foreach (var jwk in appKeys?.Keys ?? [])
                 {
                     // We are not interested in encryption keys
-                    if (jwk.ActualInstance is OAuth2ClientJsonSigningKeyResponse signingKey)
+                    if (jwk?.ActualInstance is OAuth2ClientJsonSigningKeyResponse signingKey)
                     {
                         OktaJWK? keyNode = null;
 

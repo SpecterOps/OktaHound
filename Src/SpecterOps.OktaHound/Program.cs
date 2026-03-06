@@ -1,4 +1,5 @@
 ﻿using System.CommandLine;
+using System.IO.Compression;
 using Microsoft.Extensions.Logging;
 using Okta.Sdk.Client;
 using SpecterOps.OktaHound.Model.Okta;
@@ -51,12 +52,26 @@ class Program
             Required = false
         };
 
+        Option<bool> zipOutputOption = new("--zip", "-z")
+        {
+            Description = "Compress each exported JSON output file after it is written.",
+            Required = false
+        };
+
+        Option<bool> exportAdNodesOption = new("--export-ad-nodes", "-a")
+        {
+            Description = "Export the Active Directory subgraph output file.",
+            Required = false
+        };
+
         Command collectCommand = new("collect", "Collect and export data from an Okta organization")
         {
             outputDirectoryOption,
             oktaDomainOption,
             oktaApiTokenOption,
-            skipMfaOption
+            skipMfaOption,
+            zipOutputOption,
+            exportAdNodesOption
         };
 
         // No need to dispose the cancellation token source, as it is bound to the application lifetime
@@ -70,6 +85,8 @@ class Program
             string? oktaDomain = parseResult.GetValue(oktaDomainOption);
             string? oktaApiToken = parseResult.GetValue(oktaApiTokenOption);
             bool skipMfa = parseResult.GetValue(skipMfaOption);
+            bool zipOutput = parseResult.GetValue(zipOutputOption);
+            bool exportAdNodes = parseResult.GetValue(exportAdNodesOption);
 
             // Log messages to the console
             ILogger logger = CreateConsoleLogger(verbosity);
@@ -83,7 +100,15 @@ class Program
             };
 
             // Launch the main logic
-            return FetchAndSaveOktaGraph(outputDirectory, logger, oktaDomain, oktaApiToken, skipMfa, tokenSource.Token);
+            return FetchAndSaveOktaGraph(
+                outputDirectory,
+                logger,
+                oktaDomain,
+                oktaApiToken,
+                skipMfa,
+                zipOutput,
+                exportAdNodes,
+                tokenSource.Token);
         });
 
         RootCommand rootCommand = new("SpecterOps OktaHound - Okta Data Collector for BloodHound OpenGraph")
@@ -102,6 +127,8 @@ class Program
         string? domain = null,
         string? apiToken = null,
         bool skipMfa = false,
+        bool zipOutput = false,
+        bool exportAdNodes = false,
         CancellationToken cancellationToken = default)
     {
         try
@@ -162,10 +189,20 @@ class Program
             logger.LogInformation("Writing the Okta OpenGraph to {OutputFileName}...", oktaGraphFileName);
             oktaGraph.SaveAsJson(oktaGraphFilePath);
 
+            if (zipOutput)
+            {
+                ZipJsonOutput(oktaGraphFilePath, logger);
+            }
+
             int adNodeCount = adGraph.NodeCount;
             int adEdgeCount = adGraph.EdgeCount;
 
-            if (adNodeCount > 0)
+            if (adNodeCount > 0 && !exportAdNodes)
+            {
+                logger.LogDebug("Skipping Active Directory subgraph export because --export-ad-nodes was not provided.");
+            }
+
+            if (adNodeCount > 0 && exportAdNodes)
             {
                 // Only save the AD subgraph if it is not empty
                 logger.LogInformation(
@@ -178,6 +215,11 @@ class Program
                 string adNodesFilePath = Path.Combine(outputDirectory.FullName, adNodesFileName);
                 logger.LogInformation("Writing the Active Directory OpenGraph to {OutputFileName}...", adNodesFileName);
                 adGraph.SaveAsJson(adNodesFilePath);
+
+                if (zipOutput)
+                {
+                    ZipJsonOutput(adNodesFilePath, logger);
+                }
             }
 
             int hybridEdgeCount = hybridEdges.EdgeCount;
@@ -194,6 +236,11 @@ class Program
                 string hybridEdgesFilePath = Path.Combine(outputDirectory.FullName, hybridEdgesFileName);
                 logger.LogInformation("Writing the hybrid edge OpenGraph to {OutputFileName}...", hybridEdgesFileName);
                 hybridEdges.SaveAsJson(hybridEdgesFilePath);
+
+                if (zipOutput)
+                {
+                    ZipJsonOutput(hybridEdgesFilePath, logger);
+                }
             }
 
             // Exit successfully
@@ -253,5 +300,25 @@ class Program
             });
 
         return loggerFactory.CreateLogger(LoggerCategoryName);
+    }
+
+    /// <summary>
+    /// Creates a zip archive that contains a single JSON export file.
+    /// </summary>
+    /// <param name="jsonFilePath">Path to the JSON file to archive.</param>
+    /// <param name="logger">Logger for status messages.</param>
+    private static void ZipJsonOutput(string jsonFilePath, ILogger logger)
+    {
+        string zipFilePath = Path.ChangeExtension(jsonFilePath, ".zip");
+
+        if (File.Exists(zipFilePath))
+        {
+            File.Delete(zipFilePath);
+        }
+
+        using ZipArchive archive = ZipFile.Open(zipFilePath, ZipArchiveMode.Create);
+        archive.CreateEntryFromFile(jsonFilePath, Path.GetFileName(jsonFilePath), CompressionLevel.Optimal);
+
+        logger.LogInformation("Wrote zip archive {ZipFileName}.", Path.GetFileName(zipFilePath));
     }
 }
