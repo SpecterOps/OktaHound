@@ -117,12 +117,36 @@ LIMIT 1000
 
 This query can be imported into BloodHound from the [hybrid-sync.json](../Src/Queries/hybrid-sync.json) file.
 
+## Identity Provider Assignments - Direct Privileged Access
+
+Identity providers associated with users or groups that hold direct privileged role assignments in Okta.
+
+```cypher
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_IdentityProvider)-[:Okta_IdentityProviderFor|Okta_IdpGroupAssignment]->(:Okta_User:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+RETURN p
+LIMIT 1000
+```
+
+This query can be imported into BloodHound from the [identity-providers-direct-privileged.json](../Src/Queries/identity-providers-direct-privileged.json) file.
+
+## Identity Provider Assignments - Indirect Privileged Access
+
+Identity providers associated with users who hold privileged role assignments through group membership in Okta.
+
+```cypher
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_IdentityProvider)-[:Okta_IdentityProviderFor]->(:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+RETURN p
+LIMIT 1000
+```
+
+This query can be imported into BloodHound from the [identity-providers-indirect-privileged.json](../Src/Queries/identity-providers-indirect-privileged.json) file.
+
 ## Identity Provider Assignments
 
 Lists all identity providers and the users and groups they are associated with, including per-user trust relationships and automatic group assignments.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_IdentityProvider)-[:Okta_IdentityProviderFor|Okta_IdpGroupAssignment]->(:Okta)
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_IdentityProvider)-[:Okta_IdentityProviderFor|Okta_IdpGroupAssignment]->(:Okta_User:Okta_Group)
 RETURN p
 LIMIT 1000
 ```
@@ -203,68 +227,131 @@ LIMIT 1000
 
 This query can be imported into BloodHound from the [privileged-apps.json](../Src/Queries/privileged-apps.json) file.
 
-## Privileged Accounts with Inbound Hybrid Relationship
+## Synced Principals with Privileged Access (Direct) - Hybrid Edges
 
 Users, groups, and applications with inbound hybrid relationships (sync, SSO, or AD agent) that hold privileged role assignments in Okta.
 
 ```cypher
-MATCH p = ()-[:Okta_UserSync|Okta_MembershipSync|Okta_InboundSSO|Okta_HostsAgent]->(:Okta_User:Okta_Group:Okta_Application)-[:Okta_HasRoleAssignment|Okta_MemberOf*1..2]->(r:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+MATCH p = ()-[:Okta_UserSync|Okta_MembershipSync|Okta_InboundSSO|Okta_HostsAgent]->(:Okta_User:Okta_Group:Okta_Application)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
 RETURN p
 LIMIT 1000
 ```
 
-This query can be imported into BloodHound from the [privileged-hybrid-inbound.json](../Src/Queries/privileged-hybrid-inbound.json) file.
+This query can be imported into BloodHound from the [privileged-hybrid-inbound-direct.json](../Src/Queries/privileged-hybrid-inbound-direct.json) file.
 
-## Hybrid Principals with Privileged Access
+## Synced Principals with Privileged Access (Indirect) - Hybrid Edges
+
+Users and applications with inbound hybrid relationships (sync, SSO, or AD agent) that hold privileged role assignments through group membership in Okta.
+
+```cypher
+MATCH p = ()-[:Okta_UserSync|Okta_InboundSSO|Okta_HostsAgent]->(:Okta_User:Okta_Application)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+RETURN p
+LIMIT 1000
+```
+
+This query can be imported into BloodHound from the [privileged-hybrid-inbound-indirect.json](../Src/Queries/privileged-hybrid-inbound-indirect.json) file.
+
+## Synced Principals with Privileged Access (Indirect) - Okta Edges
+
+Users synchronized from external sources that hold privileged role assignments through group membership in Okta.
+
+```cypher
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application:Okta_IdentityProvider)-[:Okta_UserPull|Okta_IdentityProviderFor]->(:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+RETURN p
+LIMIT 1000
+```
+
+This query can be imported into BloodHound from the [privileged-principals-hybrid-indirect.json](../Src/Queries/privileged-principals-hybrid-indirect.json) file.
+
+## Synced Principals with Privileged Access (Direct) - Okta Edges
 
 Users and groups synchronized from external sources that have privileged role assignments.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)-[:Okta_UserPull|Okta_GroupPull]->(:Okta)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application:Okta_IdentityProvider)-[:Okta_UserPull|Okta_GroupPull|Okta_IdentityProviderFor|Okta_IdpGroupAssignment]->(:Okta)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
 RETURN p
 LIMIT 1000
 ```
 
-This query can be imported into BloodHound from the [privileged-principals-hybrid.json](../Src/Queries/privileged-principals-hybrid.json) file.
+This query can be imported into BloodHound from the [privileged-principals-hybrid-direct.json](../Src/Queries/privileged-principals-hybrid-direct.json) file.
 
-## Privileged Users without MFA
+## Privileged Users without MFA (Direct)
 
-Users with active role assignments who do not have multi-factor authentication enabled.
+Users who do not have multi-factor authentication enabled and directly hold privileged role assignments.
 
 ```cypher
-MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment|Okta_MemberOf*1..2]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
 WHERE u.authenticationFactors = 0
 RETURN p
 LIMIT 1000
 ```
 
-This query can be imported into BloodHound from the [privileged-users-no-mfa.json](../Src/Queries/privileged-users-no-mfa.json) file.
+This query can be imported into BloodHound from the [privileged-users-no-mfa-direct.json](../Src/Queries/privileged-users-no-mfa-direct.json) file.
 
-## Privileged Users with Old Passwords
+## Privileged Users without MFA (Indirect)
 
-Finds users with role assignments where the last password change was more than a year ago.
+Users who do not have multi-factor authentication enabled and hold privileged role assignments through group membership.
 
 ```cypher
-MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment|Okta_MemberOf*1..2]->(r:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+MATCH p = (u:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE u.authenticationFactors = 0
+RETURN p
+LIMIT 1000
+```
+
+This query can be imported into BloodHound from the [privileged-users-no-mfa-indirect.json](../Src/Queries/privileged-users-no-mfa-indirect.json) file.
+
+## Privileged Users with Old Passwords (Direct)
+
+Finds users whose last password change was more than a year ago and directly hold privileged role assignments.
+
+```cypher
+MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
 WHERE u.passwordChanged IS NOT NULL AND datetime(u.passwordChanged) <= datetime() - duration("P365D")
 RETURN p
 LIMIT 1000
 ```
 
-This query can be imported into BloodHound from the [privileged-users-old-passwords.json](../Src/Queries/privileged-users-old-passwords.json) file.
+This query can be imported into BloodHound from the [privileged-users-old-passwords-direct.json](../Src/Queries/privileged-users-old-passwords-direct.json) file.
 
-## Privileged Users with Non-Active Status
+## Privileged Users with Old Passwords (Indirect)
 
-Finds privileged users with role assignments whose status is not ACTIVE, including deactivated, suspended, or provisioning-incomplete accounts.
+Finds users whose last password change was more than a year ago and hold privileged role assignments through group membership.
 
 ```cypher
-MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment|Okta_MemberOf*1..2]->(r:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+MATCH p = (u:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE u.passwordChanged IS NOT NULL AND datetime(u.passwordChanged) <= datetime() - duration("P365D")
+RETURN p
+LIMIT 1000
+```
+
+This query can be imported into BloodHound from the [privileged-users-old-passwords-indirect.json](../Src/Queries/privileged-users-old-passwords-indirect.json) file.
+
+## Privileged Users with Non-Active Status (Direct)
+
+Finds users whose status is not ACTIVE and directly hold privileged role assignments, including deactivated, suspended, or provisioning-incomplete accounts.
+
+```cypher
+MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
 WHERE u.status <> "ACTIVE"
 RETURN p
 LIMIT 1000
 ```
 
-This query can be imported into BloodHound from the [privileged-users-unexpected-status.json](../Src/Queries/privileged-users-unexpected-status.json) file.
+This query can be imported into BloodHound from the [privileged-users-unexpected-status-direct.json](../Src/Queries/privileged-users-unexpected-status-direct.json) file.
+
+## Privileged Users with Non-Active Status (Indirect)
+
+Finds users whose status is not ACTIVE and hold privileged role assignments through group membership, including deactivated, suspended, or provisioning-incomplete accounts.
+
+```cypher
+MATCH p = (u:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE u.status <> "ACTIVE"
+RETURN p
+LIMIT 1000
+```
+
+This query can be imported into BloodHound from the [privileged-users-unexpected-status-indirect.json](../Src/Queries/privileged-users-unexpected-status-indirect.json) file.
 
 ## Read Client Secrets of Privileged Applications
 
@@ -314,7 +401,7 @@ LIMIT 1000
 
 This query can be imported into BloodHound from the [role-app-admins.json](../Src/Queries/role-app-admins.json) file.
 
-## Role Assignments and Scope
+## Role Assignments - Role Assignments and Scope
 
 Lists all role assignments and scope, including transitive group membership.
 
@@ -326,9 +413,21 @@ LIMIT 1000
 
 This query can be imported into BloodHound from the [role-assignments.json](../Src/Queries/role-assignments.json) file.
 
-## Role Assignments
+## Role Assignments - All Custom Roles
 
-Lists all role assignments, linking principals to their assigned built-in or custom roles.
+Lists all role assignments, linking principals to their assigned custom roles.
+
+```cypher
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_User:Okta_Group:Okta_Application)-[:Okta_HasRole]->(:Okta_CustomRole)
+RETURN p
+LIMIT 1000
+```
+
+This query can be imported into BloodHound from the [role-custom-assignments.json](../Src/Queries/role-custom-assignments.json) file.
+
+## Role Assignments - All Built-in Roles
+
+Lists all role assignments, linking principals to their assigned built-in roles.
 
 ```cypher
 MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_User:Okta_Group:Okta_Application)-[:Okta_HasRole]->(:Okta_Role)
@@ -338,7 +437,7 @@ LIMIT 1000
 
 This query can be imported into BloodHound from the [role-direct-assignments.json](../Src/Queries/role-direct-assignments.json) file.
 
-## Group Administrators
+## Role Assignments - Group Administrators
 
 List all Group Administrators and Group Membership Administrators.
 
@@ -374,18 +473,31 @@ LIMIT 1000
 
 This query can be imported into BloodHound from the [service-integration-creators.json](../Src/Queries/service-integration-creators.json) file.
 
-## Stale Privileged Users
+## Stale Privileged Users (Direct)
 
-Finds user accounts with role assignments that have not logged in for at least 180 days.
+Finds user accounts that have not logged in for at least 180 days and directly hold privileged role assignments.
 
 ```cypher
-MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment|Okta_MemberOf*1..2]->(r:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
 WHERE u.lastLogin IS NULL OR datetime(u.lastLogin) <= datetime() - duration("P180D")
 RETURN p
 LIMIT 1000
 ```
 
-This query can be imported into BloodHound from the [stale-privileged-accounts.json](../Src/Queries/stale-privileged-accounts.json) file.
+This query can be imported into BloodHound from the [stale-privileged-accounts-direct.json](../Src/Queries/stale-privileged-accounts-direct.json) file.
+
+## Stale Privileged Users (Indirect)
+
+Finds user accounts that have not logged in for at least 180 days and hold privileged role assignments through group membership.
+
+```cypher
+MATCH p = (u:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE u.lastLogin IS NULL OR datetime(u.lastLogin) <= datetime() - duration("P180D")
+RETURN p
+LIMIT 1000
+```
+
+This query can be imported into BloodHound from the [stale-privileged-accounts-indirect.json](../Src/Queries/stale-privileged-accounts-indirect.json) file.
 
 ## Secure Web Authentication Applications
 
