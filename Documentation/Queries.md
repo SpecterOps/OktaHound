@@ -251,18 +251,6 @@ LIMIT 1000
 
 This query can be imported into BloodHound from the [privileged-hybrid-inbound-indirect.json](../Src/Queries/privileged-hybrid-inbound-indirect.json) file.
 
-## Synced Principals with Privileged Access (Indirect) - Okta Edges
-
-Users synchronized from external sources that hold privileged role assignments through group membership in Okta.
-
-```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application:Okta_IdentityProvider)-[:Okta_UserPull|Okta_IdentityProviderFor]->(:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-RETURN p
-LIMIT 1000
-```
-
-This query can be imported into BloodHound from the [privileged-principals-hybrid-indirect.json](../Src/Queries/privileged-principals-hybrid-indirect.json) file.
-
 ## Synced Principals with Privileged Access (Direct) - Okta Edges
 
 Users and groups synchronized from external sources that have privileged role assignments.
@@ -274,6 +262,18 @@ LIMIT 1000
 ```
 
 This query can be imported into BloodHound from the [privileged-principals-hybrid-direct.json](../Src/Queries/privileged-principals-hybrid-direct.json) file.
+
+## Synced Principals with Privileged Access (Indirect) - Okta Edges
+
+Users synchronized from external sources that hold privileged role assignments through group membership in Okta.
+
+```cypher
+MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application:Okta_IdentityProvider)-[:Okta_UserPull|Okta_IdentityProviderFor]->(:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+RETURN p
+LIMIT 1000
+```
+
+This query can be imported into BloodHound from the [privileged-principals-hybrid-indirect.json](../Src/Queries/privileged-principals-hybrid-indirect.json) file.
 
 ## Privileged Users without MFA (Direct)
 
