@@ -8,6 +8,8 @@ Hybrid edges connect Okta entities to entities from other supported BloodHound c
 |-----------|-------------------|-------------------|-------------|
 | [Okta_UserSync] | [User]         | [Okta_User]        | ❌         |
 |                | [Okta_User]     | [User]            | ❌         |
+| [Okta_PasswordSync] | [User]         | [Okta_User]        | ✅         |
+|                | [Okta_User]     | [User]            | ✅         |
 | [Okta_MembershipSync] | [Group]  | [Okta_Group]       | ✅         |
 |                      | [Okta_Group] | [Group]        | ✅         |
 | [Okta_HostsAgent] | [Computer] | [Okta_Agent] | ✅ |

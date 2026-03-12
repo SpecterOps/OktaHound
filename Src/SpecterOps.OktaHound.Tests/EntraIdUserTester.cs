@@ -11,7 +11,7 @@ public class EntraIdUserTester
     public void EntraIdUser_CreateEdgeNode_Serialize()
     {
         var entraUser = EntraIdUser.CreateEdgeNode("alice@contoso.com", "924feb32-9cad-4276-a55b-981788e5b31a");
-        var expectedJson = "{\"properties\":{\"userPrincipalName\":\"alice@contoso.com\",\"tenantId\":\"924feb32-9cad-4276-a55b-981788e5b31a\"},\"match_by\":\"properties\",\"kind\":\"AZUser\"}";
+        var expectedJson = "{\"match_by\":\"property\",\"property_matchers\":[{\"key\":\"userPrincipalName\",\"operator\":\"equals\",\"value\":\"alice@contoso.com\"},{\"key\":\"tenantId\",\"operator\":\"equals\",\"value\":\"924feb32-9cad-4276-a55b-981788e5b31a\"}],\"kind\":\"AZUser\"}";
 
         string json = JsonSerializer.Serialize(entraUser, typeof(OpenGraphEdgeNode), OpenGraphSerializationContext.Default);
 

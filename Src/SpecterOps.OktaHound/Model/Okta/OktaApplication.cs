@@ -195,8 +195,23 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
     [JsonIgnore]
     public bool SupportsSCIM => Features.Contains("SCIM_PROVISIONING");
 
+    /// <summary>
+    /// Indicates whether this application supports outbound password updates from Okta to the target system.
+    /// </summary>
+    /// <remarks>
+    /// Applies to SCIM and Active Directory applications.
+    /// </remarks>
     [JsonIgnore]
     public bool SupportsPasswordUpdates => Features.Contains("PUSH_PASSWORD_UPDATES");
+
+    /// <summary>
+    /// Indicates whether this application supports delegated authentication, where users are authenticated directly against the target system instead of Okta.
+    /// </summary>
+    /// <remarks>
+    /// Applies to Active Directory.
+    /// </remarks>
+    [JsonIgnore]
+    public bool SupportsDelegatedAuthentication => Features.Contains("OUTBOUND_DEL_AUTH");
 
     [JsonIgnore]
     public bool IsService => ClientType == OpenIdConnectApplicationType.Service.Value;

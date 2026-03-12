@@ -135,19 +135,34 @@ partial class OktaClient
                             // Cache the domain SID
                             domainSid ??= adUser.DomainSid;
 
-                            if (inbound)
+                            if (inbound) // Inbound AD sync
                             {
                                 _logger.LogTrace("User {UserName} ({UserId}) is synchronized FROM Active Directory.", adUser.Name, adUser.Id);
 
                                 // Create the (:User)-[:Okta_UserSync]->(:Okta_User) hybrid edge
                                 _hybridEdgeGraph.AddEdge(adUser, oktaUser, OktaUser.UserSyncEdgeKind);
+
+                                // Check if delegated authentication is enabled. This has very similar effect to password sync.
+                                // TODO: Consider introducing a separate edge kind for delegated authentication.
+                                if (appNode.SupportsDelegatedAuthentication)
+                                {
+                                    // Create the (:User)-[:Okta_PasswordSync]->(:Okta_User) hybrid edge
+                                    _hybridEdgeGraph.AddEdge(adUser, oktaUser, OktaUser.PasswordSyncEdgeKind);
+                                }
                             }
-                            else
+                            else // Outbound AD sync
                             {
                                 _logger.LogTrace("User {UserName} ({UserId}) is synchronized TO Active Directory.", adUser.Name, adUser.Id);
 
                                 // Create the (:Okta_User)-[:Okta_UserSync]->(:User) hybrid edge
                                 _hybridEdgeGraph.AddEdge(oktaUser, adUser, OktaUser.UserSyncEdgeKind);
+
+                                // Check if password push is enabled for Okta=>AD
+                                if (appNode.SupportsPasswordUpdates)
+                                {
+                                    // Create the (:Okta_User)-[:Okta_PasswordSync]->(:User) hybrid edge
+                                    _hybridEdgeGraph.AddEdge(oktaUser, adUser, OktaUser.PasswordSyncEdgeKind);
+                                }
                             }
 
                             OpenGraphEdgeNode? domainNode = null;
@@ -213,7 +228,7 @@ partial class OktaClient
                             // Create the (:Okta_User)-[:Okta_UserPush]->(:Okta_Application) hybrid edge
                             _graph.AddEdge(oktaUser, appNode, OktaUser.UserPushEdgeKind);
                         }
-                    }
+                    } // End SYNCHRONIZED
 
                     // SSO edges for SAML, OIDC, and SWA app users.
                     // For users that are not synchronized using SCIM and do not actually exist in the target tenant,

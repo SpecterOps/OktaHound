@@ -11,7 +11,7 @@ public class ActiveDirectoryUserTester
     public void ActiveDirectoryUser_CreateKerberosEdgeNode_DnsCheckFalse_Serialize()
     {
         var edgeNode = ActiveDirectoryUser.CreateKerberosEdgeNode("contoso.okta.com", "contoso.com", dnsCheck: false);
-        var expectedJson = "{\"properties\":{\"serviceprincipalnames\":\"HTTP/contoso.kerberos.okta.com\",\"domain\":\"CONTOSO.COM\"},\"match_by\":\"properties\",\"kind\":\"User\"}";
+        var expectedJson = "{\"match_by\":\"property\",\"property_matchers\":[{\"key\":\"serviceprincipalnames\",\"operator\":\"equals\",\"value\":\"HTTP/contoso.kerberos.okta.com\"},{\"key\":\"domain\",\"operator\":\"equals\",\"value\":\"CONTOSO.COM\"}],\"kind\":\"User\"}";
 
         string json = JsonSerializer.Serialize(edgeNode, typeof(OpenGraphEdgeNode), OpenGraphSerializationContext.Default);
 
