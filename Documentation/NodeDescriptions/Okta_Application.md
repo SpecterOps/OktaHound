@@ -416,15 +416,16 @@ OIDC applications can be granted OAuth 2.0 scopes to access Okta APIs on behalf 
 The `features` attribute of `Okta_Application` nodes may contain the following SCIM-related values,
 indicating if SCIM is enabled and which protocol capabilities are supported:
 
-| Feature                   | Description                                      |
-|---------------------------|--------------------------------------------------|
-| PUSH_NEW_USERS            | Supports pushing new users from Okta to the application |
-| PUSH_PASSWORD_UPDATES     | Supports pushing password updates from Okta to the application |
-| PUSH_PENDING_USERS        | Supports pushing pending users from Okta to the application |
-| PUSH_PROFILE_UPDATES      | Supports pushing profile updates from Okta to the application |
-| PUSH_USER_DEACTIVATION   | Supports pushing user deactivation from Okta to the application |
-| REACTIVATE_USERS          | Supports reactivating users in the application from Okta |
-| IMPORT_NEW_USERS          | Supports importing new users into the application from Okta |
-| OPP_SCIM_INCREMENTAL_IMPORTS* | Supports incremental imports of users into the application from Okta |
-| IMPORT_PROFILE_UPDATES    | Supports importing profile updates into Okta from the application |
-| GROUP_PUSH                | Supports pushing groups and group memberships from Okta to the application |
+| Feature                      | Description                                                                    |
+|------------------------------|--------------------------------------------------------------------------------|
+| PUSH_NEW_USERS               | Supports pushing new users from Okta to the application                        |
+| PUSH_PASSWORD_UPDATES        | Supports pushing password updates from Okta to the application                 |
+| PUSH_PENDING_USERS           | Supports pushing users from Okta to the application in pending state          |
+| PUSH_PROFILE_UPDATES         | Supports pushing profile updates from Okta to the application                  |
+| PUSH_USER_DEACTIVATION       | Supports pushing user deactivation from Okta to the application                |
+| REACTIVATE_USERS             | Supports reactivating users in the application from Okta                       |
+| IMPORT_NEW_USERS             | Supports importing new users into Okta from the application                    |
+| OPP_SCIM_INCREMENTAL_IMPORTS | Supports incremental imports of users from the application into Okta           |
+| IMPORT_PROFILE_UPDATES       | Updates a linked user's app profile in Okta during manual or scheduled imports |
+| GROUP_PUSH                   | Supports pushing groups and group memberships from Okta to the application     |
+| PROFILE_MASTERING            | Supports profile mastering in Okta, allowing the application to be the source of truth for user profiles |

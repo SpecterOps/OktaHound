@@ -188,10 +188,23 @@ partial class OktaClient
                             // This user is imported from LDAP
                             inbound = true;
                         }
-                        else
+                        else // SCIM or Okta Org2Org sync
                         {
-                            // TODO: Handle sync directions for SCIM users.
-                            inbound = false;
+                            if (appUserAssignment.Scope == AppUser.ScopeEnum.GROUP)
+                            {
+                                // If the synced user is assigned to the app through a group, the synchronization must be outbound.
+                                inbound = false;
+                            }
+                            else if (appNode.IsOktaOrg2Org)
+                            {
+                                // For Okta Org2Org outbound sync, the initial status of the user is contained in the user profile.
+                                inbound = appUserAssignment.Profile?.ContainsKey("initialStatus") != true && appNode.InboundUserSyncEnabled;
+                            }
+                            else
+                            {
+                                // TODO: Fine-tune the SCIM user sync direction heuristics:
+                                inbound = appNode.InboundUserSyncEnabled;
+                            }
 
                             // This user is probably synced using SCIM/Org2Org to/from the target app.
                             OpenGraphEdgeNode? scimUser = appNode.CreateHybridUserNode(targetUserName, appUserAssignment.ExternalId);

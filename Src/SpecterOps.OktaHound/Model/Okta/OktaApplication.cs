@@ -195,6 +195,9 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
     [JsonIgnore]
     public bool SupportsSCIM => Features.Contains("SCIM_PROVISIONING");
 
+    [JsonIgnore]
+    public bool InboundUserSyncEnabled => Features.Contains("PROFILE_MASTERING");
+
     /// <summary>
     /// Indicates whether this application supports outbound password updates from Okta to the target system.
     /// </summary>
