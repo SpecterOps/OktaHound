@@ -4,14 +4,14 @@ namespace SpecterOps.OktaHound.Model.OpenGraph;
 
 internal sealed class OpenGraphEdgeNode
 {
-    [JsonPropertyName("value")]
-    public readonly string? Value;
-
-    [JsonPropertyName("properties")]
-    public readonly OrderedDictionary<string, string>? Properties;
-
     [JsonPropertyName("match_by")]
     public readonly NodeMatchType MatchBy;
+
+    [JsonPropertyName("property_matchers")]
+    public readonly List<PropertyMatcher>? PropertyMatchers;
+
+    [JsonPropertyName("value")]
+    public readonly string? Value;
 
     [JsonPropertyName("kind")]
     public readonly string? Kind;
@@ -35,7 +35,9 @@ internal sealed class OpenGraphEdgeNode
         ArgumentNullException.ThrowIfNull(properties);
 
         this.MatchBy = NodeMatchType.Properties;
-        this.Properties = properties;
         this.Kind = kind;
+
+        // Only support equality matchers for now, so convert the properties to PropertyMatchers with the "equals" operator.
+        this.PropertyMatchers = [.. properties.Select(kvp => new PropertyMatcher(kvp.Key, kvp.Value))];
     }
 }

@@ -11,6 +11,6 @@ public enum NodeMatchType
     [JsonStringEnumMemberName("name")]
     Name,
 
-    [JsonStringEnumMemberName("properties")]
+    [JsonStringEnumMemberName("property")]
     Properties
 }
