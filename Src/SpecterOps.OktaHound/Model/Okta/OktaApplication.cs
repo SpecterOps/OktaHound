@@ -434,10 +434,7 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
             */
 
             // Fetch additional properties
-            foreach (var property in oidcApp.Settings?.App ?? [])
-            {
-                SetProperty(property.Key, property.Value);
-            }
+            SetCustomAppProperties(oidcApp.Settings?.App);
         }
         else if (application is SamlApplication saml2App)
         {
@@ -466,10 +463,7 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
             */
 
             // Fetch additional properties
-            foreach (var property in saml2App.Settings?.App ?? [])
-            {
-                SetProperty(property.Key, property.Value);
-            }
+            SetCustomAppProperties(saml2App.Settings?.App);
         }
         else if (application is Saml11Application saml1App)
         {
@@ -492,10 +486,7 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
             */
 
             // Fetch additional properties
-            foreach (var property in saml1App.Settings?.App ?? [])
-            {
-                SetProperty(property.Key, property.Value);
-            }
+            SetCustomAppProperties(saml1App.Settings?.App);
 
             // Derive Entra Tenant ID from the primary domain if specified
             string? onMicrosoftDomain = GetProperty<string>(EntraOnMicrosoftDomainPropertyName);
@@ -514,10 +505,7 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
             SetProperty(UrlPropertyName, swaApp.Settings?.SignOn?.LoginUrl);
 
             // Fetch additional properties
-            foreach (var property in swaApp.Settings?.App ?? [])
-            {
-                SetProperty(property.Key, property.Value);
-            }
+            SetCustomAppProperties(swaApp.Settings?.App);
         }
         else if (application is BrowserPluginApplication browserPluginApp)
         {
@@ -526,10 +514,7 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
             SetProperty(UrlPropertyName, browserPluginApp.Settings?.App?.Url);
 
             // Fetch additional properties
-            foreach (var property in browserPluginApp.Settings?.App?.AdditionalProperties ?? ImmutableDictionary<string, object>.Empty)
-            {
-                SetProperty(property.Key, property.Value);
-            }
+            SetCustomAppProperties(browserPluginApp.Settings?.App?.AdditionalProperties);
 
             /* Sample additional properties for specific apps:
             AWS Account Federation
@@ -715,4 +700,67 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
     }
 
     public static new OpenGraphEdgeNode CreateEdgeNode(string id) => new(id, NodeKind);
+
+    /// <summary>
+    /// Sets custom properties from the application settings, with guard clauses to prevent nested or complex structures.
+    /// </summary>
+    /// <remarks>
+    /// The goal is not to violate the OpenGraph schema with arbitrary nested objects or arrays.
+    /// </remarks>
+    /// <param name="properties">The dictionary of properties to set.</param>
+    private void SetCustomAppProperties(IDictionary<string, object>? properties)
+    {
+        if (properties is null)
+        {
+            return;
+        }
+
+        foreach (var property in properties)
+        {
+            // Implement guard clauses against anything nested.
+            // Only single value strings, numbers, or booleans, or single-depth arrays of the same with homogenous members.
+            if (IsPrimitiveValue(property.Value))
+            {
+                SetProperty(property.Key, property.Value);
+            }
+            else if (property.Value is IList<object> list && IsHomogeneousPrimitiveList(list))
+            {
+                SetProperty(property.Key, list);
+            }
+            else if (property.Value is object[] array && IsHomogeneousPrimitiveList(array))
+            {
+                SetProperty(property.Key, array);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Checks if the value is a primitive type that we want to allow for custom properties.
+    /// </summary>
+    /// <remarks>
+    /// Floating points will most probably NOT appear in app properties.
+    /// </remarks>
+    private static bool IsPrimitiveValue(object? value)
+        => value is string or bool or int or long or uint or ulong;
+
+    /// <summary>
+    /// Checks if the list is a single-depth array of primitive values with homogenous types.
+    /// </summary>
+    private static bool IsHomogeneousPrimitiveList(IEnumerable<object> items)
+    {
+        Type? expectedType = null;
+
+        foreach (var item in items)
+        {
+            if (item is null || !IsPrimitiveValue(item))
+                return false;
+
+            expectedType ??= item.GetType();
+
+            if (item.GetType() != expectedType)
+                return false;
+        }
+
+        return expectedType is not null;
+    }
 }
