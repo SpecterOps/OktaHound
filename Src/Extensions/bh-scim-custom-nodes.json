@@ -1,0 +1,32 @@
+{
+  "custom_types": {
+    "SCIM_Organization": {
+      "icon": {
+        "color": "#3B82F6",
+        "name": "building-circle-arrow-right",
+        "type": "font-awesome"
+      }
+    },
+    "SCIM_User": {
+      "icon": {
+        "color": "#10B981",
+        "name": "user-gear",
+        "type": "font-awesome"
+      }
+    },
+    "SCIM_Group": {
+      "icon": {
+        "color": "#EF4444",
+        "name": "users-gear",
+        "type": "font-awesome"
+      }
+    },
+    "SCIM_Role": {
+      "icon": {
+        "color": "#F59E0B",
+        "name": "clipboard-list",
+        "type": "font-awesome"
+      }
+    }
+  }
+}
