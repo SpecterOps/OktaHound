@@ -2,7 +2,7 @@
   "schema": {
     "name": "OktaHound",
     "display_name": "Okta (OktaHound)",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "namespace": "Okta"
   },
   "node_kinds": [
@@ -357,7 +357,7 @@
     },
     {
       "name": "Okta_PasswordSync",
-      "description": "SCIM or Okta Org2Org password synchronization between users across organizations",
+      "description": "Password synchronization between user accounts via AD integration, Org2Org, or SCIM",
       "is_traversable": true
     },
     {
