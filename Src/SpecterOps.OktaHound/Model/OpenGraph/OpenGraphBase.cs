@@ -6,9 +6,11 @@ namespace SpecterOps.OktaHound.Model.OpenGraph;
 internal abstract class OpenGraphBase<ElementsType>(JsonSerializerContext serializationContext, ElementsType elements, string? sourceKind = null) where ElementsType : OpenGraphElements
 
 {
-    // TODO: Change the schema URL to point to the official schema location when available.
-    // [JsonPropertyName("$schema")]
-    // public readonly string Schema = "https://raw.githubusercontent.com/MichaelGrafnetter/EntraAuthPolicyHound/refs/heads/main/bloodhound-opengraph.schema.json";
+    // OpenGraph schema for manual output validation from https://github.com/SpecterOps/chow
+    private const string SchemaUrl = "https://raw.githubusercontent.com/SpecterOps/chow/refs/heads/main/pkg/validator/jsonschema/opengraph.json";
+
+    [JsonPropertyName("$schema")]
+    public readonly string Schema = SchemaUrl;
 
     [JsonPropertyName("metadata")]
     public readonly OpenGraphMetadata Metadata = new(sourceKind);
