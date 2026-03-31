@@ -2,7 +2,7 @@
   "schema": {
     "name": "JamfHound",
     "display_name": "JAMF (JamfHound)",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "namespace": "jamf"
   },
   "node_kinds": [
@@ -247,7 +247,7 @@
   "environments": [
     {
       "environment_kind": "jamf_Tenant",
-      "source_kind": "jamf_Base",
+      "source_kind": "jamf",
       "principal_kinds": [
         "jamf_Account",
         "jamf_Group",
