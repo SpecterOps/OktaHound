@@ -1,5 +1,5 @@
 {
   "name": "Okta: Resource Set Membership",
   "description": "Lists all resource sets and their associated members.",
-  "query": "MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_ResourceSet)-[:Okta_ResourceSetContains]->(:Okta)\nRETURN p\nLIMIT 1000"
+  "query": "MATCH path = (:Okta_Organization)-[:Okta_Contains]->(:Okta_ResourceSet)-[:Okta_ResourceSetContains]->(:Okta)\nRETURN path\nLIMIT 1000"
 }

@@ -1,5 +1,5 @@
 {
   "name": "Okta: API Service Integration Creators",
   "description": "Lists all API service integrations and their creators.",
-  "query": "MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_CreatorOf]->(:Okta_ApiServiceIntegration)\nRETURN p\nLIMIT 1000"
+  "query": "MATCH path = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_CreatorOf]->(:Okta_ApiServiceIntegration)\nRETURN path\nLIMIT 1000"
 }

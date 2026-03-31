@@ -1,5 +1,5 @@
 {
   "name": "Okta: Synced Principals with Privileged Access (Indirect) - Okta Edges",
   "description": "Users synchronized from external sources that hold privileged role assignments through group membership in Okta.",
-  "query": "MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application:Okta_IdentityProvider)-[:Okta_UserPull|Okta_IdentityProviderFor]->(:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)\nRETURN p\nLIMIT 1000"
+  "query": "MATCH path = (:Okta_Organization)-[:Okta_Contains]->(provider)-[:Okta_UserPull|Okta_IdentityProviderFor]->(:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)\nWHERE provider:Okta_Application OR provider:Okta_IdentityProvider\nRETURN path\nLIMIT 1000"
 }

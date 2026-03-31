@@ -1,5 +1,5 @@
 {
   "name": "Okta: Hybrid Relationships Inbound",
   "description": "Retrieves all hybrid relationships from external systems to Okta.",
-  "query": "MATCH p = (n)-[]->(:Okta)\nWHERE NOT n:Okta\nRETURN p\nLIMIT 1000"
+  "query": "MATCH path = (source)-[]->(:Okta)\nWHERE NOT source:Okta\nRETURN path\nLIMIT 1000"
 }
