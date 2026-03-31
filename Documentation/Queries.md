@@ -10,8 +10,9 @@ Each query is defined in a JSON file located in the [Queries](../Src/Queries) di
 Lists Okta agents, their associated agent pools, and the AD servers hosting each agent.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_AgentPool)<-[:Okta_AgentMemberOf|Okta_HostsAgent*1..2]-(:Okta_Agent:Computer)
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(:Okta_AgentPool)<-[:Okta_AgentMemberOf|Okta_HostsAgent*1..2]-(agent)
+WHERE agent:Okta_Agent OR agent:Computer
+RETURN path
 LIMIT 1000
 ```
 
@@ -22,9 +23,9 @@ This query can be imported into BloodHound from the [ad-agents.json](../Src/Quer
 Identifies principals with access to the Okta Admin Console.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_AppAssignment]->(c:Okta_Application)
-WHERE c.appType = "saasure"
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_AppAssignment]->(console:Okta_Application)
+WHERE console.appType = "saasure"
+RETURN path
 LIMIT 1000
 ```
 
@@ -35,8 +36,8 @@ This query can be imported into BloodHound from the [admin-console-access.json](
 List all application assignments.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_AppAssignment]->(:Okta_Application)
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_AppAssignment]->(:Okta_Application)
+RETURN path
 LIMIT 1000
 ```
 
@@ -47,8 +48,9 @@ This query can be imported into BloodHound from the [app-assignments.json](../Sr
 Lists all service application secrets and JWTs.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)<-[:Okta_SecretOf|Okta_KeyOf]->(:Okta_ClientSecret:Okta_JWK)
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)<-[:Okta_SecretOf|Okta_KeyOf]->(credential)
+WHERE credential:Okta_ClientSecret OR credential:Okta_JWK
+RETURN path
 LIMIT 1000
 ```
 
@@ -59,9 +61,10 @@ This query can be imported into BloodHound from the [app-credentials.json](../Sr
 List all devices, their owners, and any mobile admins.
 
 ```cypher
-MATCH p = (:Okta_Device)-[:Okta_DeviceOf]->(:Okta_User)
-OPTIONAL MATCH q = (:Okta_User:Okta_Group:Okta_Application)-[:Okta_MobileAdmin]->(:Okta_Device)
-RETURN p,q
+MATCH path = (:Okta_Device)-[:Okta_DeviceOf]->(:Okta_User)
+OPTIONAL MATCH adminPath = (admin)-[:Okta_MobileAdmin]->(:Okta_Device)
+WHERE admin:Okta_User OR admin:Okta_Group OR admin:Okta_Application
+RETURN path,adminPath
 LIMIT 1000
 ```
 
@@ -72,8 +75,8 @@ This query can be imported into BloodHound from the [devices.json](../Src/Querie
 Retrieves all group membership relationships.
 
 ```cypher
-MATCH p = (:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)
-RETURN p
+MATCH path = (:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)
+RETURN path
 LIMIT 1000
 ```
 
@@ -84,9 +87,9 @@ This query can be imported into BloodHound from the [group-members.json](../Src/
 Retrieves all hybrid relationships from external systems to Okta.
 
 ```cypher
-MATCH p = (n)-[]->(:Okta)
-WHERE NOT n:Okta
-RETURN p
+MATCH path = (source)-[]->(:Okta)
+WHERE NOT source:Okta
+RETURN path
 LIMIT 1000
 ```
 
@@ -97,9 +100,9 @@ This query can be imported into BloodHound from the [hybrid-inbound.json](../Src
 Retrieves all hybrid relationships from Okta to external systems.
 
 ```cypher
-MATCH p = (:Okta)-[]->(n)
-WHERE NOT n:Okta
-RETURN p
+MATCH path = (:Okta)-[]->(target)
+WHERE NOT target:Okta
+RETURN path
 LIMIT 1000
 ```
 
@@ -110,8 +113,8 @@ This query can be imported into BloodHound from the [hybrid-outbound.json](../Sr
 Retrieves all users and groups that are synchronized TO or FROM Okta.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_UserPull|Okta_UserPush|Okta_GroupPull|Okta_GroupPush]->(:Okta)
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_UserPull|Okta_UserPush|Okta_GroupPull|Okta_GroupPush]->(:Okta)
+RETURN path
 LIMIT 1000
 ```
 
@@ -122,8 +125,9 @@ This query can be imported into BloodHound from the [hybrid-sync.json](../Src/Qu
 Identity providers associated with users or groups that hold direct privileged role assignments in Okta.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_IdentityProvider)-[:Okta_IdentityProviderFor|Okta_IdpGroupAssignment]->(:Okta_User:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(:Okta_IdentityProvider)-[:Okta_IdentityProviderFor|Okta_IdpGroupAssignment]->(assignee)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE assignee:Okta_User OR assignee:Okta_Group
+RETURN path
 LIMIT 1000
 ```
 
@@ -134,8 +138,8 @@ This query can be imported into BloodHound from the [identity-providers-direct-p
 Identity providers associated with users who hold privileged role assignments through group membership in Okta.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_IdentityProvider)-[:Okta_IdentityProviderFor]->(:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(:Okta_IdentityProvider)-[:Okta_IdentityProviderFor]->(:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+RETURN path
 LIMIT 1000
 ```
 
@@ -146,8 +150,9 @@ This query can be imported into BloodHound from the [identity-providers-indirect
 Lists all identity providers and the users and groups they are associated with, including per-user trust relationships and automatic group assignments.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_IdentityProvider)-[:Okta_IdentityProviderFor|Okta_IdpGroupAssignment]->(:Okta_User:Okta_Group)
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(:Okta_IdentityProvider)-[:Okta_IdentityProviderFor|Okta_IdpGroupAssignment]->(assignee)
+WHERE assignee:Okta_User OR assignee:Okta_Group
+RETURN path
 LIMIT 1000
 ```
 
@@ -158,8 +163,8 @@ This query can be imported into BloodHound from the [identity-providers.json](..
 Retrieves all manager relationships.
 
 ```cypher
-MATCH p = (:Okta_User)-[:Okta_ManagerOf]->(:Okta_User)
-RETURN p
+MATCH path = (:Okta_User)-[:Okta_ManagerOf]->(:Okta_User)
+RETURN path
 LIMIT 1000
 ```
 
@@ -170,8 +175,9 @@ This query can be imported into BloodHound from the [org-chart.json](../Src/Quer
 Lists all org-to-org trust relationships including inbound and outbound SSO federation, Secure Web Authentication (SWA), and Kerberos SSO relationships between Okta applications and supported external organizations or tenants.
 
 ```cypher
-MATCH p = (:Okta_Application:Okta_IdentityProvider)-[:Okta_InboundOrgSSO|Okta_OutboundOrgSSO|Okta_OrgSWA|Okta_KerberosSSO]-()
-RETURN p
+MATCH path = (source)-[:Okta_InboundOrgSSO|Okta_OutboundOrgSSO|Okta_OrgSWA|Okta_KerberosSSO]-()
+WHERE source:Okta_Application OR source:Okta_IdentityProvider
+RETURN path
 LIMIT 1000
 ```
 
@@ -182,8 +188,9 @@ This query can be imported into BloodHound from the [org-trust-relationships.jso
 Lists permissions to reset passwords and MFA factors.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_User:Okta_Group:Okta_Application)-[:Okta_ResetPassword|Okta_ResetFactors|Okta_HelpDeskAdmin|Okta_OrgAdmin|Okta_GroupAdmin]->(:Okta_User)
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(actor)-[:Okta_ResetPassword|Okta_ResetFactors|Okta_HelpDeskAdmin|Okta_OrgAdmin|Okta_GroupAdmin]->(:Okta_User)
+WHERE actor:Okta_User OR actor:Okta_Group OR actor:Okta_Application
+RETURN path
 LIMIT 1000
 ```
 
@@ -207,9 +214,9 @@ This query can be imported into BloodHound from the [policy-mappings.json](../Sr
 Finds active JWKs or client secrets older than 365 days on applications that have role assignments.
 
 ```cypher
-MATCH p = (s:Okta_JWK:Okta_ClientSecret)-[:Okta_KeyOf|Okta_SecretOf]->(:Okta_Application)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-WHERE s.status = "ACTIVE" AND datetime(s.created) <= datetime() - duration("P365D")
-RETURN p
+MATCH path = (credential)-[:Okta_KeyOf|Okta_SecretOf]->(:Okta_Application)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE (credential:Okta_JWK OR credential:Okta_ClientSecret) AND credential.status = "ACTIVE" AND datetime(credential.created) <= datetime() - duration("P365D")
+RETURN path
 LIMIT 1000
 ```
 
@@ -220,8 +227,8 @@ This query can be imported into BloodHound from the [privileged-app-unrotated-ac
 Applications that have roles assigned.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+RETURN path
 LIMIT 1000
 ```
 
@@ -232,8 +239,9 @@ This query can be imported into BloodHound from the [privileged-apps.json](../Sr
 Users, groups, and applications with inbound hybrid relationships (sync, SSO, or AD agent) that hold privileged role assignments in Okta.
 
 ```cypher
-MATCH p = ()-[:Okta_UserSync|Okta_MembershipSync|Okta_InboundSSO|Okta_HostsAgent]->(:Okta_User:Okta_Group:Okta_Application)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-RETURN p
+MATCH path = ()-[:Okta_UserSync|Okta_MembershipSync|Okta_InboundSSO|Okta_HostsAgent]->(principal)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE principal:Okta_User OR principal:Okta_Group OR principal:Okta_Application
+RETURN path
 LIMIT 1000
 ```
 
@@ -244,8 +252,9 @@ This query can be imported into BloodHound from the [privileged-hybrid-inbound-d
 Users and applications with inbound hybrid relationships (sync, SSO, or AD agent) that hold privileged role assignments through group membership in Okta.
 
 ```cypher
-MATCH p = ()-[:Okta_UserSync|Okta_InboundSSO|Okta_HostsAgent]->(:Okta_User:Okta_Application)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-RETURN p
+MATCH path = ()-[:Okta_UserSync|Okta_InboundSSO|Okta_HostsAgent]->(principal)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE principal:Okta_User OR principal:Okta_Application
+RETURN path
 LIMIT 1000
 ```
 
@@ -256,8 +265,9 @@ This query can be imported into BloodHound from the [privileged-hybrid-inbound-i
 Users and groups synchronized from external sources that have privileged role assignments.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application:Okta_IdentityProvider)-[:Okta_UserPull|Okta_GroupPull|Okta_IdentityProviderFor|Okta_IdpGroupAssignment]->(:Okta)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(provider)-[:Okta_UserPull|Okta_GroupPull|Okta_IdentityProviderFor|Okta_IdpGroupAssignment]->(:Okta)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE provider:Okta_Application OR provider:Okta_IdentityProvider
+RETURN path
 LIMIT 1000
 ```
 
@@ -268,8 +278,9 @@ This query can be imported into BloodHound from the [privileged-principals-hybri
 Users synchronized from external sources that hold privileged role assignments through group membership in Okta.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application:Okta_IdentityProvider)-[:Okta_UserPull|Okta_IdentityProviderFor]->(:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(provider)-[:Okta_UserPull|Okta_IdentityProviderFor]->(:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE provider:Okta_Application OR provider:Okta_IdentityProvider
+RETURN path
 LIMIT 1000
 ```
 
@@ -280,9 +291,9 @@ This query can be imported into BloodHound from the [privileged-principals-hybri
 Users who do not have multi-factor authentication enabled and directly hold privileged role assignments.
 
 ```cypher
-MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-WHERE u.authenticationFactors = 0
-RETURN p
+MATCH path = (user:Okta_User)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE user.authenticationFactors = 0
+RETURN path
 LIMIT 1000
 ```
 
@@ -293,9 +304,9 @@ This query can be imported into BloodHound from the [privileged-users-no-mfa-dir
 Users who do not have multi-factor authentication enabled and hold privileged role assignments through group membership.
 
 ```cypher
-MATCH p = (u:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-WHERE u.authenticationFactors = 0
-RETURN p
+MATCH path = (user:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE user.authenticationFactors = 0
+RETURN path
 LIMIT 1000
 ```
 
@@ -306,9 +317,9 @@ This query can be imported into BloodHound from the [privileged-users-no-mfa-ind
 Finds users whose last password change was more than a year ago and directly hold privileged role assignments.
 
 ```cypher
-MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-WHERE u.passwordChanged IS NOT NULL AND datetime(u.passwordChanged) <= datetime() - duration("P365D")
-RETURN p
+MATCH path = (user:Okta_User)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE user.passwordChanged IS NOT NULL AND datetime(user.passwordChanged) <= datetime() - duration("P365D")
+RETURN path
 LIMIT 1000
 ```
 
@@ -319,9 +330,9 @@ This query can be imported into BloodHound from the [privileged-users-old-passwo
 Finds users whose last password change was more than a year ago and hold privileged role assignments through group membership.
 
 ```cypher
-MATCH p = (u:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-WHERE u.passwordChanged IS NOT NULL AND datetime(u.passwordChanged) <= datetime() - duration("P365D")
-RETURN p
+MATCH path = (user:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE user.passwordChanged IS NOT NULL AND datetime(user.passwordChanged) <= datetime() - duration("P365D")
+RETURN path
 LIMIT 1000
 ```
 
@@ -332,9 +343,9 @@ This query can be imported into BloodHound from the [privileged-users-old-passwo
 Finds users whose status is not ACTIVE and directly hold privileged role assignments, including deactivated, suspended, or provisioning-incomplete accounts.
 
 ```cypher
-MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-WHERE u.status <> "ACTIVE"
-RETURN p
+MATCH path = (user:Okta_User)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE user.status <> "ACTIVE"
+RETURN path
 LIMIT 1000
 ```
 
@@ -345,9 +356,9 @@ This query can be imported into BloodHound from the [privileged-users-unexpected
 Finds users whose status is not ACTIVE and hold privileged role assignments through group membership, including deactivated, suspended, or provisioning-incomplete accounts.
 
 ```cypher
-MATCH p = (u:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-WHERE u.status <> "ACTIVE"
-RETURN p
+MATCH path = (user:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE user.status <> "ACTIVE"
+RETURN path
 LIMIT 1000
 ```
 
@@ -358,8 +369,8 @@ This query can be imported into BloodHound from the [privileged-users-unexpected
 Searches for client secrets associated with privileged applications that are readable to non-Super Admins.
 
 ```cypher
-MATCH p = (:Okta)-[:Okta_ReadClientSecret|Okta_MemberOf*1..2]->(:Okta_ClientSecret)-[:Okta_SecretOf]->(:Okta_Application)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-RETURN p
+MATCH path = (:Okta)-[:Okta_ReadClientSecret|Okta_MemberOf*1..2]->(:Okta_ClientSecret)-[:Okta_SecretOf]->(:Okta_Application)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+RETURN path
 LIMIT 1000
 ```
 
@@ -370,8 +381,8 @@ This query can be imported into BloodHound from the [read-client-secrets.json](.
 Lists all Okta realms and the users assigned to them.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Realm)-[:Okta_RealmContains]->(:Okta_User)
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Realm)-[:Okta_RealmContains]->(:Okta_User)
+RETURN path
 LIMIT 1000
 ```
 
@@ -382,8 +393,8 @@ This query can be imported into BloodHound from the [realm-membership.json](../S
 Lists all resource sets and their associated members.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_ResourceSet)-[:Okta_ResourceSetContains]->(:Okta)
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(:Okta_ResourceSet)-[:Okta_ResourceSetContains]->(:Okta)
+RETURN path
 LIMIT 1000
 ```
 
@@ -394,8 +405,9 @@ This query can be imported into BloodHound from the [resource-set-membership.jso
 List all Application Administrators and Managers.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_User:Okta_Group:Okta_Application)-[:Okta_AppAdmin|Okta_ManageApp]->(:Okta_Application:Okta_ApiServiceIntegration)
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(admin)-[:Okta_AppAdmin|Okta_ManageApp]->(app)
+WHERE (admin:Okta_User OR admin:Okta_Group OR admin:Okta_Application) AND (app:Okta_Application OR app:Okta_ApiServiceIntegration)
+RETURN path
 LIMIT 1000
 ```
 
@@ -406,8 +418,8 @@ This query can be imported into BloodHound from the [role-app-admins.json](../Sr
 Lists all role assignments and scope, including transitive group membership.
 
 ```cypher
-MATCH p = (:Okta)-[:Okta_HasRoleAssignment|Okta_MemberOf*1..2]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-RETURN p
+MATCH path = (:Okta)-[:Okta_HasRoleAssignment|Okta_MemberOf*1..2]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+RETURN path
 LIMIT 1000
 ```
 
@@ -418,8 +430,9 @@ This query can be imported into BloodHound from the [role-assignments.json](../S
 Lists all role assignments, linking principals to their assigned custom roles.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_User:Okta_Group:Okta_Application)-[:Okta_HasRole]->(:Okta_CustomRole)
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(assignee)-[:Okta_HasRole]->(:Okta_CustomRole)
+WHERE assignee:Okta_User OR assignee:Okta_Group OR assignee:Okta_Application
+RETURN path
 LIMIT 1000
 ```
 
@@ -430,8 +443,9 @@ This query can be imported into BloodHound from the [role-custom-assignments.jso
 Lists all role assignments, linking principals to their assigned built-in roles.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_User:Okta_Group:Okta_Application)-[:Okta_HasRole]->(:Okta_Role)
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(assignee)-[:Okta_HasRole]->(:Okta_Role)
+WHERE assignee:Okta_User OR assignee:Okta_Group OR assignee:Okta_Application
+RETURN path
 LIMIT 1000
 ```
 
@@ -442,8 +456,9 @@ This query can be imported into BloodHound from the [role-direct-assignments.jso
 List all Group Administrators and Group Membership Administrators.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_User:Okta_Group:Okta_Application)-[:Okta_GroupAdmin|Okta_GroupMembershipAdmin|Okta_OrgAdmin]->(:Okta_Group)
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(admin)-[:Okta_GroupAdmin|Okta_GroupMembershipAdmin|Okta_OrgAdmin]->(:Okta_Group)
+WHERE admin:Okta_User OR admin:Okta_Group OR admin:Okta_Application
+RETURN path
 LIMIT 1000
 ```
 
@@ -454,8 +469,8 @@ This query can be imported into BloodHound from the [role-group-admins.json](../
 Lists application-to-user assignments where the app receives password updates.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)-[:Okta_ReadPasswordUpdates]->(:Okta_User)
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application)-[:Okta_ReadPasswordUpdates]->(:Okta_User)
+RETURN path
 LIMIT 1000
 ```
 
@@ -466,8 +481,8 @@ This query can be imported into BloodHound from the [scim-read-passwords.json](.
 Lists all API service integrations and their creators.
 
 ```cypher
-MATCH p = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_CreatorOf]->(:Okta_ApiServiceIntegration)
-RETURN p
+MATCH path = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_CreatorOf]->(:Okta_ApiServiceIntegration)
+RETURN path
 LIMIT 1000
 ```
 
@@ -478,9 +493,9 @@ This query can be imported into BloodHound from the [service-integration-creator
 Finds user accounts that have not logged in for at least 180 days and directly hold privileged role assignments.
 
 ```cypher
-MATCH p = (u:Okta_User)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-WHERE u.lastLogin IS NULL OR datetime(u.lastLogin) <= datetime() - duration("P180D")
-RETURN p
+MATCH path = (user:Okta_User)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE user.lastLogin IS NULL OR datetime(user.lastLogin) <= datetime() - duration("P180D")
+RETURN path
 LIMIT 1000
 ```
 
@@ -491,9 +506,9 @@ This query can be imported into BloodHound from the [stale-privileged-accounts-d
 Finds user accounts that have not logged in for at least 180 days and hold privileged role assignments through group membership.
 
 ```cypher
-MATCH p = (u:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
-WHERE u.lastLogin IS NULL OR datetime(u.lastLogin) <= datetime() - duration("P180D")
-RETURN p
+MATCH path = (user:Okta_User)-[:Okta_MemberOf]->(:Okta_Group)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta)
+WHERE user.lastLogin IS NULL OR datetime(user.lastLogin) <= datetime() - duration("P180D")
+RETURN path
 LIMIT 1000
 ```
 
@@ -504,9 +519,9 @@ This query can be imported into BloodHound from the [stale-privileged-accounts-i
 Secure Web Authentication (SWA) relationships between Okta users and their linked accounts in external applications.
 
 ```cypher
-MATCH p = (:Okta_User)-[:Okta_SWA]->(n)
-WHERE NOT n:Okta
-RETURN p
+MATCH path = (:Okta_User)-[:Okta_SWA]->(target)
+WHERE NOT target:Okta
+RETURN path
 LIMIT 1000
 ```
 
@@ -517,8 +532,9 @@ This query can be imported into BloodHound from the [swa-applications.json](../S
 Lists all inbound user and group synchronization relationships to Okta, including password synchronization across Org2Org setups.
 
 ```cypher
-MATCH p = (n)-[:Okta_UserSync|Okta_MembershipSync|Okta_PasswordSync]->(:Okta_User:Okta_Group)
-RETURN p
+MATCH path = (source)-[:Okta_UserSync|Okta_MembershipSync|Okta_PasswordSync]->(target)
+WHERE target:Okta_User OR target:Okta_Group
+RETURN path
 LIMIT 1000
 ```
 
@@ -529,8 +545,9 @@ This query can be imported into BloodHound from the [sync-relationships-inbound.
 Lists all outbound user and group synchronization relationships from Okta, including password synchronization across Org2Org setups.
 
 ```cypher
-MATCH p = (:Okta_User:Okta_Group)-[:Okta_UserSync|Okta_MembershipSync|Okta_PasswordSync]->(n)
-RETURN p
+MATCH path = (source)-[:Okta_UserSync|Okta_MembershipSync|Okta_PasswordSync]->(target)
+WHERE source:Okta_User OR source:Okta_Group
+RETURN path
 LIMIT 1000
 ```
 
@@ -541,10 +558,10 @@ This query can be imported into BloodHound from the [sync-relationships-outbound
 Principals with SUPER_ADMIN or ORG_ADMIN role assignments and their associated devices.
 
 ```cypher
-MATCH p = (:Okta)-[:Okta_HasRoleAssignment|Okta_MemberOf|Okta_DeviceOf*1..3]->(r:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta_Organization)
-WHERE r.type = "SUPER_ADMIN"
-OR r.type = "ORG_ADMIN"
-RETURN p
+MATCH path = (:Okta)-[:Okta_HasRoleAssignment|Okta_MemberOf|Okta_DeviceOf*1..3]->(role:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta_Organization)
+WHERE role.type = "SUPER_ADMIN"
+OR role.type = "ORG_ADMIN"
+RETURN path
 LIMIT 1000
 ```
 
@@ -555,8 +572,8 @@ This query can be imported into BloodHound from the [tier0.json](../Src/Queries/
 Retrieves all (privileged) users who have been assigned API tokens.
 
 ```cypher
-MATCH p = (:Okta_ApiToken)-[:Okta_ApiTokenFor]->(:Okta_User)<-[:Okta_Contains]-(:Okta_Organization)
-RETURN p
+MATCH path = (:Okta_ApiToken)-[:Okta_ApiTokenFor]->(:Okta_User)<-[:Okta_Contains]-(:Okta_Organization)
+RETURN path
 LIMIT 1000
 ```
 
