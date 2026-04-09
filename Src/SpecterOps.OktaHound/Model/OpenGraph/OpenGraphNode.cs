@@ -64,6 +64,18 @@ internal class OpenGraphNode(string id, string[] kinds)
         }
     }
 
+    public int? GetPropertyAsInt(string name)
+    {
+        if (Properties.TryGetValue(name, out var valueObj))
+        {
+            return valueObj as int?;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
     public void SetProperty(string name, object? value)
     {
         if (value is not null)

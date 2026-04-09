@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using Okta.Sdk.Model;
+using SpecterOps.OktaHound.Model.OpenGraph;
 
 namespace SpecterOps.OktaHound.Model.Okta;
 
@@ -17,6 +18,12 @@ internal sealed class OktaResourceSet : OktaNode
     /// </summary>
     [JsonIgnore]
     public override string OriginalId => _originalId;
+
+    /// <summary>
+    /// Cached member nodes for this resource set.
+    /// </summary>
+    [JsonIgnore]
+    public List<OktaNode> Members { get; private set; } = [];
 
     public OktaResourceSet(ResourceSet resourceSet, string domainName) : base(MakeResourceSetIdUnique(resourceSet.Id, domainName), domainName, NodeKind)
     {

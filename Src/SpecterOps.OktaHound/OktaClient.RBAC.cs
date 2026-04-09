@@ -679,15 +679,34 @@ partial class OktaClient
                             continue;
                         }
 
+                        // Try to find the role assignment node in the graph
+                        var roleAssignmentNode = _graph.GetRoleAssignment(roleAssignmentId, assigneeId);
+
+                        if (roleAssignmentNode is null)
+                        {
+                            _logger.LogWarning(
+                                "Role assignment {RoleAssignmentId} for assignee {AssigneeId} scoped to resource set {ResourceSetName} ({ResourceSetId}) was not found in the graph.",
+                                roleAssignmentId,
+                                assigneeId,
+                                resourceSetNode.Name,
+                                resourceSetNode.OriginalId);
+                            continue;
+                        }
+                        else
+                        {
+                            _logger.LogTrace(
+                                "Resource set {ResourceSetName} ({ResourceSetId}) has role assignment {RoleAssignmentId} for assignee {AssigneeId}.",
+                                resourceSetNode.Name,
+                                resourceSetNode.OriginalId,
+                                roleAssignmentId,
+                                assigneeId);
+                        }
+
                         // Create the (:Okta_RoleAssignment)-[:Okta_ScopedTo]->(:Okta_ResourceSet) edge
-                        _logger.LogTrace(
-                            "Resource set {ResourceSetName} ({ResourceSetId}) has role assignment {RoleAssignmentId} for assignee {AssigneeId}.",
-                            resourceSetNode.Name,
-                            resourceSetNode.OriginalId,
-                            roleAssignmentId,
-                            assigneeId);
-                        OpenGraphEdgeNode roleAssignmentNode = OktaRoleAssignment.CreateEdgeNode(roleAssignmentId, assigneeId);
                         _graph.AddEdge(roleAssignmentNode, resourceSetNode, OktaRoleAssignment.ScopedToEdgeKind);
+
+                        // Cache the resource set target for post-processing
+                        roleAssignmentNode.Targets.Add(resourceSetNode);
                     }
                 }
 

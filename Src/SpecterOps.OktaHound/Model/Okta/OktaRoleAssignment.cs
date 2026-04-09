@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.Concurrent;
+using System.Text.Json.Serialization;
 using Okta.Sdk.Model;
 using SpecterOps.OktaHound.Model.OpenGraph;
 
@@ -88,7 +89,7 @@ internal class OktaRoleAssignment : OktaNode
         return DeriveRoleAssignmentId(roleAssignment.Id, assigneeId);
     }
 
-    private static string DeriveRoleAssignmentId(string roleAssignmentId, string assigneeId)
+    public static string DeriveRoleAssignmentId(string roleAssignmentId, string assigneeId)
     {
         // Role assignments may have non-unique IDs across different assignees
         return $"{roleAssignmentId}_{assigneeId}";

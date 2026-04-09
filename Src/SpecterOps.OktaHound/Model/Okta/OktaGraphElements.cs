@@ -13,14 +13,14 @@ internal sealed class OktaGraphElements(OktaOrganization organization) : OpenGra
         Concat(AppsById.Select(item => (OpenGraphNode)item.Value)).
         Concat(RolesById.Select(item => (OpenGraphNode)item.Value)).
         Concat(CustomRolesById.Select(item => (OpenGraphNode)item.Value)).
-        Concat(IdentityProviders.Cast<OpenGraphNode>()).
+        Concat(IdentityProvidersById.Select(item => (OpenGraphNode)item.Value)).
         Concat(Devices.Cast<OpenGraphNode>()).
-        Concat(AuthorizationServers.Cast<OpenGraphNode>()).
+        Concat(AuthorizationServersById.Select(item => (OpenGraphNode)item.Value)).
         Concat(ResourceSets.Cast<OpenGraphNode>()).
-        Concat(ApiServiceIntegrations.Cast<OpenGraphNode>()).
+        Concat(ApiServiceIntegrationsById.Select(item => (OpenGraphNode)item.Value)).
         Concat(Realms.Cast<OpenGraphNode>()).
         Concat(Policies.Cast<OpenGraphNode>()).
-        Concat(RoleAssignments.Cast<OpenGraphNode>()).
+        Concat(RoleAssignmentsById.Select(item => (OpenGraphNode)item.Value)).
         Concat(GenericNodes).
         Append(Organization);
 
@@ -31,12 +31,12 @@ internal sealed class OktaGraphElements(OktaOrganization organization) : OpenGra
         AppsById.Count +
         RolesById.Count +
         CustomRolesById.Count +
-        RoleAssignments.Count +
-        IdentityProviders.Count +
+        RoleAssignmentsById.Count +
+        IdentityProvidersById.Count +
         Devices.Count +
-        AuthorizationServers.Count +
+        AuthorizationServersById.Count +
         ResourceSets.Count +
-        ApiServiceIntegrations.Count +
+        ApiServiceIntegrationsById.Count +
         Realms.Count +
         Policies.Count +
         GenericNodes.Count + 1; // +1 for the Okta_Organization node
@@ -77,16 +77,16 @@ internal sealed class OktaGraphElements(OktaOrganization organization) : OpenGra
     public readonly ConcurrentDictionary<string, OktaCustomRole> CustomRolesById = new();
 
     /// <summary>
-    /// Represents a thread-safe collection of Okta role assignments.
+    /// Represents a thread-safe collection of Okta role assignments, keyed by their composite identifiers.
     /// </summary>
     [JsonIgnore]
-    public readonly ConcurrentBag<OktaRoleAssignment> RoleAssignments = [];
+    public readonly ConcurrentDictionary<string, OktaRoleAssignment> RoleAssignmentsById = new();
 
     /// <summary>
     /// Represents a thread-safe collection of identity providers, keyed by their string identifiers.
     /// </summary>
     [JsonIgnore]
-    public readonly ConcurrentBag<OktaIdentityProvider> IdentityProviders = [];
+    public readonly ConcurrentDictionary<string, OktaIdentityProvider> IdentityProvidersById = new();
 
     /// <summary>
     /// Represents a thread-safe collection of devices.
@@ -95,10 +95,10 @@ internal sealed class OktaGraphElements(OktaOrganization organization) : OpenGra
     public readonly ConcurrentBag<OktaDevice> Devices = [];
 
     /// <summary>
-    /// Represents a thread-safe collection of authorization servers.
+    /// Represents a thread-safe collection of authorization servers, keyed by their unique identifiers.
     /// </summary>
     [JsonIgnore]
-    public readonly ConcurrentBag<OktaAuthorizationServer> AuthorizationServers = [];
+    public readonly ConcurrentDictionary<string, OktaAuthorizationServer> AuthorizationServersById = new();
 
     /// <summary>
     /// Represents a thread-safe collection of custom resource sets.
@@ -119,10 +119,10 @@ internal sealed class OktaGraphElements(OktaOrganization organization) : OpenGra
     public readonly ConcurrentBag<OktaPolicy> Policies = [];
 
     /// <summary>
-    /// Represents a thread-safe collection of API service integrations.
+    /// Represents a thread-safe collection of API service integrations, keyed by their unique identifiers.
     /// </summary>
     [JsonIgnore]
-    public readonly ConcurrentBag<OktaApiServiceIntegration> ApiServiceIntegrations = [];
+    public readonly ConcurrentDictionary<string, OktaApiServiceIntegration> ApiServiceIntegrationsById = new();
 
     /// <summary>
     /// Represents the Okta organization associated with the current context.

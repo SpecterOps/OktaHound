@@ -20,6 +20,14 @@ internal sealed class OktaUser : OktaSecurityPrincipal
     private const string RealmIdPropertyName = "realmId";
     private const string LoginPropertyName = "login";
     private const string EmailPropertyName = "email";
+    private const string AuthenticationFactorsCountPropertyName = "authenticationFactors";
+
+    [JsonIgnore]
+    public int AuthenticationFactorsCount
+    {
+        get => GetPropertyAsInt(AuthenticationFactorsCountPropertyName) ?? 0;
+        set => SetProperty(AuthenticationFactorsCountPropertyName, value);
+    }
 
     [JsonIgnore()]
     public bool Enabled
@@ -89,6 +97,9 @@ internal sealed class OktaUser : OktaSecurityPrincipal
                 SetProperty("credentialProviderName", user.Credentials.Provider.Name);
             }
         }
+
+        // Initialize to the default value
+        AuthenticationFactorsCount = 0;
     }
 
     [return: NotNullIfNotNull(nameof(id))]

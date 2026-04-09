@@ -233,6 +233,14 @@ partial class OktaClient
                     continue;
                 }
 
+                var resourceSetMembers = roleAssignment.Targets.OfType<OktaResourceSet>().SelectMany(resourceSet => resourceSet.Members);
+
+                if (!resourceSetMembers.Any())
+                {
+                    _logger.LogDebug("Custom role {RoleName} has no members in its target resource sets. Skipping edge creation for this role.", roleAssignment.Role.Name);
+                    continue;
+                }
+
                 // Handle user permissions
                 if (permissions.Contains("okta.users.manage") ||
                     permissions.Contains("okta.users.credentials.manage") ||
@@ -242,7 +250,7 @@ partial class OktaClient
                     permissions.Contains("okta.users.credentials.expirePassword"))
                 {
                     // Users with assigned roles can't be managed by custom roles.
-                    foreach (var targetUser in roleAssignment.Targets.OfType<OktaUser>().Where(user => !user.HasRoleAssignments))
+                    foreach (var targetUser in resourceSetMembers.OfType<OktaUser>().Where(user => !user.HasRoleAssignments))
                     {
                         if (permissions.Contains("okta.users.manage") ||
                             permissions.Contains("okta.users.credentials.manage") ||
@@ -270,7 +278,7 @@ partial class OktaClient
                     permissions.Contains("okta.groups.members.manage"))
                 {
                     // Groups with assigned roles can't be managed by custom roles.
-                    foreach (var targetGroup in roleAssignment.Targets.OfType<OktaGroup>().Where(group => !group.HasRoleAssignments))
+                    foreach (var targetGroup in resourceSetMembers.OfType<OktaGroup>().Where(group => !group.HasRoleAssignments))
                     {
                         // Create the (:Okta)-[:Okta_AddMember]->(:Okta_Group) edge
                         _graph.AddEdge(roleAssignment.Assignee, targetGroup, OktaCustomRole.AddMemberEdgeKind);
@@ -281,7 +289,7 @@ partial class OktaClient
                 if (permissions.Contains("okta.apps.manage"))
                 {
                     // Apps with assigned roles can't be managed by custom roles.
-                    foreach (var targetApp in roleAssignment.Targets.OfType<OktaApplication>().Where(app => !app.HasRoleAssignments))
+                    foreach (var targetApp in resourceSetMembers.OfType<OktaApplication>().Where(app => !app.HasRoleAssignments))
                     {
                         // Create the (:Okta)-[:Okta_ManageApp]->(:Okta_Application) edge
                         _graph.AddEdge(roleAssignment.Assignee, targetApp, OktaCustomRole.ManageAppEdgeKind);
@@ -290,7 +298,7 @@ partial class OktaClient
 
                 if (permissions.Contains("okta.apps.clientCredentials.read"))
                 {
-                    foreach (var targetApp in roleAssignment.Targets.OfType<OktaApplication>())
+                    foreach (var targetApp in resourceSetMembers.OfType<OktaApplication>())
                     {
                         foreach (var clientSecretNode in _graph.GetClientSecrets(targetApp.Id))
                         {

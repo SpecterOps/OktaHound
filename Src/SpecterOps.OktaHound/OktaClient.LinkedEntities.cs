@@ -513,10 +513,13 @@ partial class OktaClient
                             "Resource set {ResourceSetName} ({ResourceSetId}) contains member {MemberId}.",
                             resourceSetNode.Name,
                             resourceSetNode.OriginalId,
-                            memberNode.Value);
+                            memberNode.Id);
 
-                        // Create the (:Okta)-[:Okta_ResourceSetContains]->(:Okta_ResourceSet) edge
+                        // Create the (:Okta_ResourceSet)-[:Okta_ResourceSetContains]->(:Okta) edge
                         _graph.AddEdge(resourceSetNode, memberNode, OktaResourceSet.ContainsEdgeKind);
+
+                        // Cache the membership in the resource set node for later use when processing the resource set permissions.
+                        resourceSetNode.Members.Add(memberNode);
                     }
                 }
             }
@@ -530,7 +533,7 @@ partial class OktaClient
         _logger.LogInformation("Finished fetching resource set memberships.");
     }
 
-    public IEnumerable<OpenGraphEdgeNode> ResolveResourceSetMembership(string resourceUrl)
+    public IEnumerable<OktaNode> ResolveResourceSetMembership(string resourceUrl)
     {
         if (_graph is null)
         {
@@ -541,20 +544,25 @@ partial class OktaClient
         {
             // All users in the organization
             // Example: https://integrator-5415459.okta.com/api/v1/users
-            return _graph.Users.Select(user => user.ToEdgeNode());
+            return _graph.Users;
         }
         else if (resourceUrl.EndsWith("/api/v1/groups", StringComparison.InvariantCulture))
         {
             // All groups in the organization
             // Example: https://integrator-5415459.okta.com/api/v1/groups
-            return _graph.Groups.Select(group => group.ToEdgeNode());
+            return _graph.Groups;
         }
         else if (resourceUrl.Contains("/api/v1/users/", StringComparison.InvariantCulture))
         {
             // Specific user
             // Example: https://integrator-5415459.okta.com/api/v1/users/4g65ds4gsd4g65dsf4
             string userId = resourceUrl.Split('/').Last();
-            return [OktaUser.CreateEdgeNode(userId)];
+            var user = _graph.GetUserById(userId);
+
+            if (user is not null)
+            {
+                return [user];
+            }
         }
         else if (resourceUrl.Contains("/api/v1/groups/", StringComparison.InvariantCulture) &&
                  resourceUrl.EndsWith("/users", StringComparison.InvariantCulture))
@@ -562,20 +570,25 @@ partial class OktaClient
             // Members of a specific group
             // Example: https://integrator-5415459.okta.com/api/v1/groups/00gw2t2qcta3zvASN697/users
             string groupId = resourceUrl.Split('/')[^2];
-            return _graph.GetGroupMembers([groupId]).Select(user => user.ToEdgeNode());
+            return _graph.GetGroupMembers([groupId]);
         }
         else if (resourceUrl.Contains("/api/v1/groups/", StringComparison.InvariantCulture))
         {
             // Specific group
             // Example: https://integrator-5415459.okta.com/api/v1/groups/00gw2t2qcta3zvASN697
             string groupId = resourceUrl.TrimEnd('/').Split('/').Last();
-            return [OktaGroup.CreateEdgeNode(groupId)];
+            var group = _graph.GetGroup(groupId);
+
+            if (group is not null)
+            {
+                return [group];
+            }
         }
         else if (resourceUrl.EndsWith("/api/v1/apps", StringComparison.InvariantCulture))
         {
             // All apps in the organization
             // Example: https://integrator-5415459.okta.com/api/v1/apps
-            return _graph.ApplicationsAndApiServiceIntegrations.Select(app => app.ToEdgeNode());
+            return _graph.ApplicationsAndApiServiceIntegrations;
         }
         else if (resourceUrl.Contains("/api/v1/apps?filter=name+eq+\"") &&
                  resourceUrl.EndsWith("\"", StringComparison.InvariantCulture))
@@ -588,56 +601,67 @@ partial class OktaClient
             // Example: https://integrator-5415459.okta.com/api/v1/apps?filter=name+eq+"aws"
             // Example: https://integrator-5415459.okta.com/api/v1/apps?filter=name+eq+"office365"
             string appType = resourceUrl.Split('"')[^2];
-            return _graph.GetAppsAndIntegrations(appType).Select(app => app.ToEdgeNode());
+            return _graph.GetAppsAndIntegrations(appType);
         }
         else if (resourceUrl.Contains("/api/v1/apps/", StringComparison.InvariantCulture))
         {
             // Specific application or API service integration instance
             // Example: https://integrator-5415459.okta.com/api/v1/apps/0oawyp12cjglrkfId697
             string appId = resourceUrl.Split('/').Last();
-            // Use generic OktaNode ID matching, as the object kind could be OktaApplication or OktaApiServiceIntegration
-            var appNode = OktaNode.CreateEdgeNode(appId);
-            return [appNode];
+            var app = _graph.GetAppOrIntegrationById(appId);
+
+            if (app is not null)
+            {
+                return [app];
+            }
         }
         else if (resourceUrl.EndsWith("/api/v1/authorizationServers", StringComparison.InvariantCulture))
         {
             // All authorization servers
             // Example: https://integrator-5415459.okta.com/api/v1/authorizationServers
-            return _graph.AuthorizationServers.Select(authServer => authServer.ToEdgeNode());
+            return _graph.AuthorizationServers;
         }
         else if (resourceUrl.Contains("/api/v1/authorizationServers/", StringComparison.InvariantCulture))
         {
             // Specific authorization server
             // Example: https://integrator-5415459.okta.com/api/v1/authorizationServers/GeGRTEr7f3yu2n7grw22
             string authServerId = resourceUrl.Split('/').Last();
-            var authServerNode = OktaAuthorizationServer.CreateEdgeNode(authServerId);
-            return [authServerNode];
+            var authServer = _graph.GetAuthorizationServer(authServerId);
+
+            if (authServer is not null)
+            {
+                return [authServer];
+            }
         }
         else if (resourceUrl.EndsWith("/api/v1/devices", StringComparison.InvariantCulture))
         {
             // All devices
             // Example: https://integrator-5415459.okta.com/api/v1/devices
-            return _graph.Devices.Select(device => device.ToEdgeNode());
+            return _graph.Devices;
         }
         else if (resourceUrl.EndsWith("/api/v1/idps", StringComparison.InvariantCulture))
         {
             // All identity providers
             // Example: https://integrator-5415459.okta.com/api/v1/idps
-            return _graph.IdentityProviders.Select(idp => idp.ToEdgeNode());
+            return _graph.IdentityProviders;
         }
         else if (resourceUrl.Contains("/api/v1/idps/", StringComparison.InvariantCulture))
         {
             // Specific identity provider
             // Example: https://integrator-5415459.okta.com/api/v1/idps/0oaulob4BFVa4zQvt0g3
             string identityProviderId = resourceUrl.Split('/').Last();
-            var identityProviderNode = OktaIdentityProvider.CreateEdgeNode(identityProviderId);
-            return [identityProviderNode];
+            var identityProvider = _graph.GetIdentityProvider(identityProviderId);
+
+            if (identityProvider is not null)
+            {
+                return [identityProvider];
+            }
         }
         else if (resourceUrl.EndsWith("/api/v1/policies", StringComparison.InvariantCulture))
         {
             // All policies (not currently supported by Okta)
             // Example: https://integrator-5415459.okta.com/api/v1/policies
-            return _graph.Policies.Select(policy => policy.ToEdgeNode());
+            return _graph.Policies;
         }
         else if (resourceUrl.Contains("/api/v1/policies/", StringComparison.InvariantCulture))
         {
@@ -646,7 +670,7 @@ partial class OktaClient
             string policyType = resourceUrl.Split('/').Last();
 
             // TODO: Consider storing policies in a dictionary with the policy type as a key
-            return _graph.Policies.Where(policy => policy.PolicyType == policyType).Select(policy => policy.ToEdgeNode());
+            return _graph.Policies.Where(policy => policy.PolicyType == policyType);
         }
 
         // Return an empty set if we could not resolve the URL
@@ -1083,7 +1107,7 @@ partial class OktaClient
                 }
 
                 _logger.LogTrace("User {UserName} has {FactorCount} authentication factors.", userNode.Name, count);
-                userNode.Properties["authenticationFactors"] = count;
+                userNode.AuthenticationFactorsCount = count;
             }
             catch (ApiException e)
             {

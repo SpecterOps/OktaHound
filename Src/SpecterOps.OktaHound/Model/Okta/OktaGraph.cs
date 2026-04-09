@@ -24,19 +24,19 @@ internal sealed class OktaGraph(OktaOrganization organization) : OpenGraphBase<O
     public IEnumerable<OktaApplication> Applications => Elements.AppsById.Select(item => item.Value);
 
     [JsonIgnore]
-    public IEnumerable<OktaApiServiceIntegration> ApiServiceIntegrations => Elements.ApiServiceIntegrations;
+    public IEnumerable<OktaApiServiceIntegration> ApiServiceIntegrations => Elements.ApiServiceIntegrationsById.Select(item => item.Value);
 
     [JsonIgnore]
     public IEnumerable<OktaNode> ApplicationsAndApiServiceIntegrations => [.. Applications, .. ApiServiceIntegrations];
 
     [JsonIgnore]
-    public IEnumerable<OktaIdentityProvider> IdentityProviders => Elements.IdentityProviders;
+    public IEnumerable<OktaIdentityProvider> IdentityProviders => Elements.IdentityProvidersById.Select(item => item.Value);
 
     [JsonIgnore]
     public IEnumerable<OktaDevice> Devices => Elements.Devices;
 
     [JsonIgnore]
-    public IEnumerable<OktaRoleAssignment> RoleAssignments => Elements.RoleAssignments;
+    public IEnumerable<OktaRoleAssignment> RoleAssignments => Elements.RoleAssignmentsById.Select(item => item.Value);
 
     [JsonIgnore]
     public IEnumerable<OktaCustomRole> CustomRoles => Elements.CustomRolesById.Select(item => item.Value);
@@ -45,7 +45,7 @@ internal sealed class OktaGraph(OktaOrganization organization) : OpenGraphBase<O
     public IEnumerable<OktaResourceSet> ResourceSets => Elements.ResourceSets;
 
     [JsonIgnore]
-    public IEnumerable<OktaAuthorizationServer> AuthorizationServers => Elements.AuthorizationServers;
+    public IEnumerable<OktaAuthorizationServer> AuthorizationServers => Elements.AuthorizationServersById.Select(item => item.Value);
 
     [JsonIgnore]
     public IEnumerable<OktaPolicy> Policies => Elements.Policies;
@@ -69,7 +69,7 @@ internal sealed class OktaGraph(OktaOrganization organization) : OpenGraphBase<O
 
     public bool AddNode(OktaBuiltinRole role) => Elements.RolesById.TryAdd(role.Id, role);
 
-    public void AddNode(OktaRoleAssignment roleAssignment) => Elements.RoleAssignments.Add(roleAssignment);
+    public bool AddNode(OktaRoleAssignment roleAssignment) => Elements.RoleAssignmentsById.TryAdd(roleAssignment.Id, roleAssignment);
 
     public bool AddNode(OktaCustomRole customRole) => Elements.CustomRolesById.TryAdd(customRole.Id, customRole);
 
@@ -81,9 +81,11 @@ internal sealed class OktaGraph(OktaOrganization organization) : OpenGraphBase<O
 
     public void AddNode(OktaPolicy policy) => Elements.Policies.Add(policy);
 
-    public void AddNode(OktaApiServiceIntegration service) => Elements.ApiServiceIntegrations.Add(service);
+    public bool AddNode(OktaApiServiceIntegration service) => Elements.ApiServiceIntegrationsById.TryAdd(service.Id, service);
 
-    public void AddNode(OktaIdentityProvider identityProvider) => Elements.IdentityProviders.Add(identityProvider);
+    public bool AddNode(OktaIdentityProvider identityProvider) => Elements.IdentityProvidersById.TryAdd(identityProvider.Id, identityProvider);
+
+    public bool AddNode(OktaAuthorizationServer authorizationServer) => Elements.AuthorizationServersById.TryAdd(authorizationServer.Id, authorizationServer);
 
     public OktaUser? GetUserById(string userId)
     {
@@ -133,10 +135,10 @@ internal sealed class OktaGraph(OktaOrganization organization) : OpenGraphBase<O
     public IEnumerable<OktaApplication> GetApplications(string type) =>
         Elements.AppsById.Where(item => item.Value.ApplicationType == type).Select(item => item.Value);
 
-    // TODO: GetApiServiceIntegration performance could be improved by using a Dictionary.
+    // TODO: GetApiServiceIntegration performance could be improved by using a dedicated Dictionary.
     // On the other hand, we do not expect many integrations to be present.
     public IEnumerable<OktaApiServiceIntegration> GetApiServiceIntegrations(string type) =>
-        Elements.ApiServiceIntegrations.Where(service => service.IntegrationType == type);
+        Elements.ApiServiceIntegrationsById.Where(item => item.Value.IntegrationType == type).Select(item => item.Value);
 
     public IEnumerable<OktaNode> GetAppsAndIntegrations(string type) =>
         [.. GetApplications(type), .. GetApiServiceIntegrations(type)];
@@ -158,6 +160,40 @@ internal sealed class OktaGraph(OktaOrganization organization) : OpenGraphBase<O
         secretOfEdges.Where(edge => edge.End.Value == applicationId)
             .Select(edge => edge.Start) :
         [];
+
+    public OktaRoleAssignment? GetRoleAssignment(string roleAssignmentId, string assigneeId)
+    {
+        string roleAssignmentKey = OktaRoleAssignment.DeriveRoleAssignmentId(roleAssignmentId, assigneeId);
+        Elements.RoleAssignmentsById.TryGetValue(roleAssignmentKey, out var roleAssignment);
+        return roleAssignment;
+    }
+
+    public OktaNode? GetAppOrIntegrationById(string appId)
+    {
+        if (Elements.AppsById.TryGetValue(appId, out var app))
+        {
+            return app;
+        }
+
+        if (Elements.ApiServiceIntegrationsById.TryGetValue(appId, out var integration))
+        {
+            return integration;
+        }
+
+        return null;
+    }
+
+    public OktaAuthorizationServer? GetAuthorizationServer(string authServerId)
+    {
+        Elements.AuthorizationServersById.TryGetValue(authServerId, out var server);
+        return server;
+    }
+
+    public OktaIdentityProvider? GetIdentityProvider(string identityProviderId)
+    {
+        Elements.IdentityProvidersById.TryGetValue(identityProviderId, out var identityProvider);
+        return identityProvider;
+    }
 
     // TODO: GetCustomRole performance could be improved by using a Dictionary.
     public OktaCustomRole? GetCustomRole(string roleName) =>
