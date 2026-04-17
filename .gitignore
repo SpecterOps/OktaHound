@@ -1,5 +1,5 @@
-## Project-specific ignores
-Documentation/OfficialDocs/
+## Codex
+.codex
 
 # Secrets
 okta.yaml
