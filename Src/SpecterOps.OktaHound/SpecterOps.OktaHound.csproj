@@ -39,26 +39,8 @@
     <!-- Allow unit tests to access internal members. -->
 	  <InternalsVisibleTo Include="SpecterOps.OktaHound.Tests" />
 
-    <!-- Include the BloodHound Community extensions. -->
-	  <Content Include="../Extensions/*.*" LinkBase="extensions">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-	  </Content>
-
     <!-- Include sample Okta authentication configuration files. -->
 	  <Content Include="okta*.yaml">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-	  </Content>
-
-    <!-- Include sample custom cypher query files. -->
-	  <Content Include="../Queries/*.*" LinkBase="queries">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-	  </Content>
-
-    <!-- Include privilege zone rules. -->
-	  <Content Include="../PrivilegeZoneRules/*.*" LinkBase="privilege-zone-rules">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 	  </Content>

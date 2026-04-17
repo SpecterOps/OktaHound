@@ -11,4 +11,4 @@
 
 ## Documentation
 
-For full documentation, see the [official BloodHound docs](https://bloodhound.specterops.io/opengraph/extensions/oktahound/).
+For full documentation, see the [official BloodHound docs](https://bloodhound.specterops.io/opengraph/extensions/okta/).

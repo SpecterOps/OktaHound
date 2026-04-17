@@ -1,5 +1,0 @@
-{
-  "name": "Okta: Application Assignments",
-  "description": "List all application assignments.",
-  "query": "MATCH path = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_AppAssignment]->(:Okta_Application)\nRETURN path\nLIMIT 1000"
-}
