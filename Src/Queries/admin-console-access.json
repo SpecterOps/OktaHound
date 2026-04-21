@@ -1,5 +1,0 @@
-{
-  "name": "Okta: Principals with Admin Console Access",
-  "description": "Identifies principals with access to the Okta Admin Console.",
-  "query": "MATCH path = (:Okta_Organization)-[:Okta_Contains]->(:Okta)-[:Okta_AppAssignment]->(console:Okta_Application)\nWHERE console.appType = \"saasure\"\nRETURN path\nLIMIT 1000"
-}

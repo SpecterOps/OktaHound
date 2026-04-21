@@ -1,5 +1,0 @@
-{
-  "name": "Okta: Organizational Structure",
-  "description": "Retrieves all manager relationships.",
-  "query": "MATCH path = (:Okta_User)-[:Okta_ManagerOf]->(:Okta_User)\nRETURN path\nLIMIT 1000"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "Okta: Devices",
-  "description": "List all devices, their owners, and any mobile admins.",
-  "query": "MATCH path = (:Okta_Device)-[:Okta_DeviceOf]->(:Okta_User)\nOPTIONAL MATCH adminPath = (admin)-[:Okta_MobileAdmin]->(:Okta_Device)\nWHERE admin:Okta_User OR admin:Okta_Group OR admin:Okta_Application\nRETURN path,adminPath\nLIMIT 1000"
-}
-
-

@@ -1,5 +1,0 @@
-{
-  "name": "Okta: Role Assignments - Group Administrators",
-  "description": "List all Group Administrators and Group Membership Administrators.",
-  "query": "MATCH path = (:Okta_Organization)-[:Okta_Contains]->(admin)-[:Okta_GroupAdmin|Okta_GroupMembershipAdmin|Okta_OrgAdmin]->(:Okta_Group)\nWHERE admin:Okta_User OR admin:Okta_Group OR admin:Okta_Application\nRETURN path\nLIMIT 1000"
-}
