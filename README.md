@@ -82,8 +82,6 @@ By default, the collector writes output files to `./output`:
 
 ## Use the Collected Data
 
-## Use the Collected Data
-
 To use the collected Okta data in BloodHound, follow the [Okta Extension getting started guide](https://bloodhound.specterops.io/opengraph/extensions/okta/getting-started) to install the extension and import the Okta Cypher queries and Privilege Zone rules.
 
 After that, upload the generated JSON files to BloodHound.
