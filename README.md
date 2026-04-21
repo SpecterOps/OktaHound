@@ -82,7 +82,7 @@ By default, the collector writes output files to `./output`:
 
 ## Use the Collected Data
 
-To use the collected Okta data in BloodHound, follow the [Okta Extension getting started guide](https://bloodhound.specterops.io/opengraph/extensions/okta/getting-started) and upload the upload the generated JSON files to BloodHound.
+To use the collected Okta data in BloodHound, follow the [Okta Extension getting started guide](https://bloodhound.specterops.io/opengraph/extensions/okta/getting-started) and upload the generated JSON files to BloodHound.
 
 ## Node and Edge Documentation
 
