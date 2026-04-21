@@ -8,7 +8,7 @@ The guidelines below outline the minimum environment requirements, explain how t
 
 ## Requirements
 
-- [.NET SDK 10.0+ SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0): The .NET SDK is required to build the application and run tests locally. Windows, Linux, and macOS are all supported.
+- [.NET SDK 10.0+](https://dotnet.microsoft.com/en-us/download/dotnet/10.0): The .NET SDK is required to build the application and run tests locally. Windows, Linux, and macOS are all supported.
 - A code editor or IDE with .NET support, such as [Visual Studio 2026+](https://visualstudio.microsoft.com/) or [Visual Studio Code](https://code.visualstudio.com/).
 - [Okta Organization](https://developer.okta.com/signup/): Read access to an Okta Workforce Identity Cloud tenant for functional testing.
 - [BloodHound](https://bloodhound.specterops.io/get-started/introduction): Optional but recommended if you need to validate collector output.
@@ -19,8 +19,7 @@ The guidelines below outline the minimum environment requirements, explain how t
 Root/
 ├─ .github/                                  # GitHub automation and CI workflows
 │  └─ workflows/                             # CI and automation definitions
-│     ├─ autobuild.yml                       # CI build pipeline
-│     ├─ fetch-vendored-extensions.yml       # Fetch and update 3rd-party BloodHound extensions
+│     └─ autobuild.yml                       # CI build and test pipeline
 ├─ .vscode/                                  # Visual Studio Code workspace settings
 ├─ Build/                                    # Compiled binaries, publish outputs, and CI artifacts
 ├─ Src/                                      # Source code for the application and tests
@@ -40,10 +39,9 @@ The documentation, schema, query, and automation assets that were removed from t
 These libraries and frameworks are used in the OktaHound project:
 
 - [Okta management SDK for .NET](https://github.com/okta/okta-sdk-dotnet) - Official Okta SDK for interacting with the Okta Management API.
-- [ILogger API](https://learn.microsoft.com/en-us/dotnet/core/extensions/logging) - A logging abstraction for .NET applications.
+- [Microsoft.Extensions.Logging.Console](https://learn.microsoft.com/en-us/dotnet/core/extensions/logging) - Console logging support built on the `ILogger` abstraction.
 - [System.CommandLine](https://learn.microsoft.com/en-us/dotnet/standard/commandline/) - A library for parsing command-line arguments.
-- [Microsoft Testing Framework](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-mstest-intro) - The testing framework used for unit tests.
-- [Font Awesome Free](https://fontawesome.com/) - Used for BloodHound node icons.
+- [MSTest.Sdk](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-mstest-sdk) and [Microsoft.Testing.Platform](https://learn.microsoft.com/en-us/dotnet/core/testing/microsoft-testing-platform-intro) - The test SDK and runner used for unit tests.
 - [System.Text.Json](https://learn.microsoft.com/en-us/dotnet/api/system.text.json) - Used to generate pre-compiled high-performance BloodHound OpenGraph JSON serializers.
 
 ## Building from Source
