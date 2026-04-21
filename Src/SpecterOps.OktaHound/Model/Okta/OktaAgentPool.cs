@@ -29,7 +29,7 @@ internal sealed class OktaAgentPool : OktaNode
     [JsonIgnore]
     public string? ActiveDirectoryDomain => IsActiveDirectoryAgentPool ? Name : null;
 
-    public OktaAgentPool(AgentPool agentPool, string domainName) : base(MakeAgentPoolUnique(agentPool.Id), domainName, NodeKind)
+    public OktaAgentPool(AgentPool agentPool, OktaOrganization organization) : base(MakeAgentPoolUnique(agentPool.Id), organization, NodeKind)
     {
         Name = agentPool.Name;
         DisplayName = agentPool.Name;

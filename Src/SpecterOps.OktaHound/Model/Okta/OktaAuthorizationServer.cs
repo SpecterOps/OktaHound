@@ -7,7 +7,7 @@ internal sealed class OktaAuthorizationServer : OktaNode
 {
     private const string NodeKind = "Okta_AuthorizationServer";
 
-    public OktaAuthorizationServer(AuthorizationServer server, string domainName) : base(server.Id, domainName, NodeKind)
+    public OktaAuthorizationServer(AuthorizationServer server, OktaOrganization organization) : base(server.Id, organization, NodeKind)
     {
         Name = server.Name;
         DisplayName = server.Name;

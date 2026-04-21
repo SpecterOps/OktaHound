@@ -52,7 +52,7 @@ internal sealed class OktaBuiltinRole : OktaRole
 
     public override bool IsBuiltIn => true;
 
-    public OktaBuiltinRole(IamRole role, string domainName) : base(MakeRoleIdUnique(role.Id, domainName), domainName, NodeKind)
+    public OktaBuiltinRole(IamRole role, OktaOrganization organization) : base(MakeRoleIdUnique(role.Id, organization.DomainName), organization, NodeKind)
     {
         if (role.Id == RoleType.CUSTOM)
         {

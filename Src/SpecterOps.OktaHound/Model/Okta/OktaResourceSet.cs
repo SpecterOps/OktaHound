@@ -25,7 +25,7 @@ internal sealed class OktaResourceSet : OktaNode
     [JsonIgnore]
     public List<OktaNode> Members { get; private set; } = [];
 
-    public OktaResourceSet(ResourceSet resourceSet, string domainName) : base(MakeResourceSetIdUnique(resourceSet.Id, domainName), domainName, NodeKind)
+    public OktaResourceSet(ResourceSet resourceSet, OktaOrganization organization) : base(MakeResourceSetIdUnique(resourceSet.Id, organization.DomainName), organization, NodeKind)
     {
         _originalId = resourceSet.Id;
         Name = resourceSet.Label;

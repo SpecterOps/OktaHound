@@ -48,7 +48,7 @@ internal sealed class OktaUser : OktaSecurityPrincipal
     [JsonIgnore]
     public string? RealmId => GetProperty<string>(RealmIdPropertyName);
 
-    public OktaUser(User user, string domainName) : base(user.Id, domainName, NodeKind)
+    public OktaUser(User user, OktaOrganization organization) : base(user.Id, organization, NodeKind)
     {
         // Write common properties
         Name = user.Profile?.Login;

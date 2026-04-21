@@ -16,7 +16,7 @@ internal sealed class OktaApiServiceIntegration : OktaNode
     [JsonIgnore]
     public List<string>? Permissions => GetProperty<List<string>>(PermissionsPropertyName);
 
-    public OktaApiServiceIntegration(APIServiceIntegrationInstance service, string domainName) : base(service.Id, domainName, NodeKind)
+    public OktaApiServiceIntegration(APIServiceIntegrationInstance service, OktaOrganization organization) : base(service.Id, organization, NodeKind)
     {
         Name = service.Name;
         DisplayName = service.Name;

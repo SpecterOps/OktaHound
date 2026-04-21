@@ -5,7 +5,7 @@ namespace SpecterOps.OktaHound.Model.Okta;
 /// <summary>
 /// Base class for Okta roles (both built-in and custom).
 /// </summary>
-internal abstract class OktaRole(string id, string domainName, string nodeKind) : OktaNode(id, domainName, nodeKind)
+internal abstract class OktaRole(string id, OktaOrganization organization, string nodeKind) : OktaNode(id, organization, nodeKind)
 {
     private const string PermissionsPropertyName = "permissions";
 

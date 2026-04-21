@@ -85,7 +85,7 @@ internal sealed class OktaGroup : OktaSecurityPrincipal
     [JsonIgnore]
     public string? SamAccountName => GetProperty<string>("samAccountName");
 
-    public OktaGroup(Group group, string domainName) : base(group.Id, domainName, NodeKind)
+    public OktaGroup(Group group, OktaOrganization organization) : base(group.Id, organization, NodeKind)
     {
         // Set common group properties
         SetProperty("created", group.Created);

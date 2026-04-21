@@ -9,7 +9,7 @@ internal sealed class OktaAgent : OktaNode
 
     private const string NodeKind = "Okta_Agent";
 
-    public OktaAgent(Agent agent, string agentPoolName, string domainName) : base(agent.Id, domainName, NodeKind)
+    public OktaAgent(Agent agent, string agentPoolName, OktaOrganization organization) : base(agent.Id, organization, NodeKind)
     {
         Name = agent.Name;
         DisplayName = agent.Name;

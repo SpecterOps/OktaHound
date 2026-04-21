@@ -11,10 +11,11 @@ internal sealed class OktaOrganization : OktaNode
     [JsonIgnore]
     public bool AgentlessDssoEnabled { get; set; }
 
-    public OktaOrganization(OrgSetting settings, string domainName) : base(settings.Id, domainName, NodeKind)
+    public OktaOrganization(OrgSetting settings, string domainName) : base(settings.Id, settings.Id, domainName, NodeKind)
     {
         Name = domainName;
         DisplayName = settings.CompanyName;
+        Collected = true;
 
         SetProperty("subdomain", settings.Subdomain);
         SetProperty("status", settings.Status?.Value);
@@ -22,9 +23,10 @@ internal sealed class OktaOrganization : OktaNode
         SetProperty("lastUpdated", settings.LastUpdated);
     }
 
-    public OktaOrganization(string id, string domainName, string companyName) : base(id, domainName, NodeKind)
+    public OktaOrganization(string id, string domainName, string companyName) : base(id, id, domainName, NodeKind)
     {
         Name = domainName;
         DisplayName = companyName;
+        Collected = true;
     }
 }

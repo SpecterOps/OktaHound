@@ -24,7 +24,7 @@ internal sealed class OktaPolicy : OktaNode
     [JsonIgnore]
     public string? PolicyType => GetProperty<string>(PolicyTypePropertyName);
 
-    public OktaPolicy(Policy policy, string domainName) : base(policy.Id, domainName, NodeKind)
+    public OktaPolicy(Policy policy, OktaOrganization organization) : base(policy.Id, organization, NodeKind)
     {
         Name = policy.Name;
         DisplayName = policy.Name;

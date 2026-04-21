@@ -30,7 +30,7 @@ internal abstract class OktaSecurityPrincipal : OktaNode
         set;
     }
 
-    protected OktaSecurityPrincipal(string id, string oktaOrganization, string kind) : base(id, oktaOrganization, kind)
+    protected OktaSecurityPrincipal(string id, OktaOrganization organization, string kind) : base(id, organization, kind)
     {
         // Push default property values into the model
         HasRoleAssignments = false;

@@ -385,7 +385,7 @@ internal sealed class OktaApplication : OktaSecurityPrincipal
         }
     }
 
-    public OktaApplication(Application application, string domainName) : base(application.Id, domainName, NodeKind)
+    public OktaApplication(Application application, OktaOrganization organization) : base(application.Id, organization, NodeKind)
     {
         Name = application.Label;
         DisplayName = application.Label;

@@ -7,7 +7,7 @@ internal sealed class OktaClientSecret : OktaNode
     public const string SecretOfEdgeKind = "Okta_SecretOf";
     private const string NodeKind = "Okta_ClientSecret";
 
-    public OktaClientSecret(APIServiceIntegrationInstanceSecret secret, string domainName) : base(secret.Id, domainName, NodeKind)
+    public OktaClientSecret(APIServiceIntegrationInstanceSecret secret, OktaOrganization organization) : base(secret.Id, organization, NodeKind)
     {
         Name = secret.SecretHash;
         DisplayName = secret.SecretHash;
@@ -19,7 +19,7 @@ internal sealed class OktaClientSecret : OktaNode
         // we will still avoid collecting the actual secret value for security reasons.
     }
 
-    public OktaClientSecret(OAuth2ClientSecret secret, string domainName) : base(secret.Id, domainName, NodeKind)
+    public OktaClientSecret(OAuth2ClientSecret secret, OktaOrganization organization) : base(secret.Id, organization, NodeKind)
     {
         Name = secret.SecretHash;
         DisplayName = secret.SecretHash;

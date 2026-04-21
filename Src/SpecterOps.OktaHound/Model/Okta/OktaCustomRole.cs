@@ -15,7 +15,7 @@ internal sealed class OktaCustomRole : OktaRole
 
     public override bool IsBuiltIn => false;
 
-    public OktaCustomRole(IamRole role, string domainName) : base(role.Id, domainName, NodeKind)
+    public OktaCustomRole(IamRole role, OktaOrganization organization) : base(role.Id, organization, NodeKind)
     {
         Name = role.Label;
         DisplayName = role.Label;

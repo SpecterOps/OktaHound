@@ -14,9 +14,16 @@ internal abstract class OktaNode : OpenGraphNode
         set => SetProperty(DomainNamePropertyKey, value);
     }
 
-    public OktaNode(string id, string oktaOrganization, string kind) : base(id, [kind])
+    public OktaNode(string nodeId, string oktaOrganizationId, string oktaDomainName, string kind) : base(nodeId, [kind])
     {
-        SetProperty(DomainNamePropertyKey, oktaOrganization);
+        DomainName = oktaDomainName;
+        EnvironmentId = oktaOrganizationId;
+    }
+
+    public OktaNode(string nodeId, OktaOrganization organization, string kind) : base(nodeId, [kind])
+    {
+        DomainName = organization.DomainName;
+        EnvironmentId = organization.Id;
     }
 
     public static OpenGraphEdgeNode CreateEdgeNode(string id) => new(id, OktaGraph.OktaSourceKind);

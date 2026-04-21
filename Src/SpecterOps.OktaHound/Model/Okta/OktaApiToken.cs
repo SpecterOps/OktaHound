@@ -8,7 +8,7 @@ internal sealed class OktaApiToken : OktaNode
     public const string NodeKind = "Okta_ApiToken";
     public const string ApiTokenForEdgeKind = "Okta_ApiTokenFor";
 
-    public OktaApiToken(ApiToken apiToken, string domainName) : base(apiToken.Id, domainName, NodeKind)
+    public OktaApiToken(ApiToken apiToken, OktaOrganization organization) : base(apiToken.Id, organization, NodeKind)
     {
         Name = apiToken.Name;
         DisplayName = apiToken.Name;

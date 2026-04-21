@@ -48,7 +48,7 @@ internal class OktaRoleAssignment : OktaNode
     [JsonIgnore]
     public string RoleType => GetProperty<string>(RoleTypePropertyName) ?? throw new ArgumentNullException(RoleTypePropertyName);
 
-    public OktaRoleAssignment(StandardRole roleAssignment, OktaRole role, OktaSecurityPrincipal assignee, string domainName) : base(DeriveRoleAssignmentId(roleAssignment, assignee.Id), domainName, NodeKind)
+    public OktaRoleAssignment(StandardRole roleAssignment, OktaRole role, OktaSecurityPrincipal assignee, OktaOrganization organization) : base(DeriveRoleAssignmentId(roleAssignment, assignee.Id), organization, NodeKind)
     {
         Name = roleAssignment.Label;
         DisplayName = roleAssignment.Label;
@@ -62,7 +62,7 @@ internal class OktaRoleAssignment : OktaNode
         SetProperty("lastUpdated", roleAssignment.LastUpdated);
     }
 
-    public OktaRoleAssignment(CustomRole roleAssignment, OktaRole role, OktaSecurityPrincipal assignee, string domainName) : base(DeriveRoleAssignmentId(roleAssignment, assignee.Id), domainName, NodeKind)
+    public OktaRoleAssignment(CustomRole roleAssignment, OktaRole role, OktaSecurityPrincipal assignee, OktaOrganization organization) : base(DeriveRoleAssignmentId(roleAssignment, assignee.Id), organization, NodeKind)
     {
         Name = roleAssignment.Label;
         DisplayName = roleAssignment.Label;

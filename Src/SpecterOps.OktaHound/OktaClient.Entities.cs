@@ -69,7 +69,7 @@ partial class OktaClient
                 userCount++;
 
                 // Create the OktaUser node
-                OktaUser userNode = new(user, _graph.Organization.DomainName);
+                OktaUser userNode = new(user, _graph.Organization);
                 _graph.AddNode(userNode);
 
                 // Create the (:Okta_Organization)-[:Okta_Contains]->(:Okta_User) edge
@@ -113,7 +113,7 @@ partial class OktaClient
                 groupCount++;
 
                 // Create the OktaGroup node
-                OktaGroup groupNode = new(group, _graph.Organization.DomainName);
+                OktaGroup groupNode = new(group, _graph.Organization);
                 _graph.AddNode(groupNode);
 
                 // Create the (:Okta_Organization)-[:Okta_Contains]->(:Okta_Group) edge
@@ -204,7 +204,7 @@ partial class OktaClient
                 deviceCount++;
 
                 // Create the OktaDevice node
-                OktaDevice deviceNode = new(device, _graph.Organization.DomainName);
+                OktaDevice deviceNode = new(device, _graph.Organization);
                 _graph.AddNode(deviceNode);
 
                 // Create the (:Okta_Organization)-[:Okta_Contains]->(:Okta_Device) edge
@@ -255,7 +255,7 @@ partial class OktaClient
                 resourceSetCount++;
 
                 // Create the OktaResourceSet node
-                OktaResourceSet resourceSetNode = new(resourceSet, _graph.Organization.DomainName);
+                OktaResourceSet resourceSetNode = new(resourceSet, _graph.Organization);
                 _graph.AddNode(resourceSetNode);
 
                 // Create the (:Okta_Organization)-[:Okta_Contains]->(:Okta_ResourceSet) edge
@@ -293,7 +293,7 @@ partial class OktaClient
                 realmCount++;
 
                 // Create the OktaRealm node
-                OktaRealm realmNode = new(realm, _graph.Organization.DomainName);
+                OktaRealm realmNode = new(realm, _graph.Organization);
                 _graph.AddNode(realmNode);
 
                 // Create the (:Okta_Organization)-[:Okta_Contains]->(:Okta_Realm) edge
@@ -349,7 +349,7 @@ partial class OktaClient
                 var role = await roleApi.GetRoleAsync(roleId, cancellationToken).ConfigureAwait(false);
 
                 // Create the OktaRole node
-                var roleNode = new OktaBuiltinRole(role, _graph.Organization.DomainName);
+                var roleNode = new OktaBuiltinRole(role, _graph.Organization);
                 _graph.AddNode(roleNode);
 
                 // Create the (:Okta_Organization)-[:Okta_Contains]->(:Okta_Role) edge
@@ -410,7 +410,7 @@ partial class OktaClient
                 roleCount++;
 
                 // Create the OktaCustomRole node
-                var roleNode = new OktaCustomRole(role, _graph.Organization.DomainName);
+                var roleNode = new OktaCustomRole(role, _graph.Organization);
                 _graph.AddNode(roleNode);
 
                 // Create the (:Okta_Organization)-[:Okta_Contains]->(:Okta_CustomRole) edge
@@ -446,7 +446,7 @@ partial class OktaClient
                 applicationCount++;
 
                 // Create the OktaApplication node
-                OktaApplication appNode = new(app, _graph.Organization.DomainName);
+                OktaApplication appNode = new(app, _graph.Organization);
                 _graph.AddNode(appNode);
 
                 // Create the (:Okta_Organization)-[:Okta_Contains]->(:Okta_Application) edge
@@ -494,7 +494,7 @@ partial class OktaClient
                 tokenCount++;
 
                 // Create the OktaApiToken node
-                OktaApiToken tokenNode = new(token, _graph.Organization.DomainName);
+                OktaApiToken tokenNode = new(token, _graph.Organization);
                 _graph.AddNode(tokenNode);
 
                 if (token.UserId is not null)
@@ -538,7 +538,7 @@ partial class OktaClient
                 agentPoolCount++;
 
                 // Create the OktaAgentPool node
-                OktaAgentPool agentPoolNode = new(agentPool, _graph.Organization.DomainName);
+                OktaAgentPool agentPoolNode = new(agentPool, _graph.Organization);
                 _graph.AddNode(agentPoolNode);
 
                 // Create the (:Okta_Organization)-[:Okta_Contains]->(:Okta_AgentPool) edge
@@ -572,7 +572,7 @@ partial class OktaClient
                     agentCount++;
 
                     // Create the OktaAgent node
-                    OktaAgent agentNode = new(agent, agentPool.Name, _graph.Organization.DomainName);
+                    OktaAgent agentNode = new(agent, agentPool.Name, _graph.Organization);
                     _graph.AddNode(agentNode);
 
                     // Create the (:Okta_Agent)-[:Okta_AgentMemberOf]->(:Okta_AgentPool) edge
@@ -618,7 +618,7 @@ partial class OktaClient
                 authorizationServerCount++;
 
                 // Create the OktaAuthorizationServer node
-                OktaAuthorizationServer authorizationServerNode = new(authorizationServer, _graph.Organization.DomainName);
+                OktaAuthorizationServer authorizationServerNode = new(authorizationServer, _graph.Organization);
                 _graph.AddNode(authorizationServerNode);
 
                 // Create the (:Okta_Organization)-[:Okta_Contains]->(:Okta_AuthorizationServer) edge
@@ -658,7 +658,7 @@ partial class OktaClient
                 identityProviderCount++;
 
                 // Create the OktaIdentityProvider node
-                OktaIdentityProvider identityProviderNode = new(identityProvider, _graph.Organization.DomainName);
+                OktaIdentityProvider identityProviderNode = new(identityProvider, _graph.Organization);
                 _graph.AddNode(identityProviderNode);
 
                 // Create the (:Okta_Organization)-[:Okta_Contains]->(:Okta_IdentityProvider) edge
@@ -711,7 +711,7 @@ partial class OktaClient
                 serviceCount++;
 
                 // Create the OktaApiServiceIntegration node
-                OktaApiServiceIntegration serviceNode = new(service, _graph.Organization.DomainName);
+                OktaApiServiceIntegration serviceNode = new(service, _graph.Organization);
                 _graph.AddNode(serviceNode);
 
                 // Create the (:Okta_Organization)-[:Okta_Contains]->(:Okta_ApiServiceIntegration) edge
@@ -763,7 +763,7 @@ partial class OktaClient
                     policyCount++;
 
                     // Create the OktaPolicy node
-                    OktaPolicy policyNode = new(policy, _graph.Organization.DomainName);
+                    OktaPolicy policyNode = new(policy, _graph.Organization);
                     _graph.AddNode(policyNode);
 
                     // Create the (:Okta_Organization)-[:Okta_Contains]->(:Okta_Policy) edge

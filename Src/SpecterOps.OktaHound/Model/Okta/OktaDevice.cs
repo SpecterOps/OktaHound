@@ -22,7 +22,7 @@ internal sealed class OktaDevice : OktaNode
     [JsonIgnore]
     public string? UDID => GetProperty<string>(UdidPropertyName);
 
-    public OktaDevice(DeviceList device, string domainName) : base(CreateDeviceId(device, domainName), domainName, NodeKind)
+    public OktaDevice(DeviceList device, OktaOrganization organization) : base(CreateDeviceId(device, organization.DomainName), organization, NodeKind)
     {
         Name = device.ResourceDisplayName?.Value ?? device.Id;
         DisplayName = device.ResourceDisplayName?.Value;

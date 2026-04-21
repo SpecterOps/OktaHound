@@ -41,7 +41,7 @@ internal sealed class OktaIdentityProvider : OktaNode
     /// </summary>
     public string[] GovernedGroupIds => GetProperty<string[]>(GovernedGroupsPropertyName) ?? [];
 
-    public OktaIdentityProvider(IdentityProvider idp, string domainName) : base(idp.Id, domainName, NodeKind)
+    public OktaIdentityProvider(IdentityProvider idp, OktaOrganization organization) : base(idp.Id, organization, NodeKind)
     {
         Name = idp.Name;
         DisplayName = idp.Name;

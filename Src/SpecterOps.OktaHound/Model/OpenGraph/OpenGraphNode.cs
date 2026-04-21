@@ -6,6 +6,8 @@ internal class OpenGraphNode(string id, string[] kinds)
 {
     private const string NamePropertyKey = "name";
     private const string DisplayNamePropertyKey = "displayName";
+    private const string EnvironmentIdPropertyKey = "environmentid";
+    private const string CollectedPropertyKey = "collected";
 
     [JsonPropertyName("id")]
     public readonly string Id = id;
@@ -38,6 +40,20 @@ internal class OpenGraphNode(string id, string[] kinds)
     {
         get => GetProperty<string>(DisplayNamePropertyKey);
         set => SetProperty(DisplayNamePropertyKey, value);
+    }
+
+    [JsonIgnore]
+    public string? EnvironmentId
+    {
+        get => GetProperty<string>(EnvironmentIdPropertyKey);
+        set => SetProperty(EnvironmentIdPropertyKey, value);
+    }
+
+    [JsonIgnore]
+    public bool? Collected
+    {
+        get => GetPropertyAsBool(CollectedPropertyKey);
+        set => SetProperty(CollectedPropertyKey, value);
     }
 
     public T? GetProperty<T>(string name) where T : class

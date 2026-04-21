@@ -10,7 +10,7 @@ internal sealed class OktaJWK : OktaNode
     public const string KeyOfEdgeKind = "Okta_KeyOf";
     private const string NodeKind = "Okta_JWK";
 
-    public OktaJWK(OAuth2ClientJsonWebKeyECResponse jwk, string domainName) : base(jwk.Id, domainName, NodeKind)
+    public OktaJWK(OAuth2ClientJsonWebKeyECResponse jwk, OktaOrganization organization) : base(jwk.Id, organization, NodeKind)
     {
         Name = jwk.Kid ?? jwk.Id;
         DisplayName = jwk.Kid ?? jwk.Id;
@@ -23,7 +23,7 @@ internal sealed class OktaJWK : OktaNode
         SetProperty("use", jwk.Use);
     }
 
-    public OktaJWK(OAuth2ClientJsonWebKeyRsaResponse jwk, string domainName) : base(jwk.Id, domainName, NodeKind)
+    public OktaJWK(OAuth2ClientJsonWebKeyRsaResponse jwk, OktaOrganization organization) : base(jwk.Id, organization, NodeKind)
     {
         Name = jwk.Kid ?? jwk.Id;
         DisplayName = jwk.Kid ?? jwk.Id;

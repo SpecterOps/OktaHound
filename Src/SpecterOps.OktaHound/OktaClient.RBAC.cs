@@ -241,7 +241,7 @@ partial class OktaClient
         _graph.AddEdge(assignee, roleNode, OktaBuiltinRole.HasRoleEdgeKind);
 
         // Create the OktaRoleAssignment node
-        var roleAssignmentNode = new OktaRoleAssignment(roleAssignment, roleNode, assignee, _graph.Organization.DomainName);
+        var roleAssignmentNode = new OktaRoleAssignment(roleAssignment, roleNode, assignee, _graph.Organization);
         _graph.AddNode(roleAssignmentNode);
 
         // Create the (:Okta)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment) edge
@@ -467,7 +467,7 @@ partial class OktaClient
         _graph.AddEdge(assignee, customRoleNode, OktaCustomRole.HasCustomRoleEdgeKind);
 
         // Create the OktaRoleAssignment node
-        OktaRoleAssignment roleAssignmentNode = new(roleAssignment, customRoleNode, assignee, _graph.Organization.DomainName);
+        OktaRoleAssignment roleAssignmentNode = new(roleAssignment, customRoleNode, assignee, _graph.Organization);
         _graph.AddNode(roleAssignmentNode);
 
         // Create the (:Okta)-[:Okta_HasRoleAssignment]->(:Okta_RoleAssignment) edge

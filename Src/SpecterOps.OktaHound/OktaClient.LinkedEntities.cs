@@ -900,7 +900,7 @@ partial class OktaClient
                     _logger.LogTrace("The {AppName} ({AppId}) application has an {Status} client secret {SecretId}.", appNode.Name, appNode.Id, secret.Status?.Value?.ToLowerInvariant(), secret.Id);
 
                     // Create the OktaClientSecret node
-                    OktaClientSecret secretNode = new(secret, _graph.Organization.DomainName);
+                    OktaClientSecret secretNode = new(secret, _graph.Organization);
                     _graph.AddNode(secretNode);
 
                     // Create the (:Okta_ClientSecret)-[:Okta_SecretOf]->(:Okta_Application) edge
@@ -953,11 +953,11 @@ partial class OktaClient
 
                         if (signingKey.ActualInstance is OAuth2ClientJsonWebKeyECResponse ecKey)
                         {
-                            keyNode = new(ecKey, _graph.Organization.DomainName);
+                            keyNode = new(ecKey, _graph.Organization);
                         }
                         else if (signingKey.ActualInstance is OAuth2ClientJsonWebKeyRsaResponse rsaKey)
                         {
-                            keyNode = new(rsaKey, _graph.Organization.DomainName);
+                            keyNode = new(rsaKey, _graph.Organization);
                         }
                         else
                         {
@@ -1014,7 +1014,7 @@ partial class OktaClient
                     _logger.LogTrace("The {ServiceName} ({ServiceId}) API service integration has an {Status} client secret {SecretId}.", serviceNode.Name, serviceNode.Id, secret.Status?.Value?.ToLowerInvariant(), secret.Id);
 
                     // Create the OktaClientSecret node
-                    OktaClientSecret secretNode = new(secret, _graph.Organization.DomainName);
+                    OktaClientSecret secretNode = new(secret, _graph.Organization);
                     _graph.AddNode(secretNode);
 
                     // Create the (:Okta_ClientSecret)-[:Okta_SecretOf]->(:Okta_ApiServiceIntegration) edge
