@@ -2,7 +2,7 @@
   "schema": {
     "name": "OktaHound",
     "display_name": "Okta (OktaHound)",
-    "version": "2.8.0",
+    "version": "v2.8.0",
     "namespace": "Okta"
   },
   "node_kinds": [

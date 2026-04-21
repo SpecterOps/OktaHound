@@ -2,7 +2,7 @@
   "schema": {
     "name": "SCIM",
     "display_name": "SCIM",
-    "version": "1.2.0",
+    "version": "v1.2.0",
     "namespace": "SCIM"
   },
   "node_kinds": [
