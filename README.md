@@ -26,7 +26,7 @@ For service application setup, follow the [OpenHound Okta app registration guide
 
 Download the latest release for your platform from the [releases page](https://github.com/SpecterOps/OktaHound/releases), or build from source with `dotnet build`.
 
-Create an `okta.yaml` file in the same directory as the `OktaHound` executable.
+Create an `okta.yaml` file in the same directory as the `OktaHound` executable, or point the collector at a configuration file in another location with the `--config` option.
 
 For OAuth 2.0 private key authentication, start from `okta.sample.oauth.yaml`:
 
@@ -73,6 +73,7 @@ Useful options:
 - `--zip` compresses each exported JSON file after it is written.
 - `--export-ad-nodes` writes the optional Active Directory subgraph output.
 - `--domain` and `--token` can be used to override `okta.yaml` when using SSWS authentication.
+- `--config` reads the configuration from a custom YAML or JSON file path instead of the default `okta.yaml` locations, which is useful for switching between multiple Okta organizations.
 
 By default, the collector writes output files to `./output`:
 

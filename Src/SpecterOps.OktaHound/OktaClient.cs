@@ -52,7 +52,16 @@ internal partial class OktaClient
 
     private readonly int _concurrentApiCalls;
 
-    public OktaClient(ILogger? logger, Configuration? oktaConfig = null, int concurrentApiCalls = DefaultConcurrentApiCalls)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OktaClient"/> class.
+    /// </summary>
+    /// <param name="logger">Logger for status messages, or null to disable logging.</param>
+    /// <param name="oktaConfig">Explicit Okta configuration whose properties take precedence over any configuration file.</param>
+    /// <param name="configFilePath">Path to a YAML or JSON configuration file that overrides the default okta.yaml lookup locations, or null to use them.</param>
+    /// <param name="concurrentApiCalls">Maximum number of concurrent requests per API endpoint.</param>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="concurrentApiCalls"/> is not positive.</exception>
+    /// <exception cref="FileNotFoundException">Thrown when <paramref name="configFilePath"/> does not exist.</exception>
+    public OktaClient(ILogger? logger, Configuration? oktaConfig = null, string? configFilePath = null, int concurrentApiCalls = DefaultConcurrentApiCalls)
     {
         if (concurrentApiCalls <= 0)
         {
@@ -65,10 +74,18 @@ internal partial class OktaClient
         _logger = logger ?? NullLogger.Instance;
 
         // Connect using the okta.yaml configuration file,
-        // located in the app directory or in ~/.okta/.
+        // located at the caller-supplied path, in the app directory, or in ~/.okta/.
         // Merge with the optionally provided configuration.
-        _logger.LogInformation("Loading Okta configuration...");
-        this._oktaConfig = Configuration.GetConfigurationOrDefault(oktaConfig);
+        if (configFilePath != null)
+        {
+            _logger.LogInformation("Loading Okta configuration from {ConfigFilePath}...", configFilePath);
+        }
+        else
+        {
+            _logger.LogInformation("Loading Okta configuration...");
+        }
+
+        this._oktaConfig = Configuration.GetConfigurationOrDefault(oktaConfig, configFilePath);
 
         // Check the authentication type
         if (this._oktaConfig.AuthorizationMode == AuthorizationMode.SSWS)

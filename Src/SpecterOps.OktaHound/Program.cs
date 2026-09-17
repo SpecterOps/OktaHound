@@ -46,6 +46,14 @@ class Program
             Arity = ArgumentArity.ExactlyOne
         };
 
+        Option<FileInfo> configFileOption = new("--config", "-c")
+        {
+            Description = "Path to a YAML or JSON configuration file. Overrides the default okta.yaml lookup locations if provided.",
+            HelpName = "FILEPATH",
+            Required = false,
+            Arity = ArgumentArity.ExactlyOne
+        };
+
         Option<bool> skipMfaOption = new("--skip-mfa")
         {
             Description = "Skip collecting user authentication factors (MFA).",
@@ -69,6 +77,7 @@ class Program
             outputDirectoryOption,
             oktaDomainOption,
             oktaApiTokenOption,
+            configFileOption,
             skipMfaOption,
             zipOutputOption,
             exportAdNodesOption
@@ -84,6 +93,7 @@ class Program
             LogLevel verbosity = parseResult.GetRequiredValue(verboseOption);
             string? oktaDomain = parseResult.GetValue(oktaDomainOption);
             string? oktaApiToken = parseResult.GetValue(oktaApiTokenOption);
+            FileInfo? configFile = parseResult.GetValue(configFileOption);
             bool skipMfa = parseResult.GetValue(skipMfaOption);
             bool zipOutput = parseResult.GetValue(zipOutputOption);
             bool exportAdNodes = parseResult.GetValue(exportAdNodesOption);
@@ -105,6 +115,7 @@ class Program
                 logger,
                 oktaDomain,
                 oktaApiToken,
+                configFile,
                 skipMfa,
                 zipOutput,
                 exportAdNodes,
@@ -126,6 +137,7 @@ class Program
         ILogger logger,
         string? domain = null,
         string? apiToken = null,
+        FileInfo? configFile = null,
         bool skipMfa = false,
         bool zipOutput = false,
         bool exportAdNodes = false,
@@ -157,6 +169,12 @@ class Program
                 return 7;
             }
 
+            if (configFile != null && !configFile.Exists)
+            {
+                logger.LogCritical("The configuration file {ConfigFilePath} does not exist. Exiting.", configFile.FullName);
+                return 8;
+            }
+
             // Load Okta configuration and create the Okta client
             Configuration? oktaConfigFromCommandLine = null;
 
@@ -165,7 +183,7 @@ class Program
                 oktaConfigFromCommandLine = new(domain, apiToken);
             }
 
-            OktaClient oktaClient = new(logger, oktaConfigFromCommandLine);
+            OktaClient oktaClient = new(logger, oktaConfigFromCommandLine, configFile?.FullName);
 
             // Fetch the Okta OpenGraph data
             (OktaGraph? oktaGraph, OpenGraph adGraph, OpenGraph hybridEdges) =
