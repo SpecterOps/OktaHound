@@ -23,9 +23,9 @@
       },
       "Okta.Sdk": {
         "type": "Direct",
-        "requested": "[10.0.3, )",
-        "resolved": "10.0.3",
-        "contentHash": "VMULZMyWcm351gknArO9OgfloqCDsqr1iLxx2jSGYJzkW1swgzfgo+0EhTKK9BnMDgSmMkQsBPFIzUeqNPcYkw==",
+        "requested": "[10.1.0, )",
+        "resolved": "10.1.0",
+        "contentHash": "i/p0wZ9mCSrvwdnJURvvbZ9Hjvfow5T+zENqbrs7lb7h6Q79nrl/1gMqxnhqHHXnt7wsYYfX4MWYNUkjwZkyPQ==",
         "dependencies": {
           "JsonSubTypes": "2.0.1",
           "Microsoft.Bcl.AsyncInterfaces": "9.0.0",

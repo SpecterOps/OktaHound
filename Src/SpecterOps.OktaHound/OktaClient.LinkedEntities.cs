@@ -490,7 +490,7 @@ partial class OktaClient
                 // The API client is not thread-safe, so it needs to be instantiated for each thread
                 RoleCResourceSetResourceApi resourceSetApi = new(_oktaConfig);
 
-                await foreach (ResourceSetResource resource in resourceSetApi.ListAllResourceSetResources(resourceSetNode.OriginalId, cancellationToken).ConfigureAwait(false))
+                await foreach (ResourceSetResource resource in resourceSetApi.ListAllResourceSetResourcesAsync(resourceSetNode.OriginalId, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
                     string? resourceUrl = resource.Links?.Self?.Href;
 
@@ -731,7 +731,7 @@ partial class OktaClient
             int privilegedUserCount = 0;
             RoleAssignmentAUserApi roleAssignmentApi = new(_oktaConfig);
 
-            await foreach (RoleAssignedUser privilegedUser in roleAssignmentApi.ListAllUsersWithRoleAssignments(limit: null, cancellationToken).ConfigureAwait(false))
+            await foreach (RoleAssignedUser privilegedUser in roleAssignmentApi.ListAllUsersWithRoleAssignmentsAsync(limit: null, cancellationToken: cancellationToken).ConfigureAwait(false))
             {
                 privilegedUserCount++;
 

@@ -249,7 +249,7 @@ partial class OktaClient
             RoleCResourceSetApi resourceSetApi = new(_oktaConfig);
             int resourceSetCount = 0;
 
-            await foreach (ResourceSet resourceSet in resourceSetApi.ListAllResourceSets(cancellationToken).ConfigureAwait(false))
+            await foreach (ResourceSet resourceSet in resourceSetApi.ListAllResourceSetsAsync(cancellationToken).ConfigureAwait(false))
             {
                 _logger.LogDebug("Processing resource set {ResourceSetLabel} ({ResourceSetId})...", resourceSet.Label, resourceSet.Id);
                 resourceSetCount++;
@@ -398,7 +398,7 @@ partial class OktaClient
             RoleECustomApi roleApi = new(_oktaConfig);
             int roleCount = 0;
 
-            await foreach (IamRole role in roleApi.ListAllRoles(cancellationToken).ConfigureAwait(false))
+            await foreach (IamRole role in roleApi.ListAllRolesAsync(cancellationToken).ConfigureAwait(false))
             {
                 if (OktaBuiltinRole.BuiltInRoles.Contains(role.Id))
                 {
