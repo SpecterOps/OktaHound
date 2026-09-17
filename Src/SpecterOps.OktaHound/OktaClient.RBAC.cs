@@ -661,9 +661,9 @@ partial class OktaClient
                 RoleDResourceSetBindingApi resourceSetBindingApi = new(_oktaConfig);
                 RoleDResourceSetBindingMemberApi resourceSetBindingMemberApi = new(_oktaConfig);
 
-                await foreach (ResourceSetBindingRole role in resourceSetBindingApi.ListAllBindings(resourceSetNode.OriginalId, cancellationToken).ConfigureAwait(false))
+                await foreach (ResourceSetBindingRole role in resourceSetBindingApi.ListAllBindingsAsync(resourceSetNode.OriginalId, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
-                    await foreach (ResourceSetBindingMember member in resourceSetBindingMemberApi.ListAllMembersOfBinding(resourceSetNode.OriginalId, role.Id, cancellationToken).ConfigureAwait(false))
+                    await foreach (ResourceSetBindingMember member in resourceSetBindingMemberApi.ListAllMembersOfBindingAsync(resourceSetNode.OriginalId, role.Id, cancellationToken: cancellationToken).ConfigureAwait(false))
                     {
                         string roleAssignmentId = member.Id;
 
