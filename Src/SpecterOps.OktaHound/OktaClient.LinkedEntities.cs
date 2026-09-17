@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using Microsoft.Extensions.Logging;
 using Okta.Sdk.Api;
 using Okta.Sdk.Client;
@@ -36,7 +36,7 @@ partial class OktaClient
                 _logger.LogDebug("Fetching consent grants for the {AppName} ({AppId}) application...", appNode.Name, appNode.Id);
 
                 // The API client is not thread-safe, so it needs to be instantiated for each thread
-                ApplicationGrantsApi appGrantsApi = new(_oktaConfig);
+                ApplicationGrantsApi appGrantsApi = new(_apiOptions);
 
                 List<string> scopeIds = [];
 
@@ -97,7 +97,7 @@ partial class OktaClient
             try
             {
                 _logger.LogDebug("Fetching user assignments for application {AppName} ({AppId})...", appNode.Name, appNode.Id);
-                ApplicationUsersApi appUsersApi = new(_oktaConfig);
+                ApplicationUsersApi appUsersApi = new(_apiOptions);
 
                 // If this app represents an AD domain, derive its SID from any associated user account
                 string? domainSid = null;
@@ -319,7 +319,7 @@ partial class OktaClient
             try
             {
                 _logger.LogDebug("Fetching group assignments for application {AppName} ({AppId})...", appNode.Name, appNode.Id);
-                ApplicationGroupsApi appGroupsApi = new(_oktaConfig);
+                ApplicationGroupsApi appGroupsApi = new(_apiOptions);
 
                 // Try to resolve the domain SIDs of apps representing AD domains
                 string? domainSid = appNode.ActiveDirectoryDomainSid;
@@ -385,8 +385,8 @@ partial class OktaClient
             try
             {
                 _logger.LogDebug("Fetching group push mappings for application {AppName} ({AppId})...", appNode.Name, appNode.Id);
-                GroupApi groupApi = new(_oktaConfig);
-                GroupPushMappingApi groupPushApi = new(_oktaConfig);
+                GroupApi groupApi = new(_apiOptions);
+                GroupPushMappingApi groupPushApi = new(_apiOptions);
 
                 await foreach (var pushMapping in groupPushApi.ListGroupPushMappings(appNode.Id, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
@@ -488,7 +488,7 @@ partial class OktaClient
                 _logger.LogDebug("Fetching membership of the {ResourceSetName} ({ResourceSetId}) resource set...", resourceSetNode.Name, resourceSetNode.OriginalId);
 
                 // The API client is not thread-safe, so it needs to be instantiated for each thread
-                RoleCResourceSetResourceApi resourceSetApi = new(_oktaConfig);
+                RoleCResourceSetResourceApi resourceSetApi = new(_apiOptions);
 
                 await foreach (ResourceSetResource resource in resourceSetApi.ListAllResourceSetResourcesAsync(resourceSetNode.OriginalId, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
@@ -700,7 +700,7 @@ partial class OktaClient
                 _logger.LogDebug("Fetching permissions of the {RoleName} ({RoleId}) custom role...", customRoleNode.Name, customRoleNode.Id);
 
                 // The API client is not thread-safe, so it needs to be instantiated for each thread
-                RoleECustomPermissionApi roleApi = new(_oktaConfig);
+                RoleECustomPermissionApi roleApi = new(_apiOptions);
 
                 Permissions permissions = await roleApi.ListRolePermissionsAsync(customRoleNode.Id, cancellationToken).ConfigureAwait(false);
 
@@ -729,7 +729,7 @@ partial class OktaClient
         try
         {
             int privilegedUserCount = 0;
-            RoleAssignmentAUserApi roleAssignmentApi = new(_oktaConfig);
+            RoleAssignmentAUserApi roleAssignmentApi = new(_apiOptions);
 
             await foreach (RoleAssignedUser privilegedUser in roleAssignmentApi.ListAllUsersWithRoleAssignmentsAsync(limit: null, cancellationToken: cancellationToken).ConfigureAwait(false))
             {
@@ -785,7 +785,7 @@ partial class OktaClient
                 _logger.LogDebug("Fetching rules associated with the {PolicyName} ({PolicyId}) policy...", policyNode.Name, policyNode.Id);
 
                 // The API client is not thread-safe, so it needs to be instantiated for each thread
-                PolicyApi policyApi = new(_oktaConfig);
+                PolicyApi policyApi = new(_apiOptions);
 
                 await foreach (var policyRule in policyApi.ListPolicyRules(policyNode.Id, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
@@ -843,7 +843,7 @@ partial class OktaClient
                 _logger.LogDebug("Retrieving resource mapping for the {PolicyName} ({PolicyId}) policy...", policyNode.Name, policyNode.Id);
 
                 // The API client is not thread-safe, so it needs to be instantiated for each thread
-                PolicyApi policyApi = new(_oktaConfig);
+                PolicyApi policyApi = new(_apiOptions);
 
                 // TODO: Switch to ListPolicyMappings() and process policy mapping URLs
                 await foreach (var application in policyApi.ListPolicyApps(policyNode.Id, cancellationToken: cancellationToken).ConfigureAwait(false))
@@ -893,7 +893,7 @@ partial class OktaClient
                 _logger.LogDebug("Fetching the list of secrets configured for the {AppName} ({AppId}) application...", appNode.Name, appNode.Id);
 
                 // The API client is not thread-safe, so it needs to be instantiated for each thread
-                ApplicationSSOPublicKeysApi ssoApi = new(_oktaConfig);
+                ApplicationSSOPublicKeysApi ssoApi = new(_apiOptions);
 
                 await foreach (var secret in ssoApi.ListOAuth2ClientSecrets(appNode.Id, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
@@ -941,7 +941,7 @@ partial class OktaClient
                 _logger.LogDebug("Fetching the list of JSON Web Keys configured for the {AppName} ({AppId}) application...", appNode.Name, appNode.Id);
 
                 // The API client is not thread-safe, so it needs to be instantiated for each thread
-                ApplicationSSOPublicKeysApi publicKeyApi = new(_oktaConfig);
+                ApplicationSSOPublicKeysApi publicKeyApi = new(_apiOptions);
                 OAuth2ClientJsonWebKeySet appKeys = await publicKeyApi.ListJwkAsync(appNode.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 foreach (var jwk in appKeys?.Keys ?? [])
@@ -1007,7 +1007,7 @@ partial class OktaClient
                 _logger.LogDebug("Fetching the list of secrets configured for the {ServiceName} ({ServiceId}) API service integration...", serviceNode.Name, serviceNode.Id);
 
                 // The API client is not thread-safe, so it needs to be instantiated for each thread
-                ApiServiceIntegrationsApi integrationsApi = new(_oktaConfig);
+                ApiServiceIntegrationsApi integrationsApi = new(_apiOptions);
 
                 await foreach (var secret in integrationsApi.ListApiServiceIntegrationInstanceSecrets(serviceNode.Id, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
@@ -1053,7 +1053,7 @@ partial class OktaClient
                 _logger.LogDebug("Fetching the list of members for group {GroupName} ({GroupId})...", groupNode.Name, groupNode.Id);
 
                 // The API client is not thread-safe, so it needs to be instantiated for each thread
-                GroupApi groupApi = new(_oktaConfig);
+                GroupApi groupApi = new(_apiOptions);
 
                 await foreach (var groupMember in groupApi.ListGroupUsers(groupNode.Id, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
@@ -1096,7 +1096,7 @@ partial class OktaClient
                 _logger.LogTrace("Fetching the list of authentication factors for user {UserName} ({UserId})...", userNode.Name, userNode.Id);
 
                 // The API client is not thread-safe, so it needs to be instantiated for each thread
-                UserFactorApi authFactorsApi = new(_oktaConfig);
+                UserFactorApi authFactorsApi = new(_apiOptions);
 
                 // Get user's authentication factors count
                 int count = 0;
@@ -1141,7 +1141,7 @@ partial class OktaClient
                 _logger.LogDebug("Fetching the list of users associated with the {IdpName} ({IdpId}) identity provider...", idpNode.Name, idpNode.Id);
 
                 // The API client is not thread-safe, so it needs to be instantiated for each thread
-                IdentityProviderUsersApi identityProviderApi = new(_oktaConfig);
+                IdentityProviderUsersApi identityProviderApi = new(_apiOptions);
 
                 await foreach (var idpUser in identityProviderApi.ListIdentityProviderApplicationUsers(idpNode.Id, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
