@@ -46,6 +46,20 @@ class Program
             Arity = ArgumentArity.ExactlyOne
         };
 
+        Option<string> oktaClientIdOption = new("--client-id", "-i")
+        {
+            Description = "OAuth 2.0 client ID of an API service app or API service integration. Overrides okta.yaml setting if provided.",
+            Required = false,
+            Arity = ArgumentArity.ExactlyOne
+        };
+
+        Option<string> oktaClientSecretOption = new("--client-secret", "-s")
+        {
+            Description = "OAuth 2.0 client secret. Can also be provided through a configuration file.",
+            Required = false,
+            Arity = ArgumentArity.ExactlyOne
+        };
+
         Option<FileInfo> configFileOption = new("--config", "-c")
         {
             Description = "Path to a YAML or JSON configuration file. Overrides the default okta.yaml lookup locations if provided.",
@@ -77,6 +91,8 @@ class Program
             outputDirectoryOption,
             oktaDomainOption,
             oktaApiTokenOption,
+            oktaClientIdOption,
+            oktaClientSecretOption,
             configFileOption,
             skipMfaOption,
             zipOutputOption,
@@ -93,6 +109,8 @@ class Program
             LogLevel verbosity = parseResult.GetRequiredValue(verboseOption);
             string? oktaDomain = parseResult.GetValue(oktaDomainOption);
             string? oktaApiToken = parseResult.GetValue(oktaApiTokenOption);
+            string? oktaClientId = parseResult.GetValue(oktaClientIdOption);
+            string? oktaClientSecret = parseResult.GetValue(oktaClientSecretOption);
             FileInfo? configFile = parseResult.GetValue(configFileOption);
             bool skipMfa = parseResult.GetValue(skipMfaOption);
             bool zipOutput = parseResult.GetValue(zipOutputOption);
@@ -115,6 +133,8 @@ class Program
                 logger,
                 oktaDomain,
                 oktaApiToken,
+                oktaClientId,
+                oktaClientSecret,
                 configFile,
                 skipMfa,
                 zipOutput,
@@ -137,6 +157,8 @@ class Program
         ILogger logger,
         string? domain = null,
         string? apiToken = null,
+        string? clientId = null,
+        string? clientSecret = null,
         FileInfo? configFile = null,
         bool skipMfa = false,
         bool zipOutput = false,
@@ -157,15 +179,21 @@ class Program
             }
 
             // Validate the Okta authentication parameters
+            if (!string.IsNullOrEmpty(apiToken) && (!string.IsNullOrEmpty(clientId) || !string.IsNullOrEmpty(clientSecret)))
+            {
+                logger.LogCritical("The API token and OAuth 2.0 client credentials are mutually exclusive. Exiting.");
+                return 7;
+            }
+
             if (string.IsNullOrEmpty(domain) && !string.IsNullOrEmpty(apiToken))
             {
                 logger.LogCritical("The Okta domain must be provided together with the API token. Exiting.");
                 return 7;
             }
 
-            if (!string.IsNullOrEmpty(domain) && string.IsNullOrEmpty(apiToken))
+            if (!string.IsNullOrEmpty(domain) && string.IsNullOrEmpty(apiToken) && string.IsNullOrEmpty(clientId))
             {
-                logger.LogCritical("The API token must be provided together with the Okta domain. Exiting.");
+                logger.LogCritical("The API token or client ID must be provided together with the Okta domain. Exiting.");
                 return 7;
             }
 
@@ -175,15 +203,38 @@ class Program
                 return 8;
             }
 
-            // Load Okta configuration and create the Okta client
+            // The client secret can also come from a configuration file.
+            // It is intentionally not resolved when an API token is provided on the command line,
+            // as the token takes precedence. A file-based token conflicting with a client secret
+            // is detected later by OktaClient, after the configuration sources are merged.
+            if (string.IsNullOrEmpty(apiToken))
+            {
+                clientSecret = OktaClientSecretTokenProvider.ResolveClientSecret(clientSecret, configFile?.FullName);
+            }
+            else
+            {
+                clientSecret = null;
+            }
+
+            // Load Okta configuration and create the Okta client.
+            // A client ID without a client secret is allowed, as the merged configuration
+            // may still provide a private key. OktaClient validates the combination.
             Configuration? oktaConfigFromCommandLine = null;
 
             if (!string.IsNullOrEmpty(apiToken))
             {
                 oktaConfigFromCommandLine = new(domain, apiToken);
             }
+            else if (!string.IsNullOrEmpty(clientId))
+            {
+                oktaConfigFromCommandLine = new()
+                {
+                    OktaDomain = domain,
+                    ClientId = clientId
+                };
+            }
 
-            OktaClient oktaClient = new(logger, oktaConfigFromCommandLine, configFile?.FullName);
+            using OktaClient oktaClient = new(logger, oktaConfigFromCommandLine, configFile?.FullName, clientSecret);
 
             // Fetch the Okta OpenGraph data
             (OktaGraph? oktaGraph, OpenGraph adGraph, OpenGraph hybridEdges) =
@@ -264,6 +315,12 @@ class Program
             // Exit successfully
             logger.LogInformation("Export completed successfully.");
             return 0;
+        }
+        catch (ArgumentException e)
+        {
+            // Invalid combination of authentication settings
+            logger.LogCritical("Invalid Okta configuration: {Message} Exiting.", e.Message);
+            return 7;
         }
         catch (IOException e)
         {

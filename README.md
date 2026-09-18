@@ -15,9 +15,10 @@ OktaHound works with the [BloodHound Okta Extension](https://bloodhound.spectero
 
 ## Authentication Options
 
-OktaHound supports two ways to authenticate to the Okta API:
+OktaHound supports three ways to authenticate to the Okta API:
 
 - `OAuth 2.0 service application` using a client ID and private key. This is the recommended option.
+- `OAuth 2.0 client secret` using a client ID and client secret. Use this option for API service integrations, which do not support private key authentication.
 - `SSWS API token` using a token tied to an Okta administrator account.
 
 For service application setup, follow the [OpenHound Okta app registration guide](https://bloodhound.specterops.io/openhound/collectors/okta/okta-app-registration). The same registration process applies to OktaHound.
@@ -49,6 +50,19 @@ okta:
       "n": "TODO"
 ```
 
+For OAuth 2.0 client secret authentication, start from `okta.sample.clientsecret.yaml`:
+
+```yaml
+okta:
+  client:
+    oktaDomain: "https://TODO.okta.com"
+    authorizationMode: "BearerToken"
+    clientId: "TODO"
+    clientSecret: "TODO"
+```
+
+The client secret can alternatively be provided through the `--client-secret` command line parameter.
+
 For SSWS token authentication, start from `okta.sample.token.yaml`:
 
 ```yaml
@@ -73,6 +87,8 @@ Useful options:
 - `--zip` compresses each exported JSON file after it is written.
 - `--export-ad-nodes` writes the optional Active Directory subgraph output.
 - `--domain` and `--token` can be used to override `okta.yaml` when using SSWS authentication.
+- `--domain`, `--client-id`, and `--client-secret` can be used to override `okta.yaml` when using OAuth 2.0 client secret authentication.
+- `--client-id`, optionally together with `--domain`, can also override `okta.yaml` when using OAuth 2.0 private key authentication, e.g. when the same key is registered in multiple Okta organizations. The private key itself can only be provided through a configuration file.
 - `--config` reads the configuration from a custom YAML or JSON file path instead of the default `okta.yaml` locations, which is useful for switching between multiple Okta organizations.
 
 By default, the collector writes output files to `./output`:

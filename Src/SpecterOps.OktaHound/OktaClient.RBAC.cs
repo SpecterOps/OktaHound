@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
 using Microsoft.Extensions.Logging;
@@ -34,7 +34,7 @@ partial class OktaClient
                 _logger.LogDebug("Fetching role assignments for user {UserName} ({UserId})...", userNode.Name, userNode.Id);
 
                 // The API client is not thread-safe, so it needs to be instantiated for each thread
-                RoleAssignmentAUserApi roleAssignmentApi = new(_oktaConfig);
+                RoleAssignmentAUserApi roleAssignmentApi = new(_apiOptions);
 
                 await foreach (var roleAssignment in roleAssignmentApi.ListAssignedRolesForUser(userNode.Id, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
@@ -112,7 +112,7 @@ partial class OktaClient
                 bool hasRoleAssignments = false;
 
                 // The API client is not thread-safe, so it needs to be instantiated for each thread
-                RoleAssignmentBGroupApi roleAssignmentApi = new(_oktaConfig);
+                RoleAssignmentBGroupApi roleAssignmentApi = new(_apiOptions);
 
                 await foreach (var roleAssignment in roleAssignmentApi.ListGroupAssignedRoles(groupNode.Id, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
@@ -170,7 +170,7 @@ partial class OktaClient
             {
                 _logger.LogDebug("Fetching role assignments for application {AppName} ({AppId})...", appNode.Name, appNode.Id);
                 bool hasRoleAssignments = false;
-                RoleAssignmentClientApi assignmentsApi = new(_oktaConfig);
+                RoleAssignmentClientApi assignmentsApi = new(_apiOptions);
 
                 await foreach (var roleAssignment in assignmentsApi.ListRolesForClient(appNode.Id, cancellationToken).ConfigureAwait(false))
                 {
@@ -488,9 +488,9 @@ partial class OktaClient
 
         try
         {
-            RoleBTargetAdminApi roleTargetUserApi = new(_oktaConfig);
-            RoleBTargetBGroupApi roleTargetGroupApi = new(_oktaConfig);
-            RoleBTargetClientApi roleTargetAppApi = new(_oktaConfig);
+            RoleBTargetAdminApi roleTargetUserApi = new(_apiOptions);
+            RoleBTargetBGroupApi roleTargetGroupApi = new(_apiOptions);
+            RoleBTargetClientApi roleTargetAppApi = new(_apiOptions);
 
             if (roleAssignment.AssignmentType == RoleAssignmentType.USER)
             {
@@ -581,9 +581,9 @@ partial class OktaClient
 
         try
         {
-            RoleBTargetAdminApi roleTargetUserApi = new(_oktaConfig);
-            RoleBTargetBGroupApi roleTargetGroupApi = new(_oktaConfig);
-            RoleBTargetClientApi roleTargetAppApi = new(_oktaConfig);
+            RoleBTargetAdminApi roleTargetUserApi = new(_apiOptions);
+            RoleBTargetBGroupApi roleTargetGroupApi = new(_apiOptions);
+            RoleBTargetClientApi roleTargetAppApi = new(_apiOptions);
 
             if (roleAssignment.AssignmentType == RoleAssignmentType.USER)
             {
@@ -658,8 +658,8 @@ partial class OktaClient
                 _logger.LogDebug("Fetching role assignments scoped to the {ResourceSetName} ({ResourceSetId}) resource set...", resourceSetNode.Name, resourceSetNode.OriginalId);
 
                 // The API client is not thread-safe, so it needs to be instantiated for each thread
-                RoleDResourceSetBindingApi resourceSetBindingApi = new(_oktaConfig);
-                RoleDResourceSetBindingMemberApi resourceSetBindingMemberApi = new(_oktaConfig);
+                RoleDResourceSetBindingApi resourceSetBindingApi = new(_apiOptions);
+                RoleDResourceSetBindingMemberApi resourceSetBindingMemberApi = new(_apiOptions);
 
                 await foreach (ResourceSetBindingRole role in resourceSetBindingApi.ListAllBindingsAsync(resourceSetNode.OriginalId, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {

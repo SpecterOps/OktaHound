@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using Microsoft.Extensions.Logging;
 using Okta.Sdk.Api;
 using Okta.Sdk.Client;
@@ -31,7 +31,7 @@ partial class OktaClient
             _logger.LogInformation("Fetching Okta organization information...");
 
             // Fetch organization information
-            OrgSettingGeneralApi orgApi = new(_oktaConfig);
+            OrgSettingGeneralApi orgApi = new(_apiOptions);
             OrgSetting orgSettings = await orgApi.GetOrgSettingsAsync(cancellationToken).ConfigureAwait(false);
 
             // Extract the domain name from the Okta URL
@@ -60,7 +60,7 @@ partial class OktaClient
 
         try
         {
-            UserApi userApi = new(_oktaConfig);
+            UserApi userApi = new(_apiOptions);
             int userCount = 0;
 
             await foreach (var user in userApi.ListUsers(cancellationToken: cancellationToken).ConfigureAwait(false))
@@ -104,7 +104,7 @@ partial class OktaClient
 
         try
         {
-            GroupApi groupApi = new(_oktaConfig);
+            GroupApi groupApi = new(_apiOptions);
             int groupCount = 0;
 
             await foreach (var group in groupApi.ListGroups(cancellationToken: cancellationToken).ConfigureAwait(false))
@@ -195,7 +195,7 @@ partial class OktaClient
 
         try
         {
-            DeviceApi deviceApi = new(_oktaConfig);
+            DeviceApi deviceApi = new(_apiOptions);
             int deviceCount = 0;
 
             await foreach (var device in deviceApi.ListDevices(expand: DeviceExpandParameter.UserSummary, cancellationToken: cancellationToken).ConfigureAwait(false))
@@ -246,7 +246,7 @@ partial class OktaClient
 
         try
         {
-            RoleCResourceSetApi resourceSetApi = new(_oktaConfig);
+            RoleCResourceSetApi resourceSetApi = new(_apiOptions);
             int resourceSetCount = 0;
 
             await foreach (ResourceSet resourceSet in resourceSetApi.ListAllResourceSetsAsync(cancellationToken).ConfigureAwait(false))
@@ -283,8 +283,8 @@ partial class OktaClient
 
         try
         {
-            RealmApi realmApi = new(_oktaConfig);
-            RealmAssignmentApi realmAssignmentApi = new(_oktaConfig);
+            RealmApi realmApi = new(_apiOptions);
+            RealmAssignmentApi realmAssignmentApi = new(_apiOptions);
             int realmCount = 0;
 
             await foreach (var realm in realmApi.ListRealms(cancellationToken: cancellationToken).ConfigureAwait(false))
@@ -344,7 +344,7 @@ partial class OktaClient
             try
             {
                 _logger.LogDebug("Fetching info about the built-in role {RoleId}...", roleId);
-                RoleECustomApi roleApi = new(_oktaConfig);
+                RoleECustomApi roleApi = new(_apiOptions);
 
                 var role = await roleApi.GetRoleAsync(roleId, cancellationToken).ConfigureAwait(false);
 
@@ -395,7 +395,7 @@ partial class OktaClient
 
         try
         {
-            RoleECustomApi roleApi = new(_oktaConfig);
+            RoleECustomApi roleApi = new(_apiOptions);
             int roleCount = 0;
 
             await foreach (IamRole role in roleApi.ListAllRolesAsync(cancellationToken).ConfigureAwait(false))
@@ -437,7 +437,7 @@ partial class OktaClient
 
         try
         {
-            ApplicationApi appApi = new(_oktaConfig);
+            ApplicationApi appApi = new(_apiOptions);
             int applicationCount = 0;
 
             await foreach (var app in appApi.ListApplications(cancellationToken: cancellationToken).ConfigureAwait(false))
@@ -485,7 +485,7 @@ partial class OktaClient
 
         try
         {
-            ApiTokenApi tokenApi = new(_oktaConfig);
+            ApiTokenApi tokenApi = new(_apiOptions);
             int tokenCount = 0;
 
             await foreach (var token in tokenApi.ListApiTokens(cancellationToken).ConfigureAwait(false))
@@ -529,7 +529,7 @@ partial class OktaClient
 
         try
         {
-            AgentPoolsApi agentPoolsApi = new(_oktaConfig);
+            AgentPoolsApi agentPoolsApi = new(_apiOptions);
             int agentPoolCount = 0;
 
             await foreach (var agentPool in agentPoolsApi.ListAgentPools(cancellationToken: cancellationToken).ConfigureAwait(false))
@@ -609,7 +609,7 @@ partial class OktaClient
 
         try
         {
-            AuthorizationServerApi authorizationServerApi = new(_oktaConfig);
+            AuthorizationServerApi authorizationServerApi = new(_apiOptions);
             int authorizationServerCount = 0;
 
             await foreach (var authorizationServer in authorizationServerApi.ListAuthorizationServers(cancellationToken: cancellationToken).ConfigureAwait(false))
@@ -625,7 +625,7 @@ partial class OktaClient
                 _graph.AddEdge(_graph.Organization, authorizationServerNode, OktaOrganization.ContainsEdgeKind);
 
                 // TODO: List associated trusted servers
-                // AuthorizationServerAssocApi authorizationServerAssocApi = new(_oktaConfig);
+                // AuthorizationServerAssocApi authorizationServerAssocApi = new(_apiOptions);
                 // authorizationServerAssocApi.ListAssociatedServersByTrustedType(authorizationServerNode.Id, trusted: true, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
@@ -649,7 +649,7 @@ partial class OktaClient
 
         try
         {
-            IdentityProviderApi identityProviderApi = new(_oktaConfig);
+            IdentityProviderApi identityProviderApi = new(_apiOptions);
             int identityProviderCount = 0;
 
             await foreach (var identityProvider in identityProviderApi.ListIdentityProviders(cancellationToken: cancellationToken).ConfigureAwait(false))
@@ -702,7 +702,7 @@ partial class OktaClient
 
         try
         {
-            ApiServiceIntegrationsApi apiServiceApi = new(_oktaConfig);
+            ApiServiceIntegrationsApi apiServiceApi = new(_apiOptions);
             int serviceCount = 0;
 
             await foreach (var service in apiServiceApi.ListApiServiceIntegrationInstances(cancellationToken: cancellationToken).ConfigureAwait(false))
@@ -748,7 +748,7 @@ partial class OktaClient
             throw new InvalidOperationException("Okta graph not initialized. Please call InitializeOktaGraph() first.");
         }
 
-        PolicyApi policyApi = new(_oktaConfig);
+        PolicyApi policyApi = new(_apiOptions);
         int policyCount = 0;
 
         foreach (PolicyTypeParameter policyType in OktaPolicy.PolicyTypes)
@@ -798,7 +798,7 @@ partial class OktaClient
             throw new InvalidOperationException("Okta graph not initialized. Please call InitializeOktaGraph() first.");
         }
 
-        SystemLogApi logApi = new(_oktaConfig);
+        SystemLogApi logApi = new(_apiOptions);
         int eventCount = 0;
 
         try

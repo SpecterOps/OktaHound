@@ -6,7 +6,7 @@ using SpecterOps.OktaHound.Model.OpenGraph;
 
 namespace SpecterOps.OktaHound;
 
-internal partial class OktaClient
+internal partial class OktaClient : IDisposable
 {
     /// <summary>
     /// Default Okta domain if none is specified in okta.yaml
@@ -46,6 +46,16 @@ internal partial class OktaClient
     private readonly Configuration _oktaConfig;
 
     /// <summary>
+    /// Shared settings used to construct all Okta API clients.
+    /// </summary>
+    private readonly OktaApiClientOptions _apiOptions;
+
+    /// <summary>
+    /// Provides OAuth 2.0 access tokens when client secret authentication is used.
+    /// </summary>
+    private readonly OktaClientSecretTokenProvider? _clientSecretTokenProvider;
+
+    /// <summary>
     /// Represents the logger instance used for logging operations within the application.
     /// </summary>
     private readonly ILogger _logger;
@@ -58,10 +68,12 @@ internal partial class OktaClient
     /// <param name="logger">Logger for status messages, or null to disable logging.</param>
     /// <param name="oktaConfig">Explicit Okta configuration whose properties take precedence over any configuration file.</param>
     /// <param name="configFilePath">Path to a YAML or JSON configuration file that overrides the default okta.yaml lookup locations, or null to use them.</param>
+    /// <param name="clientSecret">OAuth 2.0 client secret used together with the configured client ID, or null to use another authentication method.</param>
     /// <param name="concurrentApiCalls">Maximum number of concurrent requests per API endpoint.</param>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="concurrentApiCalls"/> is not positive.</exception>
+    /// <exception cref="ArgumentException">Thrown when the client credential settings are incomplete.</exception>
     /// <exception cref="FileNotFoundException">Thrown when <paramref name="configFilePath"/> does not exist.</exception>
-    public OktaClient(ILogger? logger, Configuration? oktaConfig = null, string? configFilePath = null, int concurrentApiCalls = DefaultConcurrentApiCalls)
+    public OktaClient(ILogger? logger, Configuration? oktaConfig = null, string? configFilePath = null, string? clientSecret = null, int concurrentApiCalls = DefaultConcurrentApiCalls)
     {
         if (concurrentApiCalls <= 0)
         {
@@ -88,6 +100,35 @@ internal partial class OktaClient
         this._oktaConfig = Configuration.GetConfigurationOrDefault(oktaConfig, configFilePath);
 
         // Check the authentication type
+        if (!string.IsNullOrEmpty(clientSecret))
+        {
+            // The Okta SDK does not support client secret authentication (see okta/okta-sdk-dotnet#817),
+            // so the OAuth 2.0 client credentials flow is implemented locally and the resulting
+            // bearer tokens are attached to API requests by an interceptor.
+            if (string.IsNullOrEmpty(this._oktaConfig.ClientId))
+            {
+                throw new ArgumentException("A client ID must be configured when using client secret authentication.");
+            }
+
+            if (this._oktaConfig.AuthorizationMode == AuthorizationMode.SSWS && !string.IsNullOrEmpty(this._oktaConfig.Token))
+            {
+                // Refuse to guess which of the two conflicting credentials the user meant.
+                throw new ArgumentException("Both an SSWS API token and an OAuth 2.0 client secret are configured. Remove one of them, or set authorizationMode to BearerToken to use the client secret.");
+            }
+
+            this._oktaConfig.AuthorizationMode = AuthorizationMode.BearerToken;
+            _clientSecretTokenProvider = new OktaClientSecretTokenProvider(this._oktaConfig, clientSecret, _logger);
+        }
+        else if (!string.IsNullOrEmpty(this._oktaConfig.ClientId)
+            && !Configuration.IsPrivateKeyMode(this._oktaConfig)
+            && string.IsNullOrEmpty(this._oktaConfig.Token)
+            && string.IsNullOrEmpty(this._oktaConfig.AccessToken))
+        {
+            // A client ID alone cannot authenticate. It is only allowed without a client secret
+            // when the merged configuration provides another credential, e.g. a private key.
+            throw new ArgumentException("A client ID is configured without a usable credential. Provide a client secret through the --client-secret parameter or a configuration file, or configure private key authentication.");
+        }
+
         if (this._oktaConfig.AuthorizationMode == AuthorizationMode.SSWS)
         {
             _logger.LogWarning("Using API Token (SSWS) authentication. It is recommended to use OAuth 2.0 with an API Service App for better security and auditing.");
@@ -95,10 +136,39 @@ internal partial class OktaClient
 
         // Override the scopes to ensure we have the required permissions.
         this._oktaConfig.Scopes = RequiredOktaScopes;
+
+        // In private key mode, all API clients share a single token provider (and thus a single cached token).
+        _apiOptions = new OktaApiClientOptions(
+            this._oktaConfig,
+            oAuthTokenProvider: Configuration.IsPrivateKeyMode(this._oktaConfig) ? new DefaultOAuthTokenProvider(this._oktaConfig) : null,
+            interceptors: _clientSecretTokenProvider != null ? [new OktaBearerTokenInterceptor(_clientSecretTokenProvider)] : null);
+    }
+
+    public void Dispose()
+    {
+        _clientSecretTokenProvider?.Dispose();
     }
 
     public async Task InitializeOktaGraph(CancellationToken cancellationToken = default)
     {
+        if (_clientSecretTokenProvider != null && _oktaConfig.OktaDomain != DefaultOktaDomain)
+        {
+            try
+            {
+                // Acquire the first access token before any API client is constructed,
+                // both to satisfy the SDK configuration validation and to fail fast on bad credentials.
+                _oktaConfig.AccessToken = await _clientSecretTokenProvider.GetAccessTokenAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception e) when (e is not OperationCanceledException)
+            {
+                _logger.LogCritical("Could not authenticate using the OAuth 2.0 client credentials flow: {Message}", e.Message);
+
+                // Drop any pre-existing graph to indicate failure.
+                _graph = null;
+                return;
+            }
+        }
+
         OktaOrganization? orgNode = await FetchOktaOrganization(cancellationToken);
 
         if (orgNode is null)
