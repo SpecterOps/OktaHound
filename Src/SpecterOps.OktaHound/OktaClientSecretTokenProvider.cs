@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -149,7 +150,7 @@ internal sealed class OktaClientSecretTokenProvider : IDisposable
 
         // The client_secret_basic authentication method requires the credentials
         // to be form-urlencoded before they are Base64-encoded (RFC 6749 section 2.3.1).
-        string credentials = $"{Uri.EscapeDataString(_configuration.ClientId)}:{Uri.EscapeDataString(_clientSecret)}";
+        string credentials = $"{WebUtility.UrlEncode(_configuration.ClientId)}:{WebUtility.UrlEncode(_clientSecret)}";
         request.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes(credentials)));
 
         request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
