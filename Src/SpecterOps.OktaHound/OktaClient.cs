@@ -110,6 +110,12 @@ internal partial class OktaClient : IDisposable
                 throw new ArgumentException("A client ID must be configured when using client secret authentication.");
             }
 
+            if (this._oktaConfig.AuthorizationMode == AuthorizationMode.SSWS && !string.IsNullOrEmpty(this._oktaConfig.Token))
+            {
+                // Refuse to guess which of the two conflicting credentials the user meant.
+                throw new ArgumentException("Both an SSWS API token and an OAuth 2.0 client secret are configured. Remove one of them, or set authorizationMode to BearerToken to use the client secret.");
+            }
+
             this._oktaConfig.AuthorizationMode = AuthorizationMode.BearerToken;
             _clientSecretTokenProvider = new OktaClientSecretTokenProvider(this._oktaConfig, clientSecret, _logger);
         }

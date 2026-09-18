@@ -204,7 +204,9 @@ class Program
             }
 
             // The client secret can also come from a configuration file.
-            // It is intentionally not resolved when an SSWS API token is used, as the token takes precedence.
+            // It is intentionally not resolved when an API token is provided on the command line,
+            // as the token takes precedence. A file-based token conflicting with a client secret
+            // is detected later by OktaClient, after the configuration sources are merged.
             if (string.IsNullOrEmpty(apiToken))
             {
                 clientSecret = OktaClientSecretTokenProvider.ResolveClientSecret(clientSecret, configFile?.FullName);

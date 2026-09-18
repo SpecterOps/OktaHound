@@ -26,8 +26,16 @@ internal sealed class OktaClientSecretTokenProvider : IDisposable
     /// <summary>
     /// Access tokens are renewed this long before they actually expire,
     /// so that requests already in flight never carry a token that expires mid-request.
+    /// Tokens whose lifetime is shorter than twice this buffer are still cached
+    /// for half of their lifetime instead of being re-requested on every API call.
     /// </summary>
     private static readonly TimeSpan ExpirationBuffer = TimeSpan.FromMinutes(5);
+
+    /// <summary>
+    /// An immutable access token snapshot, published atomically so that the token
+    /// and its renewal deadline are always read as a consistent pair.
+    /// </summary>
+    private sealed record CachedToken(string AccessToken, DateTimeOffset RenewAfter);
 
     private readonly Configuration _configuration;
     private readonly string _clientSecret;
@@ -35,8 +43,7 @@ internal sealed class OktaClientSecretTokenProvider : IDisposable
     private readonly SemaphoreSlim _renewalLock = new(1, 1);
     private readonly HttpClient _httpClient;
 
-    private string? _accessToken;
-    private DateTimeOffset _accessTokenExpiresAt = DateTimeOffset.MinValue;
+    private volatile CachedToken? _cachedToken;
 
     public OktaClientSecretTokenProvider(Configuration configuration, string clientSecret, ILogger logger)
     {
@@ -63,12 +70,12 @@ internal sealed class OktaClientSecretTokenProvider : IDisposable
     /// </summary>
     public async Task<string> GetAccessTokenAsync(CancellationToken cancellationToken = default)
     {
-        // Fast path without locking; the cached token stays valid for the entire buffer window.
-        string? accessToken = _accessToken;
+        // Fast path without locking; the immutable snapshot stays valid beyond its renewal deadline.
+        CachedToken? cached = _cachedToken;
 
-        if (accessToken != null && DateTimeOffset.UtcNow < _accessTokenExpiresAt - ExpirationBuffer)
+        if (cached != null && DateTimeOffset.UtcNow < cached.RenewAfter)
         {
-            return accessToken;
+            return cached.AccessToken;
         }
 
         await _renewalLock.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -76,12 +83,15 @@ internal sealed class OktaClientSecretTokenProvider : IDisposable
         try
         {
             // Re-check after acquiring the lock, as another caller may have renewed the token in the meantime.
-            if (_accessToken == null || DateTimeOffset.UtcNow >= _accessTokenExpiresAt - ExpirationBuffer)
+            cached = _cachedToken;
+
+            if (cached == null || DateTimeOffset.UtcNow >= cached.RenewAfter)
             {
-                (_accessToken, _accessTokenExpiresAt) = await RequestAccessTokenAsync(cancellationToken).ConfigureAwait(false);
+                cached = await RequestAccessTokenAsync(cancellationToken).ConfigureAwait(false);
+                _cachedToken = cached;
             }
 
-            return _accessToken;
+            return cached.AccessToken;
         }
         finally
         {
@@ -129,7 +139,7 @@ internal sealed class OktaClientSecretTokenProvider : IDisposable
         return configBuilder.Build()["okta:client:clientSecret"];
     }
 
-    private async Task<(string accessToken, DateTimeOffset expiresAt)> RequestAccessTokenAsync(CancellationToken cancellationToken)
+    private async Task<CachedToken> RequestAccessTokenAsync(CancellationToken cancellationToken)
     {
         Uri tokenEndpoint = new(new Uri(_configuration.OktaDomain), TokenEndpointPath);
         _logger.LogDebug("Requesting an OAuth 2.0 access token from {TokenEndpoint}...", tokenEndpoint);
@@ -175,7 +185,11 @@ internal sealed class OktaClientSecretTokenProvider : IDisposable
 
         _logger.LogDebug("Obtained an OAuth 2.0 access token that expires in {ExpiresIn} seconds.", expiresIn);
 
-        return (accessToken, DateTimeOffset.UtcNow.AddSeconds(expiresIn));
+        // Renew ahead of the actual expiration, but cache short-lived tokens
+        // for at least half of their lifetime.
+        double renewalDelaySeconds = Math.Max(expiresIn / 2.0, expiresIn - ExpirationBuffer.TotalSeconds);
+
+        return new CachedToken(accessToken, DateTimeOffset.UtcNow.AddSeconds(renewalDelaySeconds));
     }
 
     /// <summary>
