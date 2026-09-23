@@ -1,5 +1,8 @@
 # OktaHound
 
+> [!IMPORTANT]
+> This tool is deprecated. Please use the [OpenHound Okta collector](https://github.com/SpecterOps/openhound-okta) instead.
+
 [![Applies to BloodHound Community Edition](https://mintlify.s3.us-west-1.amazonaws.com/specterops/assets/community-edition-pill-tag.svg)](https://specterops.io/bloodhound-community-edition/)
 
 [![Apache License 2.0](https://img.shields.io/badge/License-Apache%20License%202.0-green)](LICENSE)

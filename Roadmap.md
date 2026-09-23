@@ -113,19 +113,3 @@ We decided not to collect the following Okta entity types, as they are not direc
 > [!NOTE]
 > The entities listed above should not be skipped during Okta security assessments,
 > as they might still contain misconfigurations that could be exploited by attackers.
-
-## Least Privileged Access
-
-To read application OAuth 2.0 grants, the [Super administrators](https://help.okta.com/en-us/content/topics/security/administrators-super-admin.htm)
-role must be assigned to the `OktaHound` application. We are in touch with Okta to find a better solution.
-
-The following steps should be applicable in the future to grant least privileged access to the `OktaHound` application:
-
-In addition to the OAuth 2.0 scopes listed above, the `OktaHound` application must be assigned the [Read-only administrators](https://help.okta.com/en-us/content/topics/security/administrators-read-only-admin.htm) role. As this built-in role does not allow reading role assignments, a custom role needs to be created with the appropriate permissions.
-
-In accordance with the principle of least privilege, our recommendation is to create a custom role called **IAM Readers** with the **View roles, resources, and admin assignments** permission and a [resource set](https://help.okta.com/oie/en-us/content/topics/security/custom-admin-role/create-resource-set.htm) called **IAM Resources** containing **All Identity and Access Management resources**. The IAM Readers role should then be assigned to the `OktaHound` application and scoped to the IAM Resources resource set.
-
-## API Service Integration
-
-Our long-term goal is to [register](https://oinmanager.okta.com/) BloodHound Enterprise as an API application in [Okta's OIN Catalog](https://www.okta.com/integrations/),
-to streamline the app registration process.
